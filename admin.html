@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SISTEMA ADT - CONTROL DE ACCESO TOTAL</title>
+  <title>SISTEMA ADT - ADMINISTRACIÓN INTEGRAL</title>
   <style>
     :root {
       --sidebar-bg: #0f172a;
@@ -15,7 +15,6 @@
       --radius: 12px;
       --danger: #ef4444;
       --warning: #f59e0b;
-      --success: #10b981;
     }
 
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', system-ui, sans-serif; }
@@ -26,22 +25,29 @@
     .login-card { background: white; padding: 40px; border-radius: 20px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
     .login-card input { text-transform: none !important; }
 
-    /* SIDEBAR */
+    /* BARRA LATERAL */
     .sidebar { width: 320px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; border-right: 1px solid var(--border); flex-shrink: 0; }
     .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; background: #020617; }
     .sidebar-brand h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 1px; }
 
     .sidebar-nav { padding: 15px 10px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid #1e293b; }
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; transition: 0.2s; font-size: 11px; }
+    .nav-btn { 
+      width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; 
+      text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; transition: 0.2s; font-size: 11px;
+    }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
     .nav-btn:hover:not(.active) { background: #1e293b; color: white; }
 
     /* ACORDEÓN CATÁLOGO */
     .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; }
     .cat-accordion { margin-bottom: 6px; }
-    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 6px; display: flex; justify-content: space-between; }
+    .cat-trigger { 
+      width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
+      text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 6px;
+      display: flex; justify-content: space-between;
+    }
     .cat-content { max-height: 0; overflow: hidden; transition: 0.3s; background: #0f172a; }
-    .cat-accordion.active .cat-content { max-height: 1000px; padding: 10px 0; }
+    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
     .food-card { background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; margin: 0 5px; }
     .btn-quick { width: 100%; font-size: 9px; padding: 9px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; margin-top: 4px; font-weight: 800; }
     .btn-quick:hover { background: var(--accent); }
@@ -69,11 +75,8 @@
     .btn-ghost { background: transparent; color: #64748b; border: 1px solid var(--border); }
 
     .hidden { display: none !important; }
-    #autoNameDisplay { font-size: 14px; font-weight: 900; color: var(--accent); margin-top: 10px; display: block; }
-    
-    /* Permisos */
     .perm-badge { padding: 4px 8px; border-radius: 4px; font-size: 9px; margin-right: 4px; border: 1px solid var(--border); }
-    .perm-on { background: #dcfce7; color: #16a34a; }
+    .perm-on { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
     .perm-off { background: #f1f5f9; color: #94a3b8; }
   </style>
 </head>
@@ -96,7 +99,6 @@
       <button class="nav-btn active" id="btnModeBuilder" onclick="switchMode('builder')">🛠 CONSTRUCTOR</button>
       <button class="nav-btn hidden" id="btnModeCatalog" onclick="switchMode('catalog')">📂 GESTOR ALIMENTOS</button>
       <button class="nav-btn" id="btnModeHistory" onclick="switchMode('history')">📜 HISTORIAL</button>
-      <!-- Solo Administrador Maestro -->
       <button class="nav-btn hidden" id="btnModeUsers" onclick="switchMode('users')">👥 GESTIÓN USUARIOS</button>
     </div>
 
@@ -106,7 +108,7 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- MAIN AREA -->
   <main class="main-area hidden" id="appMain">
     <div class="top-bar">
       <h1 id="viewTitle" style="font-size: 16px; margin: 0; font-weight: 900;">🛠 CONSTRUCTOR</h1>
@@ -129,21 +131,26 @@
               </div>
               <div>
                 <label>NOMBRE ASIGNADO AUTOMÁTICAMENTE</label>
-                <div id="autoNameDisplay">CARGANDO...</div>
+                <div id="autoNameDisplay" style="font-size: 18px; font-weight: 900; color: var(--accent); margin-top: 8px;">CARGANDO...</div>
               </div>
             </div>
-            <div style="margin-top: 20px;">
-              <button class="btn btn-primary" id="btnSaveFull" style="width: 100%; font-size: 14px; padding: 18px;">PUBLICAR ESTE MENÚ AHORA</button>
+            <button class="btn btn-primary" id="btnSaveFull" style="width: 100%; font-size: 14px; padding: 18px; margin-top: 20px;">PUBLICAR ESTE MENÚ AHORA</button>
+
+            <div style="margin-top: 25px; border-top: 2px dashed var(--bg); padding-top: 20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="font-size: 11px; color: #64748b; margin:0;">PLATOS EN EL BORRADOR</h3>
+                <button class="btn btn-ghost" style="padding: 5px 10px;" onclick="clearDraft()">LIMPIAR</button>
+              </div>
+              <div id="platesDraft"></div>
+              <div id="emptyMsg" style="text-align: center; color: #94a3b8; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 12px; font-size: 12px;">USA EL CATÁLOGO PARA AÑADIR PLATOS.</div>
             </div>
-            <div id="platesDraft" style="margin-top: 25px;"></div>
-            <div id="emptyMsg" style="text-align: center; color: #94a3b8; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 12px; font-size: 12px;">USA EL CATÁLOGO PARA AÑADIR PLATOS.</div>
           </div>
         </div>
 
         <!-- VISTA 2: GESTOR ALIMENTOS -->
         <div id="viewCatalog" class="hidden">
           <div class="card">
-            <h3 id="catalogTitle" style="margin-top: 0; font-size: 14px;">GESTIÓN DE ALIMENTOS</h3>
+            <h3 id="catalogFormTitle" style="margin-top: 0; font-size: 14px;">AÑADIR NUEVO ALIMENTO</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
               <input type="hidden" id="editCatalogId">
               <div><label>CAT.</label><input id="cCat"></div>
@@ -165,30 +172,20 @@
           <div class="card"><div class="table-wrap"><table><thead><tr><th>FECHA</th><th>NOMBRE</th><th>ACCIONES</th></tr></thead><tbody id="historyTable"></tbody></table></div></div>
         </div>
 
-        <!-- VISTA 4: GESTIÓN DE USUARIOS (MAESTRO) -->
+        <!-- VISTA 4: GESTIÓN DE USUARIOS -->
         <div id="viewUsers" class="hidden">
           <div class="card">
-            <h3 style="margin-top:0; font-size: 14px;">DAR ACCESO A NUEVO USUARIO</h3>
+            <h3 style="margin-top: 0; font-size: 14px;">DAR ACCESO A USUARIO</h3>
             <div class="grid-form">
-              <div><label>CORREO DEL USUARIO (EN MINÚSCULAS)</label><input id="newUserEmail" type="email" placeholder="ejemplo@correo.com" style="text-transform: none !important;"></div>
+              <div><label>EMAIL (MINÚSCULAS)</label><input id="newUserEmail" type="email" style="text-transform: none !important;"></div>
               <div style="display: flex; align-items: center; gap: 20px; padding-top: 15px;">
-                <label style="margin:0;"><input type="checkbox" id="checkPermCatalog" style="width: auto; margin-right:8px;"> GESTOR ALIMENTOS</label>
-                <label style="margin:0;"><input type="checkbox" id="checkPermUsers" style="width: auto; margin-right:8px;"> GESTIÓN USUARIOS</label>
+                <label style="margin:0;"><input type="checkbox" id="checkPermCatalog" style="width: auto; margin-right:8px;"> CATÁLOGO</label>
+                <label style="margin:0;"><input type="checkbox" id="checkPermUsers" style="width: auto; margin-right:8px;"> USUARIOS</label>
               </div>
-              <div style="display: flex; align-items: flex-end;">
-                <button class="btn btn-primary" onclick="addUserPermission()" style="width: 100%;">DAR ACCESO</button>
-              </div>
+              <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="addUserPermission()" style="width:100%">OTORGAR</button></div>
             </div>
           </div>
-          <div class="card">
-            <h3 style="margin: 0 0 15px 0; font-size: 14px;">USUARIOS CON PERMISOS ESPECIALES</h3>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>USUARIO (EMAIL)</th><th>PERMISOS ACTIVOS</th><th>ACCIÓN</th></tr></thead>
-                <tbody id="usersTableBody"></tbody>
-              </table>
-            </div>
-          </div>
+          <div class="card"><div class="table-wrap"><table><thead><tr><th>EMAIL</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
         </div>
 
       </div>
@@ -212,18 +209,20 @@
         const email = session.user.email.toLowerCase();
         document.getElementById('userBadge').innerText = email;
 
-        // Cargar permisos desde la tabla
-        const { data: perms } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        
-        if (perms) {
-          userPerms.catalog = perms.can_manage_catalog;
-          userPerms.users = perms.can_manage_users;
+        // LLAVE MAESTRA EDUARDO
+        if (email === "eduardoignacio.g.h@gmail.com") {
+            userPerms.catalog = true; userPerms.users = true;
+        }
+
+        const { data: dbPerms } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        if (dbPerms) {
+            userPerms.catalog = dbPerms.can_manage_catalog || userPerms.catalog;
+            userPerms.users = dbPerms.can_manage_users || userPerms.users;
         }
 
         document.getElementById('loginOverlay').classList.add('hidden');
         document.getElementById('appMain').classList.remove('hidden');
 
-        // Mostrar botones según permisos
         if (userPerms.catalog) document.getElementById('btnModeCatalog').classList.remove('hidden');
         if (userPerms.users) document.getElementById('btnModeUsers').classList.remove('hidden');
 
@@ -234,15 +233,13 @@
 
     document.getElementById('btnLogin').onclick = async () => {
       const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim(), password: lPass.value });
-      if (error) alert("ACCESO DENEGADO"); else location.reload();
+      if (error) alert("DATOS INCORRECTOS"); else location.reload();
     };
 
     function logout() { sb.auth.signOut(); location.reload(); }
 
+    // --- NAVEGACIÓN ---
     function switchMode(mode) {
-      if (mode === 'catalog' && !userPerms.catalog) return;
-      if (mode === 'users' && !userPerms.users) return;
-
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('viewBuilder').classList.add('hidden');
       document.getElementById('viewCatalog').classList.add('hidden');
@@ -250,59 +247,18 @@
       document.getElementById('viewUsers').classList.add('hidden');
       document.getElementById('quickPickerArea').classList.add('hidden');
 
-      const btn = { 'builder': 'btnModeBuilder', 'catalog': 'btnModeCatalog', 'history': 'btnModeHistory', 'users': 'btnModeUsers' }[mode];
-      document.getElementById(btn).classList.add('active');
+      const mapping = { 'builder': 'btnModeBuilder', 'catalog': 'btnModeCatalog', 'history': 'btnModeHistory', 'users': 'btnModeUsers' };
+      document.getElementById(mapping[mode]).classList.add('active');
       document.getElementById('view' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.remove('hidden');
       document.getElementById('viewTitle').innerText = { 'builder': '🛠 CONSTRUCTOR', 'catalog': '📂 GESTOR ALIMENTOS', 'history': '📜 HISTORIAL', 'users': '👥 GESTIÓN USUARIOS' }[mode];
-      
-      if (mode === 'builder') {
-        document.getElementById('quickPickerArea').classList.remove('hidden');
-        calculateNextMenuName();
-      } else if (mode === 'users') loadUsersManager();
+
+      if (mode === 'builder') { document.getElementById('quickPickerArea').classList.remove('hidden'); calculateNextMenuName(); }
+      else if (mode === 'users') loadUsersManager();
       else if (mode === 'catalog') loadCatalogManager();
       else if (mode === 'history') loadHistory();
     }
 
-    // --- GESTIÓN DE USUARIOS (SÓLO MAESTRO) ---
-    async function loadUsersManager() {
-      const { data } = await sb.from('user_permissions').select('*').order('email');
-      document.getElementById('usersTableBody').innerHTML = data.map(u => `
-        <tr>
-          <td style="text-transform:none;">${u.email}</td>
-          <td>
-            <span class="perm-badge ${u.can_manage_catalog ? 'perm-on' : 'perm-off'}">GESTOR ALIMENTOS</span>
-            <span class="perm-badge ${u.can_manage_users ? 'perm-on' : 'perm-off'}">GESTOR USUARIOS</span>
-          </td>
-          <td><button class="btn btn-danger" style="padding:5px 10px" onclick="deleteUserPerm(${u.id})">QUITAR ACCESO</button></td>
-        </tr>`).join('');
-    }
-
-    async function addUserPermission() {
-      const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
-      const cat = document.getElementById('checkPermCatalog').checked;
-      const usr = document.getElementById('checkPermUsers').checked;
-      if (!email) return alert("INGRESA UN CORREO");
-
-      const { error } = await sb.from('user_permissions').upsert({
-        email, can_manage_catalog: cat, can_manage_users: usr
-      });
-
-      if (error) alert("ERROR AL DAR ACCESO: " + error.message);
-      else {
-        alert("ACCESO ACTUALIZADO ✅");
-        document.getElementById('newUserEmail').value = "";
-        loadUsersManager();
-      }
-    }
-
-    async function deleteUserPerm(id) {
-      if(confirm("¿QUITAR TODOS LOS PERMISOS A ESTE USUARIO?")) {
-        await sb.from('user_permissions').delete().eq('id', id);
-        loadUsersManager();
-      }
-    }
-
-    // --- LOGICA DE MENÚS Y CATÁLOGO (IGUAL QUE ANTES) ---
+    // --- CONSTRUCTOR & NOMBRES ---
     async function calculateNextMenuName() {
       const date = document.getElementById('menuDate').value;
       if (!date) return;
@@ -326,9 +282,9 @@
             ${grouped[cat].map(i => `
               <div class="food-card">
                 <b>${i.acompanamiento}</b>
-                <button class="btn-quick" onclick="addToDraft('${i.acompanamiento}', '${i.pollo}', '${cat}')">${i.pollo}</button>
-                <button class="btn-quick" onclick="addToDraft('${i.acompanamiento}', '${i.cerdo}', '${cat}')">${i.cerdo}</button>
-                <button class="btn-quick" onclick="addToDraft('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">${i.carne_roja}</button>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.pollo}', '${cat}')">${i.pollo}</button>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.cerdo}', '${cat}')">${i.cerdo}</button>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">${i.carne_roja}</button>
               </div>`).join('')}
           </div>
         </div>`).join('');
@@ -336,97 +292,85 @@
 
     function toggleAcc(id) {
       const el = document.getElementById(id);
-      const wasActive = el.classList.contains('active');
+      const was = el.classList.contains('active');
       document.querySelectorAll('.cat-accordion').forEach(a => a.classList.remove('active'));
-      if (!wasActive) el.classList.add('active');
+      if(!was) el.classList.add('active');
     }
 
-    function addToDraft(a, p, c) {
+    function addDraft(a, p, c) {
       draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` });
       renderDraft();
     }
 
     function renderDraft() {
-      const container = document.getElementById('platesDraft');
-      const empty = document.getElementById('emptyMsg');
-      if (draft.length === 0) { empty.classList.remove('hidden'); container.innerHTML = ""; return; }
-      empty.classList.add('hidden');
-      container.innerHTML = draft.map((p, i) => `
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-          <div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div>
-          <button class="btn btn-danger" style="padding:5px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button>
-        </div>`).join('');
+      platesDraft.innerHTML = draft.map((p, i) => `<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button class="btn btn-danger" style="padding:5px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button></div>`).join('');
+      emptyMsg.classList.toggle('hidden', draft.length > 0);
     }
 
-    document.getElementById('btnSaveFull').onclick = async () => {
-      const date = document.getElementById('menuDate').value;
-      if (!date || draft.length === 0) return alert("FALTA FECHA O PLATOS");
+    function clearDraft() { draft = []; renderDraft(); }
+
+    btnSaveFull.onclick = async () => {
+      const date = menuDate.value;
+      if (!date || draft.length === 0) return alert("FALTA INFO");
       await calculateNextMenuName();
       const { data: menu, error } = await sb.from('menus').insert([{ name: nextMenuName, menu_date: date }]).select().single();
-      if (error) return alert("ERROR AL GUARDAR.");
+      if (error) return alert("REINTENTA");
       for (const p of draft) {
         const { data: item } = await sb.from('menu_items').insert([p]).select().single();
         await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
       }
-      alert("PUBLICADO COMO " + nextMenuName + " ✅");
-      clearDraft(); calculateNextMenuName();
+      alert("PUBLICADO: " + nextMenuName); clearDraft(); calculateNextMenuName();
     };
 
+    // --- CATALOGO CRUD ---
     async function loadCatalogManager() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
       catalogCache = data || [];
-      document.getElementById('catalogTable').innerHTML = catalogCache.map(i => `
-        <tr><td>${i.categoria}</td><td>${i.acompanamiento}</td><td>${i.pollo}</td><td>${i.cerdo}</td><td>${i.carne_roja}</td><td><button class="btn btn-warning" style="padding:5px 10px" onclick="editCatalogItem(${i.id})">E</button><button class="btn btn-danger" style="padding:5px 10px" onclick="deleteCatalogItem(${i.id})">X</button></td></tr>`).join('');
+      catalogTable.innerHTML = catalogCache.map(i => `<tr><td>${i.categoria}</td><td>${i.acompanamiento}</td><td>${i.pollo}</td><td>${i.cerdo}</td><td>${i.carne_roja}</td><td><button class="btn btn-warning" style="padding:5px" onclick="editCatalog(${i.id})">E</button><button class="btn btn-danger" style="padding:5px" onclick="delCatalog(${i.id})">X</button></td></tr>`).join('');
     }
 
-    function editCatalogItem(id) {
-      const item = catalogCache.find(x => x.id === id);
-      if (!item) return;
-      document.getElementById('editCatalogId').value = item.id;
-      document.getElementById('cCat').value = item.categoria;
-      document.getElementById('cAcomp').value = item.acompanamiento;
-      document.getElementById('cPollo').value = item.pollo;
-      document.getElementById('cCerdo').value = item.cerdo;
-      document.getElementById('cCarne').value = item.carne_roja;
-      document.getElementById('btnCatalogAction').innerText = "ACTUALIZAR";
-      document.getElementById('btnCancelEdit').classList.remove('hidden');
+    function editCatalog(id) {
+      const i = catalogCache.find(x => x.id === id);
+      editCatalogId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cPollo.value = i.pollo; cCerdo.value = i.cerdo; cCarne.value = i.carne_roja;
+      catalogFormTitle.innerText = "EDITAR ALIMENTO"; btnCatalogAction.innerText = "ACTUALIZAR"; btnCancelEdit.classList.remove('hidden');
     }
 
-    function cancelEditCatalog() {
-      document.getElementById('editCatalogId').value = "";
-      document.querySelectorAll('#viewCatalog input').forEach(i => i.value = "");
-      document.getElementById('btnCatalogAction').innerText = "GUARDAR";
-      document.getElementById('btnCancelEdit').classList.add('hidden');
-    }
+    function cancelEditCatalog() { editCatalogId.value = ""; cCat.value = ""; cAcomp.value = ""; cPollo.value = ""; cCerdo.value = ""; cCarne.value = ""; catalogFormTitle.innerText = "AÑADIR NUEVO"; btnCatalogAction.innerText = "GUARDAR"; btnCancelEdit.classList.add('hidden'); }
 
     async function saveCatalogItem() {
-      const id = document.getElementById('editCatalogId').value;
+      const id = editCatalogId.value;
       const p = { categoria: cCat.value.toUpperCase(), acompanamiento: cAcomp.value.toUpperCase(), pollo: cPollo.value.toUpperCase(), cerdo: cCerdo.value.toUpperCase(), carne_roja: cCarne.value.toUpperCase() };
-      if (id) await sb.from('food_catalog').update(p).eq('id', id);
-      else await sb.from('food_catalog').insert([p]);
+      if (id) await sb.from('food_catalog').update(p).eq('id', id); else await sb.from('food_catalog').insert([p]);
       cancelEditCatalog(); loadData(); loadCatalogManager();
     }
 
-    async function deleteCatalogItem(id) {
-      if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadData(); loadCatalogManager(); }
-    }
+    async function delCatalog(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadData(); loadCatalogManager(); } }
 
+    // --- HISTORIAL ---
     async function loadHistory() {
       const { data } = await sb.from('menus').select('*').order('menu_date', { ascending: false });
-      document.getElementById('historyTable').innerHTML = (data || []).map(m => `
-        <tr><td>${m.menu_date}</td><td>${m.name}</td><td><button class="btn btn-danger" onclick="deleteMenu(${m.id})">X</button></td></tr>`).join('');
+      historyTable.innerHTML = (data || []).map(m => `<tr><td>${m.menu_date}</td><td>${m.name}</td><td><button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`).join('');
     }
 
-    async function deleteMenu(id) {
-      if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); calculateNextMenuName(); }
+    async function delMenu(id) { if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); calculateNextMenuName(); } }
+
+    // --- USUARIOS ---
+    async function loadUsersManager() {
+      const { data } = await sb.from('user_permissions').select('*').order('email');
+      usersTableBody.innerHTML = data.map(u => `<tr><td style="text-transform:none">${u.email}</td><td><span class="perm-badge ${u.can_manage_catalog?'perm-on':'perm-off'}">CATALOGO</span><span class="perm-badge ${u.can_manage_users?'perm-on':'perm-off'}">USUARIOS</span></td><td><button class="btn btn-danger" onclick="delUser(${u.id})">X</button></td></tr>`).join('');
     }
 
-    document.addEventListener('input', (e) => {
-      if (e.target.tagName === 'INPUT' && e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
-        e.target.value = e.target.value.toUpperCase();
-      }
-    });
-    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
+    async function addUserPermission() {
+      const email = newUserEmail.value.trim().toLowerCase();
+      if(!email) return;
+      await sb.from('user_permissions').upsert({ email, can_manage_catalog: checkPermCatalog.checked, can_manage_users: checkPermUsers.checked });
+      newUserEmail.value = ""; loadUsersManager(); alert("ACCESO OTORGADO");
+    }
+
+    async function delUser(id) { if(confirm("¿QUITAR ACCESO?")) { await sb.from('user_permissions').delete().eq('id', id); loadUsersManager(); } }
+
+    document.addEventListener('input', (e) => { if (e.target.tagName === 'INPUT' && !['email', 'password', 'date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
+    menuDate.value = new Date().toISOString().split('T')[0];
     checkAuth();
   </script>
 </body>
