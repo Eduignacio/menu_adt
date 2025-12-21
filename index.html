@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menu ADT</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; }
+    input, button { padding: 8px; margin: 5px 0; }
+    pre { background: #f4f4f4; padding: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Consulta Menu ADT</h1>
+
+  <input id="texto" placeholder="Buscar..." />
+  <button onclick="buscar()">Buscar</button>
+
+  <pre id="resultado"></pre>
+
+  <script>
+    const supabaseUrl = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const supabaseKey = "PEGA_AQUI_TU_ANON_KEY";
+    const supabase = supabaseJs.createClient(supabaseUrl, supabaseKey);
+
+    async function buscar() {
+      const texto = document.getElementById("texto").value;
+
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("*")
+        .ilike("name", `%${texto}%`);
+
+      document.getElementById("resultado").textContent =
+        error ? error.message : JSON.stringify(data, null, 2);
+    }
+  </script>
+
+</body>
+</html>
