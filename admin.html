@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SISTEMA ADT - ADMINISTRACIÓN TOTAL</title>
+  <title>SISTEMA ADT - ADMINISTRACIÓN</title>
   <style>
     :root {
       --sidebar-bg: #0f172a;
@@ -31,23 +31,16 @@
     .sidebar-brand h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 1px; }
 
     .sidebar-nav { padding: 15px 10px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid #1e293b; }
-    .nav-btn { 
-      width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; 
-      text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; transition: 0.2s; font-size: 11px;
-    }
+    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; transition: 0.2s; font-size: 11px; }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
     .nav-btn:hover:not(.active) { background: #1e293b; color: white; }
 
-    /* ACORDEÓN CATÁLOGO */
+    /* ACORDEÓN */
     .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; }
     .cat-accordion { margin-bottom: 6px; }
-    .cat-trigger { 
-      width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
-      text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 6px;
-      display: flex; justify-content: space-between;
-    }
+    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 6px; display: flex; justify-content: space-between; }
     .cat-content { max-height: 0; overflow: hidden; transition: 0.3s; background: #0f172a; }
-    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
+    .cat-accordion.active .cat-content { max-height: 1000px; padding: 10px 0; }
     .food-card { background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; margin: 0 5px; }
     .btn-quick { width: 100%; font-size: 9px; padding: 9px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; margin-top: 4px; font-weight: 800; }
     .btn-quick:hover { background: var(--accent); }
@@ -88,9 +81,12 @@
   <div id="loginOverlay">
     <div class="login-card">
       <h2 style="text-align: center; margin: 0;">ADMINISTRACIÓN ADT</h2>
-      <label>EMAIL</label><input id="lEmail" type="email" placeholder="admin@adt.com">
-      <label style="margin-top:15px;">PASSWORD</label><input id="lPass" type="password" placeholder="••••••">
+      <label>EMAIL</label>
+      <input id="lEmail" type="email" placeholder="admin@adt.com">
+      <label style="margin-top:15px;">PASSWORD</label>
+      <input id="lPass" type="password" placeholder="••••••">
       <button class="btn btn-primary" id="btnLogin" style="width: 100%; margin-top: 25px;">ENTRAR</button>
+      <p id="loginFeedback" style="color: red; font-size: 10px; text-align: center; margin-top: 15px; display: none; text-transform: none;"></p>
     </div>
   </div>
 
@@ -110,12 +106,12 @@
     </div>
   </aside>
 
-  <!-- MAIN AREA -->
+  <!-- MAIN -->
   <main class="main-area hidden" id="appMain">
     <div class="top-bar">
       <h1 id="viewTitle" style="font-size: 16px; margin: 0; font-weight: 900;">🛠 CONSTRUCTOR</h1>
       <div style="display:flex; align-items:center; gap:15px;">
-        <span id="userBadge" style="font-size: 9px; color: var(--accent); font-weight: 900;"></span>
+        <span id="userBadge" style="font-size: 9px; color: var(--accent); font-weight: 900; text-transform: lowercase;"></span>
         <button class="btn btn-ghost" onclick="logout()">CERRAR SESIÓN</button>
       </div>
     </div>
@@ -123,7 +119,6 @@
     <div class="view-content">
       <div class="container">
         
-        <!-- VISTA 1: CONSTRUCTOR -->
         <div id="viewBuilder">
           <div class="card">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -142,10 +137,9 @@
           </div>
         </div>
 
-        <!-- VISTA 2: GESTOR ALIMENTOS -->
         <div id="viewCatalog" class="hidden">
           <div class="card">
-            <h3 id="catalogFormTitle" style="margin-top: 0; font-size: 14px;">AÑADIR NUEVO ALIMENTO</h3>
+            <h3 id="catalogFormTitle" style="margin-top: 0; font-size: 14px;">GESTIÓN DE ALIMENTOS</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
               <input type="hidden" id="editCatalogId">
               <div><label>CAT.</label><input id="cCat"></div>
@@ -162,29 +156,24 @@
           <div class="card"><div class="table-wrap"><table><thead><tr><th>CAT.</th><th>ACOMP.</th><th>POLLO</th><th>CERDO</th><th>CARNE</th><th>ACCIÓN</th></tr></thead><tbody id="catalogTable"></tbody></table></div></div>
         </div>
 
-        <!-- VISTA 3: HISTORIAL -->
         <div id="viewHistory" class="hidden">
           <div class="card"><div class="table-wrap"><table><thead><tr><th>FECHA</th><th>NOMBRE</th><th>ACCIONES</th></tr></thead><tbody id="historyTable"></tbody></table></div></div>
         </div>
 
-        <!-- VISTA 4: GESTIÓN DE USUARIOS (CREAR CUENTAS) -->
         <div id="viewUsers" class="hidden">
           <div class="card">
-            <h3 style="margin-top: 0; font-size: 14px;">CREAR NUEVO USUARIO Y ASIGNAR PERMISOS</h3>
+            <h3 style="margin-top: 0; font-size: 14px;">CREAR NUEVO USUARIO</h3>
             <div class="grid-form">
-              <div><label>EMAIL (MINÚSCULAS)</label><input id="newUserEmail" type="email" placeholder="usuario@gmail.com" style="text-transform: none !important;"></div>
-              <div><label>CONTRASEÑA</label><input id="newUserPass" type="password" placeholder="MIN. 6 CARACTERES" style="text-transform: none !important;"></div>
+              <div><label>EMAIL (MINÚSCULAS)</label><input id="newUserEmail" type="email" style="text-transform: none !important;"></div>
+              <div><label>CONTRASEÑA</label><input id="newUserPass" type="password" style="text-transform: none !important;"></div>
               <div style="display: flex; align-items: center; gap: 20px; padding-top: 15px;">
                 <label style="margin:0;"><input type="checkbox" id="checkPermCatalog" style="width: auto; margin-right:8px;"> CATÁLOGO</label>
                 <label style="margin:0;"><input type="checkbox" id="checkPermUsers" style="width: auto; margin-right:8px;"> USUARIOS</label>
               </div>
-              <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="createUserAndPermission()" style="width:100%">CREAR USUARIO</button></div>
+              <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="createUserAndPermission()" style="width:100%">CREAR</button></div>
             </div>
           </div>
-          <div class="card">
-            <h3 style="margin: 0 0 15px 0; font-size: 14px;">LISTA DE ACCESOS</h3>
-            <div class="table-wrap"><table><thead><tr><th>EMAIL</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usersTableBody"></tbody></table></div>
-          </div>
+          <div class="card"><div class="table-wrap"><table><thead><tr><th>EMAIL</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
         </div>
 
       </div>
@@ -195,7 +184,9 @@
   <script>
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const sb = window.supabase.createClient(S_URL, S_KEY);
+    
+    // Evitar conflicto de nombre
+    const supabaseClient = window.supabase.createClient(S_URL, S_KEY);
 
     let userPerms = { catalog: false, users: false };
     let draft = [];
@@ -203,16 +194,18 @@
     let nextMenuName = "MENU 1";
 
     async function checkAuth() {
-      const { data: { session } } = await sb.auth.getSession();
+      const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         const email = session.user.email.toLowerCase();
         document.getElementById('userBadge').innerText = email;
 
+        // LLAVE MAESTRA
         if (email === "eduardoignacio.g.h@gmail.com") {
-            userPerms.catalog = true; userPerms.users = true;
+            userPerms.catalog = true; 
+            userPerms.users = true;
         }
 
-        const { data: dbPerms } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        const { data: dbPerms } = await supabaseClient.from('user_permissions').select('*').eq('email', email).maybeSingle();
         if (dbPerms) {
             userPerms.catalog = dbPerms.can_manage_catalog || userPerms.catalog;
             userPerms.users = dbPerms.can_manage_users || userPerms.users;
@@ -230,11 +223,30 @@
     }
 
     document.getElementById('btnLogin').onclick = async () => {
-      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim(), password: lPass.value });
-      if (error) alert("DATOS INCORRECTOS"); else location.reload();
+      const email = document.getElementById('lEmail').value.trim();
+      const password = document.getElementById('lPass').value;
+      const feedback = document.getElementById('loginFeedback');
+      
+      feedback.style.display = "none";
+
+      if(!email || !password) {
+          feedback.innerText = "INGRESA EMAIL Y PASSWORD";
+          feedback.style.display = "block";
+          return;
+      }
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+          feedback.innerText = "ERROR: " + error.message.toUpperCase();
+          feedback.style.display = "block";
+          console.error(error);
+      } else {
+          location.reload();
+      }
     };
 
-    function logout() { sb.auth.signOut(); location.reload(); }
+    function logout() { supabaseClient.auth.signOut(); location.reload(); }
 
     function switchMode(mode) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -255,55 +267,16 @@
       else if (mode === 'history') loadHistory();
     }
 
-    // --- USUARIOS: CREAR CUENTA Y PERMISOS ---
-    async function createUserAndPermission() {
-        const email = newUserEmail.value.trim().toLowerCase();
-        const password = newUserPass.value;
-        const cat = checkPermCatalog.checked;
-        const usr = checkPermUsers.checked;
-
-        if (!email || !password || password.length < 6) return alert("COMPLETA EMAIL Y PASSWORD (MIN 6)");
-
-        // 1. Crear el usuario en la Autenticación de Supabase
-        const { error: authError } = await sb.auth.signUp({ email, password });
-        
-        if (authError) {
-            return alert("ERROR AL CREAR CUENTA: " + authError.message);
-        }
-
-        // 2. Crear el registro de permisos en nuestra tabla
-        const { error: permError } = await sb.from('user_permissions').upsert({ 
-            email, 
-            can_manage_catalog: cat, 
-            can_manage_users: usr 
-        });
-
-        if (permError) alert("CUENTA CREADA PERO ERROR EN PERMISOS: " + permError.message);
-        else {
-            alert("USUARIO CREADO CON ÉXITO ✅\nYA PUEDE INICIAR SESIÓN.");
-            newUserEmail.value = ""; newUserPass.value = "";
-            loadUsersManager();
-        }
-    }
-
-    async function loadUsersManager() {
-      const { data } = await sb.from('user_permissions').select('*').order('email');
-      usersTableBody.innerHTML = (data || []).map(u => `<tr><td style="text-transform:none">${u.email}</td><td><span class="perm-badge ${u.can_manage_catalog?'perm-on':'perm-off'}">CATALOGO</span><span class="perm-badge ${u.can_manage_users?'perm-on':'perm-off'}">USUARIOS</span></td><td><button class="btn btn-danger" onclick="delUser(${u.id})">X</button></td></tr>`).join('');
-    }
-
-    async function delUser(id) { if(confirm("¿QUITAR ACCESO? (NOTA: La cuenta sigue existiendo en Auth, pero no verá módulos)")) { await sb.from('user_permissions').delete().eq('id', id); loadUsersManager(); } }
-
-    // --- RESTO DE FUNCIONES (CATALOGO, MENÚ, ETC) ---
     async function calculateNextMenuName() {
       const date = document.getElementById('menuDate').value;
       if (!date) return;
-      const { count } = await sb.from('menus').select('*', { count: 'exact', head: true }).eq('menu_date', date);
+      const { count } = await supabaseClient.from('menus').select('*', { count: 'exact', head: true }).eq('menu_date', date);
       nextMenuName = "MENU " + ((count || 0) + 1);
       document.getElementById('autoNameDisplay').innerText = nextMenuName;
     }
 
     async function loadData() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
+      const { data } = await supabaseClient.from('food_catalog').select('*').order('categoria');
       catalogCache = data || [];
       renderCatalogPicker();
     }
@@ -315,3 +288,115 @@
           <button class="cat-trigger" onclick="toggleAcc('acc-${cat.replace(/\s/g, '').replace(/\//g, '')}')">${cat} <span>▼</span></button>
           <div class="cat-content">
             ${grouped[cat].map(i => `
+              <div class="food-card">
+                <b>${i.acompanamiento}</b>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.pollo}', '${cat}')">${i.pollo}</button>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.cerdo}', '${cat}')">${i.cerdo}</button>
+                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">${i.carne_roja}</button>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    function toggleAcc(id) {
+      const el = document.getElementById(id);
+      const was = el.classList.contains('active');
+      document.querySelectorAll('.cat-accordion').forEach(a => a.classList.remove('active'));
+      if(!was) el.classList.add('active');
+    }
+
+    function addDraft(a, p, c) {
+      draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` });
+      renderDraft();
+    }
+
+    function renderDraft() {
+      document.getElementById('platesDraft').innerHTML = draft.map((p, i) => `<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button class="btn btn-danger" style="padding:5px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button></div>`).join('');
+      document.getElementById('emptyMsg').classList.toggle('hidden', draft.length > 0);
+    }
+
+    function clearDraft() { draft = []; renderDraft(); }
+
+    document.getElementById('btnSaveFull').onclick = async () => {
+      const date = document.getElementById('menuDate').value;
+      if (!date || draft.length === 0) return alert("FALTA INFO");
+      await calculateNextMenuName();
+      const { data: menu, error } = await supabaseClient.from('menus').insert([{ name: nextMenuName, menu_date: date }]).select().single();
+      if (error) return alert("ERROR AL GUARDAR");
+      for (const p of draft) {
+        const { data: item } = await supabaseClient.from('menu_items').insert([p]).select().single();
+        await supabaseClient.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
+      }
+      alert("PUBLICADO: " + nextMenuName); clearDraft(); calculateNextMenuName();
+    };
+
+    async function loadCatalogManager() {
+      const { data } = await supabaseClient.from('food_catalog').select('*').order('categoria');
+      catalogCache = data || [];
+      document.getElementById('catalogTable').innerHTML = catalogCache.map(i => `<tr><td>${i.categoria}</td><td>${i.acompanamiento}</td><td>${i.pollo}</td><td>${i.cerdo}</td><td>${i.carne_roja}</td><td><button class="btn btn-warning" style="padding:5px" onclick="editCatalog(${i.id})">E</button><button class="btn btn-danger" style="padding:5px" onclick="delCatalog(${i.id})">X</button></td></tr>`).join('');
+    }
+
+    function editCatalog(id) {
+      const i = catalogCache.find(x => x.id === id);
+      document.getElementById('editCatalogId').value = i.id;
+      document.getElementById('cCat').value = i.categoria;
+      document.getElementById('cAcomp').value = i.acompanamiento;
+      document.getElementById('cPollo').value = i.pollo;
+      document.getElementById('cCerdo').value = i.cerdo;
+      document.getElementById('cCarne').value = i.carne_roja;
+      document.getElementById('catalogFormTitle').innerText = "EDITAR ALIMENTO";
+      document.getElementById('btnCatalogAction').innerText = "ACTUALIZAR";
+      document.getElementById('btnCancelEdit').classList.remove('hidden');
+    }
+
+    function cancelEditCatalog() {
+        document.getElementById('editCatalogId').value = "";
+        document.getElementById('cCat').value = "";
+        document.getElementById('cAcomp').value = "";
+        document.getElementById('cPollo').value = "";
+        document.getElementById('cCerdo').value = "";
+        document.getElementById('cCarne').value = "";
+        document.getElementById('catalogFormTitle').innerText = "AÑADIR NUEVO";
+        document.getElementById('btnCatalogAction').innerText = "GUARDAR";
+        document.getElementById('btnCancelEdit').classList.add('hidden');
+    }
+
+    async function saveCatalogItem() {
+      const id = document.getElementById('editCatalogId').value;
+      const p = { categoria: document.getElementById('cCat').value.toUpperCase(), acompanamiento: document.getElementById('cAcomp').value.toUpperCase(), pollo: document.getElementById('cPollo').value.toUpperCase(), cerdo: document.getElementById('cCerdo').value.toUpperCase(), carne_roja: document.getElementById('cCarne').value.toUpperCase() };
+      if (id) await supabaseClient.from('food_catalog').update(p).eq('id', id); else await supabaseClient.from('food_catalog').insert([p]);
+      cancelEditCatalog(); loadData(); loadCatalogManager();
+    }
+
+    async function delCatalog(id) { if(confirm("¿BORRAR?")) { await supabaseClient.from('food_catalog').delete().eq('id', id); loadData(); loadCatalogManager(); } }
+
+    async function loadHistory() {
+      const { data } = await supabaseClient.from('menus').select('*').order('menu_date', { ascending: false });
+      document.getElementById('historyTable').innerHTML = (data || []).map(m => `<tr><td>${m.menu_date}</td><td>${m.name}</td><td><button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`).join('');
+    }
+
+    async function delMenu(id) { if(confirm("¿BORRAR?")) { await supabaseClient.from('menu_menu_items').delete().eq('menu_id', id); await supabaseClient.from('menus').delete().eq('id', id); loadHistory(); calculateNextMenuName(); } }
+
+    async function createUserAndPermission() {
+      const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
+      const password = document.getElementById('newUserPass').value;
+      if(!email || !password) return alert("FALTA INFO");
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      if(error) return alert("ERROR AUTH: " + error.message);
+      await supabaseClient.from('user_permissions').upsert({ email, can_manage_catalog: document.getElementById('checkPermCatalog').checked, can_manage_users: document.getElementById('checkPermUsers').checked });
+      alert("USUARIO CREADO"); loadUsersManager();
+    }
+
+    async function loadUsersManager() {
+      const { data } = await supabaseClient.from('user_permissions').select('*').order('email');
+      document.getElementById('usersTableBody').innerHTML = (data || []).map(u => `<tr><td style="text-transform:none">${u.email}</td><td><span class="perm-badge ${u.can_manage_catalog?'perm-on':'perm-off'}">CATALOGO</span><span class="perm-badge ${u.can_manage_users?'perm-on':'perm-off'}">USUARIOS</span></td><td><button class="btn btn-danger" onclick="delUser(${u.id})">X</button></td></tr>`).join('');
+    }
+
+    async function delUser(id) { if(confirm("¿QUITAR PERMISOS?")) { await supabaseClient.from('user_permissions').delete().eq('id', id); loadUsersManager(); } }
+
+    document.addEventListener('input', (e) => { if (e.target.tagName === 'INPUT' && !['email', 'password', 'date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
+    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
+    checkAuth();
+  </script>
+</body>
+</html>
