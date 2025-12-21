@@ -2,293 +2,499 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin - Menú ADT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Menú</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial; margin:0; background:#f6f6f6;}
-    header{padding:18px; background:white; box-shadow:0 2px 14px rgba(0,0,0,.06);}
-    .wrap{max-width:980px; margin:18px auto; padding:0 16px;}
-    .row{display:flex; gap:14px; flex-wrap:wrap;}
-    .card{background:white; border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.07); margin:12px 0;}
-    h1{margin:0; font-size:26px;}
-    h2{margin:0 0 10px;}
-    label{display:block; font-weight:700; margin:10px 0 6px;}
-    input, textarea{width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; font-size:14px;}
-    textarea{min-height:80px; resize:vertical;}
-    .btn{border:0; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;}
-    .btn-primary{background:#111; color:#fff;}
-    .btn-ghost{background:#eee;}
-    .btn-danger{background:#c62828; color:#fff;}
-    table{width:100%; border-collapse:collapse;}
-    th, td{padding:10px; border-bottom:1px solid #eee; text-align:left; vertical-align:top;}
-    .muted{opacity:.7;}
-    .topbar{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-    a{color:#111;}
-    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:#eee; font-weight:700;}
+    body { font-family: system-ui, Arial; margin:0; background:#f6f6f6; }
+    .wrap { max-width: 1100px; margin:0 auto; padding: 30px 18px 60px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    h1 { margin:0; }
+    .btn { padding: 10px 14px; border-radius: 12px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn.primary { background:#111; color:#fff; border-color:#111; }
+    .btn.danger { background:#b42318; color:#fff; border-color:#b42318; }
+    .card { background:#fff; border-radius: 16px; padding: 18px; box-shadow: 0 6px 18px rgba(0,0,0,.08); margin-top: 16px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 850px){ .grid { grid-template-columns: 1fr; } }
+    label { font-weight: 700; font-size: 13px; display:block; margin: 10px 0 6px; }
+    input, textarea, select { width:100%; padding: 10px; border-radius: 12px; border:1px solid #ddd; font: inherit; }
+    textarea { min-height: 90px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { text-align:left; padding: 10px; border-bottom:1px solid #eee; vertical-align: top; }
+    th { font-size: 13px; color:#333; }
+    .muted { color:#666; }
+    .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; background:#eee; font-size: 12px; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap topbar">
+  <div class="wrap">
+    <header>
       <h1>Admin Menú</h1>
       <div class="row">
-        <a class="pill" href="/index.html">← Volver al menú</a>
-        <button id="logoutBtn" class="btn btn-ghost" style="display:none;">Cerrar sesión</button>
+        <a class="btn" href="/index.html">← Volver al menú</a>
+        <button class="btn" id="btnLogout">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <div class="card" id="loginCard">
+      <h2 style="margin:0 0 10px">Iniciar sesión</h2>
+      <div class="grid">
+        <div>
+          <label>Email</label>
+          <input id="loginEmail" placeholder="tu@email.com" />
+        </div>
+        <div>
+          <label>Contraseña</label>
+          <input id="loginPass" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnLogin">Entrar</button>
+        <span class="muted" id="loginMsg"></span>
       </div>
     </div>
-  </header>
 
-  <div class="wrap">
-
-    <div id="loginCard" class="card">
-      <h2>Entrar</h2>
-      <div class="muted">Solo usuarios autorizados pueden editar el menú.</div>
-      <label>Email</label>
-      <input id="email" type="email" placeholder="tu@email.com" />
-      <label>Contraseña</label>
-      <input id="password" type="password" placeholder="••••••••" />
-      <div style="margin-top:12px;">
-        <button id="loginBtn" class="btn btn-primary">Entrar</button>
-      </div>
-      <div id="loginMsg" class="muted" style="margin-top:10px;"></div>
-    </div>
-
-    <div id="adminArea" style="display:none;">
+    <!-- ADMIN -->
+    <div id="adminArea" style="display:none">
+      <!-- MENÚS -->
       <div class="card">
-        <h2>Agregar / Editar plato</h2>
+        <h2 style="margin:0 0 10px">Menús (historial)</h2>
 
-        <div class="row">
-          <div style="flex:1; min-width:240px;">
-            <label>ID (vacío para crear)</label>
-            <input id="id" type="number" placeholder="ej: 1" />
+        <div class="grid">
+          <div>
+            <label>Seleccionar menú existente</label>
+            <select id="menuHistory"></select>
+            <div class="row" style="margin-top:10px">
+              <button class="btn" id="btnLoadMenu">Editar menú</button>
+              <button class="btn danger" id="btnDeleteMenu">Borrar menú</button>
+            </div>
           </div>
-          <div style="flex:2; min-width:240px;">
-            <label>Nombre</label>
-            <input id="name" type="text" placeholder="Hamburguesa clásica" />
+
+          <div>
+            <label>Crear menú nuevo</label>
+            <input id="newMenuTitle" placeholder="Ej: Menú lunes / Menú especial" />
+            <label style="margin-top:10px">Fecha (recomendado)</label>
+            <input id="newMenuDate" type="date" />
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" id="btnCreateMenu">Agregar menú</button>
+              <span class="muted" id="menuMsg"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITAR MENÚ SELECCIONADO -->
+      <div class="card">
+        <h2 style="margin:0 0 10px">Editar menú seleccionado</h2>
+        <div class="grid">
+          <div>
+            <label>Título</label>
+            <input id="editMenuTitle" />
+          </div>
+          <div>
+            <label>Fecha</label>
+            <input id="editMenuDate" type="date" />
           </div>
         </div>
 
-        <div class="row">
-          <div style="flex:1; min-width:240px;">
-            <label>Categoría</label>
-            <input id="category" type="text" placeholder="Principal / Entrada / Bebida" />
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="btnSaveMenuMeta">Guardar cambios del menú</button>
+          <span class="muted" id="menuMetaMsg"></span>
+        </div>
+
+        <hr style="margin:16px 0; border:none; border-top:1px solid #eee">
+
+        <div class="grid">
+          <div>
+            <label>Agregar plato desde catálogo</label>
+            <select id="catalogSelect"></select>
+            <label style="margin-top:10px">Orden (opcional)</label>
+            <input id="sortOrder" type="number" value="0" />
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" id="btnAddItemToMenu">Agregar al menú</button>
+              <span class="muted" id="menuItemsMsg"></span>
+            </div>
           </div>
-          <div style="flex:1; min-width:240px;">
-            <label>Fecha (opcional)</label>
-            <input id="date" type="date" />
+
+          <div>
+            <label>Platos en este menú</label>
+            <div id="menuItemsList" class="muted">Selecciona un menú para ver platos.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATÁLOGO DE PLATOS -->
+      <div class="card">
+        <h2 style="margin:0 0 10px">Catálogo de platos (reutilizable)</h2>
+
+        <div class="grid">
+          <div>
+            <label>Nombre</label>
+            <input id="dishName" placeholder="Ej: Hamburguesa clásica" />
+          </div>
+          <div>
+            <label>Categoría</label>
+            <input id="dishCategory" placeholder="Ej: Principal / Entrada / Bebida" />
           </div>
         </div>
 
         <label>Descripción</label>
-        <textarea id="description" placeholder="Carne, queso, tomate y papas"></textarea>
+        <textarea id="dishDesc" placeholder="Ej: Carne, queso, tomate y papas"></textarea>
 
-        <div class="row" style="margin-top:12px;">
-          <button id="saveBtn" class="btn btn-primary">Guardar (crear/actualizar)</button>
-          <button id="clearBtn" class="btn btn-ghost">Limpiar</button>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="btnCreateDish">Crear plato</button>
+          <span class="muted" id="dishMsg"></span>
         </div>
 
-        <div id="saveMsg" class="muted" style="margin-top:10px;"></div>
-      </div>
+        <hr style="margin:16px 0; border:none; border-top:1px solid #eee">
 
-      <div class="card">
-        <h2>Platos actuales</h2>
-        <div class="muted" id="listMsg">Cargando...</div>
-        <div style="overflow:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
+        <h3 style="margin:0 0 10px">Platos existentes</h3>
+        <div id="dishTable"></div>
       </div>
     </div>
-
   </div>
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // UI
     const loginCard = document.getElementById("loginCard");
     const adminArea = document.getElementById("adminArea");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
     const loginMsg = document.getElementById("loginMsg");
 
-    const idEl = document.getElementById("id");
-    const nameEl = document.getElementById("name");
-    const catEl = document.getElementById("category");
-    const dateEl = document.getElementById("date");
-    const descEl = document.getElementById("description");
+    const menuHistory = document.getElementById("menuHistory");
+    const menuMsg = document.getElementById("menuMsg");
+    const menuMetaMsg = document.getElementById("menuMetaMsg");
+    const menuItemsMsg = document.getElementById("menuItemsMsg");
 
-    const saveBtn = document.getElementById("saveBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const saveMsg = document.getElementById("saveMsg");
+    const catalogSelect = document.getElementById("catalogSelect");
+    const menuItemsList = document.getElementById("menuItemsList");
 
-    const listMsg = document.getElementById("listMsg");
-    const tbody = document.getElementById("tbody");
+    const dishMsg = document.getElementById("dishMsg");
+    const dishTable = document.getElementById("dishTable");
 
-    function escapeHtml(str){
-      return String(str ?? "").replace(/[&<>"']/g, (m) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
+    let currentMenuId = null;
+    let cachedMenus = [];
+    let cachedDishes = [];
 
-    function setLoggedUI(isLogged){
-      loginCard.style.display = isLogged ? "none" : "block";
-      adminArea.style.display = isLogged ? "block" : "none";
-      logoutBtn.style.display = isLogged ? "inline-block" : "none";
-    }
+    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
 
-    async function refreshList(){
-      listMsg.textContent = "Cargando...";
-      const { data, error } = await supabase
-        .from("menu_items")
-        .select("id,name,category,description,date")
-        .order("id", { ascending:true });
-
-      if (error){
-        listMsg.textContent = "Error cargando.";
-        tbody.innerHTML = `<tr><td colspan="5">Error: ${escapeHtml(error.message)}</td></tr>`;
-        return;
+    async function refreshAuthUI() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        loginCard.style.display = "none";
+        adminArea.style.display = "block";
+        await reloadAll();
+      } else {
+        loginCard.style.display = "block";
+        adminArea.style.display = "none";
       }
-
-      if (!data || data.length === 0){
-        listMsg.textContent = "No hay platos.";
-        tbody.innerHTML = "";
-        return;
-      }
-
-      listMsg.textContent = `${data.length} plato(s).`;
-      tbody.innerHTML = data.map(row => `
-        <tr>
-          <td>${row.id}</td>
-          <td>${escapeHtml(row.name)}</td>
-          <td>${escapeHtml(row.category)}</td>
-          <td>${escapeHtml(row.description)}</td>
-          <td>
-            <button class="btn btn-ghost" data-edit="${row.id}">Editar</button>
-            <button class="btn btn-danger" data-del="${row.id}">Borrar</button>
-          </td>
-        </tr>
-      `).join("");
-
-      tbody.querySelectorAll("[data-edit]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = Number(btn.getAttribute("data-edit"));
-          const item = data.find(x => x.id === id);
-          if (!item) return;
-          idEl.value = item.id ?? "";
-          nameEl.value = item.name ?? "";
-          catEl.value = item.category ?? "";
-          descEl.value = item.description ?? "";
-          dateEl.value = item.date ?? "";
-          saveMsg.textContent = "Editando ID " + id;
-        });
-      });
-
-      tbody.querySelectorAll("[data-del]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = Number(btn.getAttribute("data-del"));
-          if (!confirm("¿Borrar el plato ID " + id + "?")) return;
-
-          const { error } = await supabase.from("menu_items").delete().eq("id", id);
-          if (error){
-            alert("Error borrando: " + error.message);
-            return;
-          }
-          await refreshList();
-        });
-      });
     }
 
-    function clearForm(){
-      idEl.value = "";
-      nameEl.value = "";
-      catEl.value = "";
-      dateEl.value = "";
-      descEl.value = "";
-      saveMsg.textContent = "";
-    }
-
-    loginBtn.addEventListener("click", async () => {
-      loginMsg.textContent = "Entrando...";
-      const email = emailEl.value.trim();
-      const password = passEl.value;
+    // LOGIN
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      loginMsg.textContent = "";
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPass").value;
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error){
+      if (error) {
         loginMsg.textContent = "Error: " + error.message;
         return;
       }
-      loginMsg.textContent = "OK.";
+      await refreshAuthUI();
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    document.getElementById("btnLogout").addEventListener("click", async () => {
       await supabase.auth.signOut();
+      await refreshAuthUI();
     });
 
-    saveBtn.addEventListener("click", async () => {
-      saveMsg.textContent = "Guardando...";
-      const id = idEl.value ? Number(idEl.value) : null;
+    // LOAD MENUS
+    async function loadMenus() {
+      const { data, error } = await supabase
+        .from("menus")
+        .select("id,title,menu_date,created_at")
+        .order("menu_date", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false });
 
-      const payload = {
-        name: nameEl.value.trim(),
-        category: catEl.value.trim(),
-        description: descEl.value.trim(),
-        date: dateEl.value || null,
-      };
+      if (error) { console.error(error); return; }
+      cachedMenus = data || [];
 
-      if (!payload.name){
-        saveMsg.textContent = "Falta el nombre.";
+      if (!cachedMenus.length) {
+        menuHistory.innerHTML = `<option value="">No hay menús aún</option>`;
         return;
       }
 
-      // Si hay ID: update. Si no hay: insert.
-      let res;
-      if (id){
-        res = await supabase.from("menu_items").update(payload).eq("id", id);
-      } else {
-        res = await supabase.from("menu_items").insert(payload);
-      }
+      menuHistory.innerHTML = `<option value="">(Selecciona un menú)</option>` + cachedMenus.map(m => {
+        const label = `${m.menu_date ? m.menu_date + " - " : ""}${m.title}`;
+        return `<option value="${m.id}">${esc(label)}</option>`;
+      }).join("");
+    }
 
-      if (res.error){
-        saveMsg.textContent = "Error: " + res.error.message;
+    // CREATE MENU
+    document.getElementById("btnCreateMenu").addEventListener("click", async () => {
+      menuMsg.textContent = "";
+      const title = document.getElementById("newMenuTitle").value.trim();
+      const menu_date = document.getElementById("newMenuDate").value || null;
+
+      if (!title) { menuMsg.textContent = "Ponle un título al menú."; return; }
+
+      const { data, error } = await supabase
+        .from("menus")
+        .insert([{ title, menu_date }])
+        .select("id,title,menu_date")
+        .single();
+
+      if (error) { menuMsg.textContent = "Error: " + error.message; return; }
+
+      menuMsg.textContent = "Menú creado ✅";
+      document.getElementById("newMenuTitle").value = "";
+      document.getElementById("newMenuDate").value = "";
+
+      await loadMenus();
+      // auto seleccionar el nuevo
+      menuHistory.value = String(data.id);
+      await loadMenuForEdit(data.id);
+    });
+
+    // EDIT MENU (load)
+    document.getElementById("btnLoadMenu").addEventListener("click", async () => {
+      const id = menuHistory.value;
+      if (!id) return;
+      await loadMenuForEdit(id);
+    });
+
+    async function loadMenuForEdit(menuId) {
+      currentMenuId = Number(menuId);
+
+      const menu = cachedMenus.find(m => Number(m.id) === Number(menuId));
+      document.getElementById("editMenuTitle").value = menu?.title || "";
+      document.getElementById("editMenuDate").value = menu?.menu_date || "";
+
+      await renderMenuItems(menuId);
+    }
+
+    // SAVE MENU META
+    document.getElementById("btnSaveMenuMeta").addEventListener("click", async () => {
+      menuMetaMsg.textContent = "";
+      if (!currentMenuId) { menuMetaMsg.textContent = "Selecciona un menú."; return; }
+
+      const title = document.getElementById("editMenuTitle").value.trim();
+      const menu_date = document.getElementById("editMenuDate").value || null;
+
+      if (!title) { menuMetaMsg.textContent = "El título no puede ir vacío."; return; }
+
+      const { error } = await supabase
+        .from("menus")
+        .update({ title, menu_date })
+        .eq("id", currentMenuId);
+
+      if (error) { menuMetaMsg.textContent = "Error: " + error.message; return; }
+
+      menuMetaMsg.textContent = "Guardado ✅";
+      await loadMenus();
+      menuHistory.value = String(currentMenuId);
+    });
+
+    // DELETE MENU
+    document.getElementById("btnDeleteMenu").addEventListener("click", async () => {
+      if (!menuHistory.value) return;
+      const id = Number(menuHistory.value);
+
+      const menu = cachedMenus.find(m => Number(m.id) === id);
+      const label = `${menu?.menu_date ? menu.menu_date + " - " : ""}${menu?.title || ""}`;
+      if (!confirm(`¿Seguro que quieres borrar este menú?\n\n${label}\n\n(No borra los platos del catálogo)`)) return;
+
+      const { error } = await supabase.from("menus").delete().eq("id", id);
+      if (error) { alert("Error: " + error.message); return; }
+
+      currentMenuId = null;
+      menuItemsList.innerHTML = `<span class="muted">Menú borrado.</span>`;
+      await loadMenus();
+    });
+
+    // LOAD DISH CATALOG
+    async function loadDishes() {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id,name,category,description")
+        .order("name", { ascending: true });
+
+      if (error) { console.error(error); return; }
+      cachedDishes = data || [];
+
+      catalogSelect.innerHTML = cachedDishes.length
+        ? `<option value="">(Elige un plato)</option>` + cachedDishes.map(d => {
+            const label = `${d.name}${d.category ? " — " + d.category : ""}`;
+            return `<option value="${d.id}">${esc(label)}</option>`;
+          }).join("")
+        : `<option value="">No hay platos en el catálogo</option>`;
+
+      renderDishTable();
+    }
+
+    // CREATE DISH (NO mostramos ID en la UI)
+    document.getElementById("btnCreateDish").addEventListener("click", async () => {
+      dishMsg.textContent = "";
+      const name = document.getElementById("dishName").value.trim();
+      const category = document.getElementById("dishCategory").value.trim() || null;
+      const description = document.getElementById("dishDesc").value.trim() || null;
+
+      if (!name) { dishMsg.textContent = "Ponle nombre al plato."; return; }
+
+      const { error } = await supabase
+        .from("menu_items")
+        .insert([{ name, category, description }]);
+
+      if (error) { dishMsg.textContent = "Error: " + error.message; return; }
+
+      dishMsg.textContent = "Plato creado ✅";
+      document.getElementById("dishName").value = "";
+      document.getElementById("dishCategory").value = "";
+      document.getElementById("dishDesc").value = "";
+
+      await loadDishes();
+    });
+
+    function renderDishTable() {
+      if (!cachedDishes.length) {
+        dishTable.innerHTML = `<div class="muted">No hay platos todavía.</div>`;
         return;
       }
 
-      saveMsg.textContent = "Guardado ✅";
-      clearForm();
-      await refreshList();
+      // NO mostramos ID
+      dishTable.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cachedDishes.map(d => `
+              <tr>
+                <td><strong>${esc(d.name)}</strong></td>
+                <td>${esc(d.category || "-")}</td>
+                <td>${esc(d.description || "")}</td>
+                <td>
+                  <button class="btn danger" data-del-dish="${d.id}">Borrar</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+
+      dishTable.querySelectorAll("[data-del-dish]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-del-dish"));
+          const dish = cachedDishes.find(x => Number(x.id) === id);
+          if (!confirm(`¿Borrar plato "${dish?.name}"?\n(Ojo: si está usado en algún menú, no lo dejará borrar)`)) return;
+
+          const { error } = await supabase.from("menu_items").delete().eq("id", id);
+          if (error) { alert("Error: " + error.message); return; }
+          await loadDishes();
+          if (currentMenuId) await renderMenuItems(currentMenuId);
+        });
+      });
+    }
+
+    // MENU ITEMS LIST
+    async function renderMenuItems(menuId) {
+      const { data, error } = await supabase
+        .from("menu_menu_items")
+        .select("menu_id,item_id,sort_order, menu_items:menu_items(name,category,description)")
+        .eq("menu_id", menuId)
+        .order("sort_order", { ascending: true });
+
+      if (error) { console.error(error); menuItemsList.textContent = "Error cargando platos."; return; }
+
+      const rows = data || [];
+      if (!rows.length) {
+        menuItemsList.innerHTML = `<div class="muted">Este menú no tiene platos todavía.</div>`;
+        return;
+      }
+
+      menuItemsList.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${esc(r.sort_order)}</td>
+                <td><strong>${esc(r.menu_items?.name || "")}</strong></td>
+                <td>${esc(r.menu_items?.category || "-")}</td>
+                <td>${esc(r.menu_items?.description || "")}</td>
+                <td><button class="btn danger" data-remove-item="${r.item_id}">Quitar</button></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+
+      menuItemsList.querySelectorAll("[data-remove-item]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const itemId = Number(btn.getAttribute("data-remove-item"));
+          const { error } = await supabase
+            .from("menu_menu_items")
+            .delete()
+            .eq("menu_id", menuId)
+            .eq("item_id", itemId);
+
+          if (error) { alert("Error: " + error.message); return; }
+          await renderMenuItems(menuId);
+        });
+      });
+    }
+
+    // ADD ITEM TO MENU
+    document.getElementById("btnAddItemToMenu").addEventListener("click", async () => {
+      menuItemsMsg.textContent = "";
+      if (!currentMenuId) { menuItemsMsg.textContent = "Selecciona un menú."; return; }
+
+      const itemId = Number(catalogSelect.value);
+      if (!itemId) { menuItemsMsg.textContent = "Elige un plato."; return; }
+
+      const sort_order = Number(document.getElementById("sortOrder").value || 0);
+
+      // upsert para que si ya está, actualice el orden
+      const { error } = await supabase
+        .from("menu_menu_items")
+        .upsert([{ menu_id: currentMenuId, item_id: itemId, sort_order }], { onConflict: "menu_id,item_id" });
+
+      if (error) { menuItemsMsg.textContent = "Error: " + error.message; return; }
+
+      menuItemsMsg.textContent = "Agregado ✅";
+      await renderMenuItems(currentMenuId);
     });
 
-    clearBtn.addEventListener("click", clearForm);
+    async function reloadAll() {
+      await loadMenus();
+      await loadDishes();
+      currentMenuId = null;
+      menuItemsList.innerHTML = `<div class="muted">Selecciona un menú para gestionarlo.</div>`;
+    }
 
-    // Estado inicial por sesión
-    const { data: { session } } = await supabase.auth.getSession();
-    setLoggedUI(!!session);
-    if (session) await refreshList();
-
-    // Reacciona a login/logout
-    supabase.auth.onAuthStateChange(async (_event, session2) => {
-      setLoggedUI(!!session2);
-      if (session2) await refreshList();
-    });
+    supabase.auth.onAuthStateChange(() => refreshAuthUI());
+    refreshAuthUI();
   </script>
 </body>
 </html>
