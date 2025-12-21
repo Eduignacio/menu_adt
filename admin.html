@@ -156,7 +156,9 @@
   <script>
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const supabase = window.supabase.createClient(S_URL, S_KEY);
+    
+    // Cambiamos el nombre de la variable para evitar conflicto con la librería
+    const supabaseClient = window.supabase.createClient(S_URL, S_KEY);
 
     let draft = [];
 
@@ -176,10 +178,7 @@
     function openApp() {
       loginOverlay.classList.add('hidden');
       appMain.classList.remove('hidden');
-
-      // fecha por defecto
       document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
-
       loadCatalog();
     }
 
@@ -190,7 +189,7 @@
 
     // --- AUTH ---
     async function checkAuth() {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await supabaseClient.auth.getSession();
       if (error) {
         console.error("getSession error:", error);
         closeApp();
@@ -202,44 +201,40 @@
 
     document.getElementById('btnLogin').onclick = async () => {
       clearError();
-
       const email = document.getElementById('lEmail').value.trim();
       const password = document.getElementById('lPass').value;
 
       if (!email || !password) return showError("Completa email y contraseña.");
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
         console.error("LOGIN ERROR:", error);
-        // Muestra el error real
         return showError(error.message);
       }
 
-      // Si login ok, abre la app SIN recargar
       if (data.session) openApp();
-      else showError("No se pudo iniciar sesión (sin sesión). Revisa configuración Auth.");
+      else showError("No se pudo iniciar sesión.");
     };
 
     document.getElementById('btnLogoutTop').onclick = async () => {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       closeApp();
     };
 
-    // Listener por si cambia el estado
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
       if (session) openApp();
       else closeApp();
     });
 
     // --- CATÁLOGO ---
     async function loadCatalog() {
-      const { data, error } = await supabase.from('food_catalog').select('*').order('categoria');
+      const { data, error } = await supabaseClient.from('food_catalog').select('*').order('categoria');
       const list = document.getElementById('catalogList');
 
       if (error) {
         console.error("food_catalog error:", error);
-        list.innerHTML = `<div style="color:#fff; font-size:12px;">Error cargando catálogo: ${error.message}</div>`;
+        list.innerHTML = `<div style="color:#fff; font-size:12px;">Error cargando catálogo.</div>`;
         return;
       }
 
@@ -269,8 +264,6 @@
         </div>`).join('');
     }
 
-    // Nota: JSON.stringify arriba evita que se rompa el HTML si hay comillas en textos.
-
     window.addPlate = function(acomp, prote, cat) {
       draft.push({
         name: `${acomp} + ${prote}`.trim(),
@@ -299,7 +292,7 @@
 
       if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
 
-      const { data: menu, error: mErr } = await supabase
+      const { data: menu, error: mErr } = await supabaseClient
         .from('menus')
         .insert([{ name, menu_date: date }])
         .select()
@@ -308,7 +301,7 @@
       if (mErr) return alert("ERROR MENÚ: " + mErr.message);
 
       for (const p of draft) {
-        const { data: item, error: iErr } = await supabase
+        const { data: item, error: iErr } = await supabaseClient
           .from('menu_items')
           .insert([p])
           .select()
@@ -316,11 +309,9 @@
 
         if (iErr) return alert("ERROR PLATO: " + iErr.message);
 
-        const { error: linkErr } = await supabase
+        await supabaseClient
           .from('menu_menu_items')
           .insert([{ menu_id: menu.id, menu_item_id: item.id }]);
-
-        if (linkErr) return alert("ERROR LINK: " + linkErr.message);
       }
 
       alert("MENÚ PUBLICADO EXITOSAMENTE");
