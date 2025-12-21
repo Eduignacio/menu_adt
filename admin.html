@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Menú ADT</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial; margin:0; background:#f6f6f6;}
+    header{padding:18px; background:white; box-shadow:0 2px 14px rgba(0,0,0,.06);}
+    .wrap{max-width:980px; margin:18px auto; padding:0 16px;}
+    .row{display:flex; gap:14px; flex-wrap:wrap;}
+    .card{background:white; border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.07); margin:12px 0;}
+    h1{margin:0; font-size:26px;}
+    h2{margin:0 0 10px;}
+    label{display:block; font-weight:700; margin:10px 0 6px;}
+    input, textarea{width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; font-size:14px;}
+    textarea{min-height:80px; resize:vertical;}
+    .btn{border:0; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;}
+    .btn-primary{background:#111; color:#fff;}
+    .btn-ghost{background:#eee;}
+    .btn-danger{background:#c62828; color:#fff;}
+    table{width:100%; border-collapse:collapse;}
+    th, td{padding:10px; border-bottom:1px solid #eee; text-align:left; vertical-align:top;}
+    .muted{opacity:.7;}
+    .topbar{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+    a{color:#111;}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:#eee; font-weight:700;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <h1>Admin Menú</h1>
+      <div class="row">
+        <a class="pill" href="/index.html">← Volver al menú</a>
+        <button id="logoutBtn" class="btn btn-ghost" style="display:none;">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <div id="loginCard" class="card">
+      <h2>Entrar</h2>
+      <div class="muted">Solo usuarios autorizados pueden editar el menú.</div>
+      <label>Email</label>
+      <input id="email" type="email" placeholder="tu@email.com" />
+      <label>Contraseña</label>
+      <input id="password" type="password" placeholder="••••••••" />
+      <div style="margin-top:12px;">
+        <button id="loginBtn" class="btn btn-primary">Entrar</button>
+      </div>
+      <div id="loginMsg" class="muted" style="margin-top:10px;"></div>
+    </div>
+
+    <div id="adminArea" style="display:none;">
+      <div class="card">
+        <h2>Agregar / Editar plato</h2>
+
+        <div class="row">
+          <div style="flex:1; min-width:240px;">
+            <label>ID (vacío para crear)</label>
+            <input id="id" type="number" placeholder="ej: 1" />
+          </div>
+          <div style="flex:2; min-width:240px;">
+            <label>Nombre</label>
+            <input id="name" type="text" placeholder="Hamburguesa clásica" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1; min-width:240px;">
+            <label>Categoría</label>
+            <input id="category" type="text" placeholder="Principal / Entrada / Bebida" />
+          </div>
+          <div style="flex:1; min-width:240px;">
+            <label>Fecha (opcional)</label>
+            <input id="date" type="date" />
+          </div>
+        </div>
+
+        <label>Descripción</label>
+        <textarea id="description" placeholder="Carne, queso, tomate y papas"></textarea>
+
+        <div class="row" style="margin-top:12px;">
+          <button id="saveBtn" class="btn btn-primary">Guardar (crear/actualizar)</button>
+          <button id="clearBtn" class="btn btn-ghost">Limpiar</button>
+        </div>
+
+        <div id="saveMsg" class="muted" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Platos actuales</h2>
+        <div class="muted" id="listMsg">Cargando...</div>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginCard = document.getElementById("loginCard");
+    const adminArea = document.getElementById("adminArea");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMsg = document.getElementById("loginMsg");
+
+    const idEl = document.getElementById("id");
+    const nameEl = document.getElementById("name");
+    const catEl = document.getElementById("category");
+    const dateEl = document.getElementById("date");
+    const descEl = document.getElementById("description");
+
+    const saveBtn = document.getElementById("saveBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const saveMsg = document.getElementById("saveMsg");
+
+    const listMsg = document.getElementById("listMsg");
+    const tbody = document.getElementById("tbody");
+
+    function escapeHtml(str){
+      return String(str ?? "").replace(/[&<>"']/g, (m) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    function setLoggedUI(isLogged){
+      loginCard.style.display = isLogged ? "none" : "block";
+      adminArea.style.display = isLogged ? "block" : "none";
+      logoutBtn.style.display = isLogged ? "inline-block" : "none";
+    }
+
+    async function refreshList(){
+      listMsg.textContent = "Cargando...";
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id,name,category,description,date")
+        .order("id", { ascending:true });
+
+      if (error){
+        listMsg.textContent = "Error cargando.";
+        tbody.innerHTML = `<tr><td colspan="5">Error: ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0){
+        listMsg.textContent = "No hay platos.";
+        tbody.innerHTML = "";
+        return;
+      }
+
+      listMsg.textContent = `${data.length} plato(s).`;
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.category)}</td>
+          <td>${escapeHtml(row.description)}</td>
+          <td>
+            <button class="btn btn-ghost" data-edit="${row.id}">Editar</button>
+            <button class="btn btn-danger" data-del="${row.id}">Borrar</button>
+          </td>
+        </tr>
+      `).join("");
+
+      tbody.querySelectorAll("[data-edit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.getAttribute("data-edit"));
+          const item = data.find(x => x.id === id);
+          if (!item) return;
+          idEl.value = item.id ?? "";
+          nameEl.value = item.name ?? "";
+          catEl.value = item.category ?? "";
+          descEl.value = item.description ?? "";
+          dateEl.value = item.date ?? "";
+          saveMsg.textContent = "Editando ID " + id;
+        });
+      });
+
+      tbody.querySelectorAll("[data-del]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-del"));
+          if (!confirm("¿Borrar el plato ID " + id + "?")) return;
+
+          const { error } = await supabase.from("menu_items").delete().eq("id", id);
+          if (error){
+            alert("Error borrando: " + error.message);
+            return;
+          }
+          await refreshList();
+        });
+      });
+    }
+
+    function clearForm(){
+      idEl.value = "";
+      nameEl.value = "";
+      catEl.value = "";
+      dateEl.value = "";
+      descEl.value = "";
+      saveMsg.textContent = "";
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      loginMsg.textContent = "Entrando...";
+      const email = emailEl.value.trim();
+      const password = passEl.value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error){
+        loginMsg.textContent = "Error: " + error.message;
+        return;
+      }
+      loginMsg.textContent = "OK.";
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      saveMsg.textContent = "Guardando...";
+      const id = idEl.value ? Number(idEl.value) : null;
+
+      const payload = {
+        name: nameEl.value.trim(),
+        category: catEl.value.trim(),
+        description: descEl.value.trim(),
+        date: dateEl.value || null,
+      };
+
+      if (!payload.name){
+        saveMsg.textContent = "Falta el nombre.";
+        return;
+      }
+
+      // Si hay ID: update. Si no hay: insert.
+      let res;
+      if (id){
+        res = await supabase.from("menu_items").update(payload).eq("id", id);
+      } else {
+        res = await supabase.from("menu_items").insert(payload);
+      }
+
+      if (res.error){
+        saveMsg.textContent = "Error: " + res.error.message;
+        return;
+      }
+
+      saveMsg.textContent = "Guardado ✅";
+      clearForm();
+      await refreshList();
+    });
+
+    clearBtn.addEventListener("click", clearForm);
+
+    // Estado inicial por sesión
+    const { data: { session } } = await supabase.auth.getSession();
+    setLoggedUI(!!session);
+    if (session) await refreshList();
+
+    // Reacciona a login/logout
+    supabase.auth.onAuthStateChange(async (_event, session2) => {
+      setLoggedUI(!!session2);
+      if (session2) await refreshList();
+    });
+  </script>
+</body>
+</html>
