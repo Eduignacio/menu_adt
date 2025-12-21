@@ -3,544 +3,146 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Menú Pro</title>
+  <title>ADMIN MATRIX - ADT</title>
   <style>
-    :root {
-      --sidebar-bg: #0f172a;
-      --sidebar-text: #f8fafc;
-      --accent: #6366f1;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
-      --success: #10b981;
-      --radius: 12px;
-    }
+    :root { --sidebar: #0f172a; --accent: #6366f1; --bg: #f1f5f9; --card: #fff; }
+    * { box-sizing: border-box; text-transform: uppercase; font-family: sans-serif; }
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
-    * { box-sizing: border-box; text-transform: uppercase; } /* Forzado visual global */
+    /* SIDEBAR CATÁLOGO */
+    .sidebar { width: 360px; background: var(--sidebar); color: #fff; display: flex; flex-direction: column; border-right: 1px solid #e2e8f0; }
+    .sb-header { padding: 20px; background: #1e293b; border-bottom: 1px solid #334155; }
+    .sb-content { flex: 1; overflow-y: auto; padding: 15px; }
     
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+    .cat-group { margin-bottom: 20px; }
+    .cat-name { font-size: 11px; font-weight: 900; color: var(--accent); margin-bottom: 8px; border-left: 3px solid var(--accent); padding-left: 8px; }
+    .food-card { background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; }
+    .food-card b { display: block; font-size: 12px; margin-bottom: 8px; color: #f1f5f9; }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+    .btn-quick { font-size: 8px; padding: 6px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: 800; }
+    .btn-quick:hover { background: var(--accent); }
 
-    /* BARRA LATERAL */
-    .sidebar {
-      width: 280px;
-      background: var(--sidebar-bg);
-      color: var(--sidebar-text);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      border-right: 1px solid var(--border);
-    }
-
-    .sidebar-header {
-      padding: 24px;
-      border-bottom: 1px solid #1e293b;
-    }
-
-    .sidebar-header h1 {
-      font-size: 18px;
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--accent);
-    }
-
-    .menu-list-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-
-    .menu-item-btn {
-      width: 100%;
-      background: transparent;
-      border: 1px solid #1e293b;
-      color: #94a3b8;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: left;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .menu-item-btn:hover { background: #1e293b; color: white; }
-    .menu-item-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    .menu-item-btn span { font-weight: 800; font-size: 13px; }
-    .menu-item-btn small { opacity: 0.7; margin-top: 4px; }
-
-    /* CONTENIDO PRINCIPAL */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      background: var(--bg);
-    }
-
-    .top-nav {
-      background: var(--card);
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .view-container { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
-
-    /* CARDS & GRIDS */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .grid-editor {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 24px;
-    }
-
-    /* FORMS */
-    label {
-      display: block;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 16px;
-      background: #f8fafc;
-      font-weight: 600;
-    }
-
-    input:focus { border-color: var(--accent); outline: none; background: white; }
-
-    /* BUTTONS */
-    .btn {
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-    }
-
-    .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
-    .btn-danger { background: white; color: var(--danger); border-color: var(--danger); }
-    .btn-danger:hover { background: var(--danger); color: white; }
-    .btn-ghost { border: none; background: transparent; color: var(--muted); }
-
-    /* TABLES */
-    .table-container { overflow: hidden; border-radius: 8px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th { background: #f8fafc; padding: 14px; text-align: left; font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--border); }
-    td { padding: 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
-
-    /* UTILS */
+    /* ÁREA PRINCIPAL */
+    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .top-nav { padding: 15px 30px; background: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+    .content { padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; }
+    
+    .builder-card { background: #fff; border-radius: 12px; padding: 25px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .plate-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    
+    input, select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-weight: 800; font-size: 13px; }
+    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
+    .btn-save { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 900; width: 100%; }
+    
+    #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 999; display: flex; align-items: center; justify-content: center; }
     .hidden { display: none !important; }
-    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; background: #e2e8f0; }
-
-    /* LOGIN OVERLAY */
-    #loginCard {
-      position: fixed;
-      inset: 0;
-      background: var(--sidebar-bg);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-box { width: 400px; background: white; padding: 40px; border-radius: 20px; }
-
-    @media (max-width: 1024px) {
-      .grid-editor { grid-template-columns: 1fr; }
-      .sidebar { width: 80px; }
-      .sidebar span, .sidebar small, .sidebar-header h1 { display: none; }
-    }
   </style>
 </head>
-
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginCard">
-    <div class="login-box">
-      <h2 style="margin-top:0; text-align:center; color: var(--sidebar-bg)">ADMIN ACCESO</h2>
-      <label>Email</label>
-      <input id="loginEmail" type="email" placeholder="ADMIN@CORREO.COM" />
-      <label>Contraseña</label>
-      <input id="loginPass" type="password" placeholder="••••••••" />
-      <button class="btn btn-primary" id="btnLogin" style="width:100%; justify-content:center; margin-top:10px;">INICIAR SESIÓN</button>
+  <div id="loginOverlay">
+    <div style="background:white; padding:30px; border-radius:15px; width:300px;">
+      <h3 style="text-align:center;">LOGIN ADMIN</h3>
+      <input id="lemail" placeholder="EMAIL" style="margin-bottom:10px;">
+      <input id="lpass" type="password" placeholder="CONTRASEÑA">
+      <button onclick="login()" class="btn-save" style="margin-top:15px;">ENTRAR</button>
     </div>
   </div>
 
-  <!-- APP STRUCTURE -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <h1>MENU MANAGER</h1>
-    </div>
-    <div class="menu-list-container">
-      <label style="color: #475569; margin-left: 12px;">HISTORIAL DE MENÚS</label>
-      <div id="menuButtonsList">
-        <!-- Botones de menú dinámicos aquí -->
-      </div>
-    </div>
-    <div style="padding: 16px; border-top: 1px solid #1e293b;">
-      <button class="btn btn-primary" id="btnSidebarNewMenu" style="width:100%">+ NUEVO MENÚ</button>
-    </div>
+    <div class="sb-header"><h2>CATÁLOGO RÁPIDO</h2></div>
+    <div class="sb-content" id="catalogBox"></div>
   </aside>
 
-  <main class="main-content hidden" id="app">
+  <main class="main hidden" id="app">
     <div class="top-nav">
-      <div>
-        <span class="status-badge" id="menuStatus">SELECCIONA UN MENÚ</span>
-      </div>
-      <div style="display: flex; gap: 10px;">
-        <button class="btn btn-ghost" id="btnLogout">CERRAR SESIÓN</button>
-      </div>
+      <b>CONSTRUCTOR DE MENÚS</b>
+      <button onclick="logout()">SALIR</button>
     </div>
-
-    <div class="view-container">
-      
-      <!-- GESTIÓN DEL MENÚ SELECCIONADO -->
-      <div class="card">
-        <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-          <div style="flex:1; max-width: 400px; margin-right: 20px;">
-            <label>NOMBRE DEL MENÚ ACTUAL</label>
-            <input id="menuName" placeholder="EJ: ALMUERZO EJECUTIVO" />
-          </div>
-          <div style="flex:1; max-width: 200px; margin-right: 20px;">
-            <label>FECHA</label>
-            <input id="menuDate" type="date" />
-          </div>
-          <div style="display:flex; gap:10px; padding-bottom: 16px;">
-            <button class="btn btn-primary" id="btnUpdateMenu">GUARDAR CAMBIOS</button>
-            <button class="btn btn-danger" id="btnDeleteMenu">ELIMINAR MENÚ</button>
-          </div>
+    <div class="content">
+      <div class="builder-card">
+        <div class="row">
+          <div><label>NOMBRE DEL MENÚ</label><input id="mName" value="ALMUERZO DEL DÍA"></div>
+          <div><label>FECHA</label><input id="mDate" type="date"></div>
+          <div style="display:flex; align-items:flex-end;"><button class="btn-save" onclick="saveMenu()">PUBLICAR MENÚ</button></div>
         </div>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:50px">#</th>
-                <th>PLATO</th>
-                <th>CATEGORÍA</th>
-                <th>DESCRIPCIÓN</th>
-                <th style="width:180px">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody id="menuItemsTbody">
-              <!-- Platos del menú actual -->
-            </tbody>
-          </table>
-        </div>
+        <div id="plateList"></div>
       </div>
-
-      <div class="grid-editor">
-        <!-- EDITOR DE PLATO -->
-        <div class="card">
-          <h3 style="margin-top:0">EDITOR DE PLATO</h3>
-          <input id="itemId" type="hidden" />
-          
-          <label>NOMBRE DEL PLATO</label>
-          <input id="itemName" class="auto-caps" placeholder="EJ: MILANESA CON PAPAS" />
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div>
-              <label>CATEGORÍA</label>
-              <select id="itemCategory">
-                <option value="">(SIN CATEGORÍA)</option>
-                <option value="ENTRADA">ENTRADA</option>
-                <option value="PRINCIPAL">PRINCIPAL</option>
-                <option value="POSTRE">POSTRE</option>
-                <option value="BEBIDA">BEBIDA</option>
-              </select>
-            </div>
-            <div>
-              <label>FECHA PLATO (OPC.)</label>
-              <input id="itemDate" type="date" />
-            </div>
-          </div>
-
-          <label>DESCRIPCIÓN / INGREDIENTES</label>
-          <textarea id="itemDesc" class="auto-caps" style="height: 80px;" placeholder="CARNE RES, QUESO, TOMATE..."></textarea>
-
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn btn-primary" id="btnSaveItem" style="flex:1">GUARDAR Y AGREGAR</button>
-            <button class="btn" id="btnClearItem">LIMPIAR</button>
-          </div>
-        </div>
-
-        <!-- HISTORIAL / BUSCADOR -->
-        <div class="card">
-          <h3 style="margin-top:0">BUSCAR EN HISTORIAL</h3>
-          <div style="position: relative;">
-            <input id="searchItems" placeholder="BUSCAR POR NOMBRE O CATEGORÍA..." style="padding-left: 40px;" />
-            <span style="position: absolute; left: 14px; top: 12px; opacity: 0.5;">🔍</span>
-          </div>
-
-          <div class="table-container" style="max-height: 350px; overflow-y: auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>PLATO</th>
-                  <th>CAT.</th>
-                  <th style="width:100px">ACCIÓN</th>
-                </tr>
-              </thead>
-              <tbody id="historyItemsTbody">
-                <!-- Items del historial -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const supabase = window.supabase.createClient(S_URL, S_KEY);
 
-    // Dom Elements
-    const loginCard = document.getElementById("loginCard");
-    const app = document.getElementById("app");
-    const menuButtonsList = document.getElementById("menuButtonsList");
-    const menuItemsTbody = document.getElementById("menuItemsTbody");
-    const historyItemsTbody = document.getElementById("historyItemsTbody");
+    let currentPlates = [];
 
-    let currentMenuId = null;
-    let menusCache = [];
-    let historyCache = [];
-
-    // --- LOGICA DE MAYÚSCULAS AUTOMÁTICAS ---
-    document.querySelectorAll('input, textarea').forEach(el => {
-      if(el.type !== 'password' && el.type !== 'date' && el.type !== 'email') {
-        el.addEventListener('input', function() {
-          this.value = this.value.toUpperCase();
-        });
-      }
-    });
-
-    function fmtDate(d) {
-      if (!d) return "";
-      const [y, m, dd] = d.split("-");
-      return `${dd}/${m}/${y}`;
+    async function login() {
+      const { error } = await supabase.auth.signInWithPassword({ email: lemail.value, password: lpass.value });
+      if (error) alert("ERROR"); else location.reload();
     }
+    
+    async function logout() { await supabase.auth.signOut(); location.reload(); }
 
-    async function refreshAuthUI() {
-      const { data } = await supabaseClient.auth.getSession();
-      const loggedIn = !!data.session;
-      loginCard.classList.toggle("hidden", loggedIn);
-      app.classList.toggle("hidden", !loggedIn);
-
-      if (loggedIn) {
-        await loadMenus();
-        await loadHistoryItems();
+    async function check() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        loginOverlay.classList.add('hidden');
+        app.classList.remove('hidden');
+        loadCatalog();
       }
     }
 
-    // AUTH
-    document.getElementById("btnLogin").onclick = async () => {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPass").value;
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert("ERROR: " + error.message);
-      else refreshAuthUI();
-    };
-
-    document.getElementById("btnLogout").onclick = async () => {
-      await supabaseClient.auth.signOut();
-      refreshAuthUI();
-    };
-
-    // MENUS
-    async function loadMenus() {
-      const { data } = await supabaseClient.from("menus").select("*").order("menu_date", { ascending: false });
-      menusCache = data || [];
-      renderMenuButtons();
-    }
-
-    function renderMenuButtons() {
-      menuButtonsList.innerHTML = menusCache.map(m => `
-        <button class="menu-item-btn ${currentMenuId == m.id ? 'active' : ''}" onclick="selectMenu(${m.id})">
-          <span>${m.name || 'SIN NOMBRE'}</span>
-          <small>${m.menu_date ? fmtDate(m.menu_date) : 'SIN FECHA'}</small>
-        </button>
-      `).join("");
-    }
-
-    window.selectMenu = async (id) => {
-      currentMenuId = id;
-      const m = menusCache.find(x => x.id === id);
-      document.getElementById("menuName").value = m.name || "";
-      document.getElementById("menuDate").value = m.menu_date || "";
-      document.getElementById("menuStatus").textContent = `EDITANDO: ${m.name}`;
-      renderMenuButtons();
-      await loadMenuItems();
-    };
-
-    document.getElementById("btnSidebarNewMenu").onclick = async () => {
-      const { data, error } = await supabaseClient.from("menus").insert([{ name: "NUEVO MENÚ", menu_date: new Date().toISOString().split('T')[0] }]).select().single();
-      if (!error) {
-        await loadMenus();
-        selectMenu(data.id);
-      }
-    };
-
-    document.getElementById("btnUpdateMenu").onclick = async () => {
-      if(!currentMenuId) return;
-      const name = document.getElementById("menuName").value;
-      const date = document.getElementById("menuDate").value;
-      await supabaseClient.from("menus").update({ name, menu_date: date }).eq("id", currentMenuId);
-      await loadMenus();
-      alert("MENÚ ACTUALIZADO");
-    };
-
-    document.getElementById("btnDeleteMenu").onclick = async () => {
-      if(!currentMenuId || !confirm("¿ELIMINAR ESTE MENÚ COMPLETAMENTE?")) return;
-      await supabaseClient.from("menu_menu_items").delete().eq("menu_id", currentMenuId);
-      await supabaseClient.from("menus").delete().eq("id", currentMenuId);
-      currentMenuId = null;
-      await loadMenus();
-      location.reload();
-    };
-
-    // ITEMS
-    async function loadHistoryItems() {
-      const { data } = await supabaseClient.from("menu_items").select("*").order("created_at", { ascending: false });
-      historyCache = data || [];
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const q = document.getElementById("searchItems").value.toUpperCase();
-      const filtered = historyCache.filter(i => (i.name||"").includes(q) || (i.category||"").includes(q));
-
-      historyItemsTbody.innerHTML = filtered.map(i => `
-        <tr>
-          <td><b>${i.name}</b><br><small style="color:var(--muted)">${i.description || ''}</small></td>
-          <td><span class="status-badge">${i.category || '-'}</span></td>
-          <td>
-            <div style="display:flex; gap:5px;">
-              <button class="btn btn-primary" style="padding:5px 10px" onclick="addItemToMenu(${i.id})">+</button>
-              <button class="btn btn-danger" style="padding:5px 10px" onclick="deleteFromHistory(${i.id})">×</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
-    }
-
-    document.getElementById("searchItems").oninput = renderHistory;
-
-    async function loadMenuItems() {
-      if (!currentMenuId) return;
-      const { data } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id, menu_items(id, name, category, description)")
-        .eq("menu_id", currentMenuId);
+    async function loadCatalog() {
+      const { data } = await supabase.from('food_catalog').select('*').order('categoria');
+      const box = document.getElementById('catalogBox');
+      const grouped = data.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
       
-      menuItemsTbody.innerHTML = (data || []).map((row, idx) => `
-        <tr>
-          <td>${idx + 1}</td>
-          <td><b>${row.menu_items.name}</b></td>
-          <td>${row.menu_items.category || ''}</td>
-          <td>${row.menu_items.description || ''}</td>
-          <td>
-            <button class="btn btn-danger" onclick="removeItemFromMenu(${row.id})">QUITAR</button>
-          </td>
-        </tr>
-      `).join("");
+      box.innerHTML = Object.keys(grouped).map(cat => `
+        <div class="cat-group">
+          <div class="cat-name">${cat}</div>
+          ${grouped[cat].map(i => `
+            <div class="food-card">
+              <b>${i.acompanamiento}</b>
+              <div class="btn-grid">
+                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.pollo}', '${cat}')">POLLO</button>
+                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.cerdo}', '${cat}')">CERDO</button>
+                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">CARNE</button>
+              </div>
+            </div>`).join('')}
+        </div>`).join('');
     }
 
-    window.addItemToMenu = async (itemId) => {
-      if(!currentMenuId) return alert("SELECCIONA UN MENÚ PRIMERO");
-      await supabaseClient.from("menu_menu_items").insert([{ menu_id: currentMenuId, menu_item_id: itemId }]);
-      loadMenuItems();
-    };
+    function add(a, p, c) {
+      currentPlates.push({ name: `${a} + ${p}`, category: c, description: `ACOMPAÑAMIENTO: ${a} | PROTEÍNA: ${p}` });
+      render();
+    }
 
-    window.removeItemFromMenu = async (linkId) => {
-      await supabaseClient.from("menu_menu_items").delete().eq("id", linkId);
-      loadMenuItems();
-    };
+    function render() {
+      plateList.innerHTML = currentPlates.map((p, i) => `
+        <div class="plate-item">
+          <div><b>${p.name}</b><br><small>${p.category}</small></div>
+          <button onclick="currentPlates.splice(${i},1);render()">X</button>
+        </div>`).join('');
+    }
 
-    window.deleteFromHistory = async (id) => {
-      if(!confirm("¿BORRAR PLATO DEL HISTORIAL? SE QUITARÁ DE TODOS LOS MENÚS.")) return;
-      await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
-      await supabaseClient.from("menu_items").delete().eq("id", id);
-      await loadHistoryItems();
-      await loadMenuItems();
-    };
-
-    document.getElementById("btnSaveItem").onclick = async () => {
-      const name = document.getElementById("itemName").value;
-      if(!name) return;
-      const payload = {
-        name,
-        category: document.getElementById("itemCategory").value,
-        description: document.getElementById("itemDesc").value,
-        item_date: document.getElementById("itemDate").value || null
-      };
-
-      const { data, error } = await supabaseClient.from("menu_items").insert([payload]).select().single();
-      if(!error) {
-        if(currentMenuId) await addItemToMenu(data.id);
-        await loadHistoryItems();
-        document.getElementById("itemName").value = "";
-        document.getElementById("itemDesc").value = "";
+    async function saveMenu() {
+      const name = mName.value, date = mDate.value;
+      if (!date || !currentPlates.length) return alert("FALTA FECHA O PLATOS");
+      
+      const { data: menu } = await supabase.from('menus').insert([{ name, menu_date: date }]).select().single();
+      for (const p of currentPlates) {
+        const { data: item } = await supabase.from('menu_items').insert([p]).select().single();
+        await supabase.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
       }
-    };
+      alert("MENÚ PUBLICADO"); currentPlates = []; render();
+    }
 
-    document.getElementById("btnClearItem").onclick = () => {
-      document.getElementById("itemId").value = "";
-      document.getElementById("itemName").value = "";
-      document.getElementById("itemDesc").value = "";
-    };
-
-    refreshAuthUI();
+    mDate.value = new Date().toISOString().split('T')[0];
+    check();
   </script>
 </body>
 </html>
