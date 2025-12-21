@@ -45,14 +45,14 @@
     .food-card { background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 10px; border: 1px solid #334155; }
     .food-card b { display: block; font-size: 11px; margin-bottom: 10px; color: #94a3b8; border-bottom: 1px solid #1e293b; padding-bottom: 5px; }
     
-    /* BOTONES DINÁMICOS: Ajustados para que el texto largo no se rompa */
     .btn-grid { display: flex; flex-direction: column; gap: 6px; }
     .btn-quick { 
       font-size: 10px; padding: 10px; background: #334155; border: none; 
       color: white; cursor: pointer; border-radius: 6px; font-weight: 700;
-      text-align: center; transition: background 0.2s;
+      text-align: center; transition: all 0.2s;
     }
-    .btn-quick:hover { background: var(--accent); }
+    .btn-quick:hover { background: var(--accent); transform: scale(1.02); }
+    .btn-quick:active { transform: scale(0.98); }
 
     /* MAIN */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
@@ -77,7 +77,6 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
       <h2 style="text-align:center;">LOGIN ADMIN</h2>
@@ -89,7 +88,6 @@
     </div>
   </div>
 
-  <!-- SIDEBAR -->
   <aside class="catalog-sidebar">
     <div class="sidebar-header">
       <h2 style="font-size: 14px; margin:0;">CATÁLOGO</h2>
@@ -98,11 +96,10 @@
     <div class="catalog-scroll" id="catalogList"></div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main-area hidden" id="appMain">
     <div class="top-bar">
       <h1 style="font-size: 16px; margin:0; font-weight: 900;">ADT | GESTIÓN DE MENÚ</h1>
-      <button class="btn btn-ghost" id="btnLogoutTop">CERRAR SESIÓN</button>
+      <button class="btn btn-ghost" onclick="logout()">CERRAR SESIÓN</button>
     </div>
 
     <div class="view-container">
@@ -134,7 +131,6 @@
 
     let draft = [];
 
-    // --- SEGURIDAD ---
     async function checkAuth() {
       const { data } = await sb.auth.getSession();
       if (data.session) {
@@ -150,9 +146,8 @@
       else location.reload();
     };
 
-    document.getElementById('btnLogoutTop').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+    window.logout = async () => { await sb.auth.signOut(); location.reload(); };
 
-    // --- CARGAR CATÁLOGO (BOTONES CORREGIDOS) ---
     async function loadCatalog() {
       const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
       if (error) return;
@@ -162,22 +157,33 @@
         return acc;
       }, {});
 
-      document.getElementById('catalogList').innerHTML = Object.keys(grouped).map(cat => `
-        <div class="cat-accordion" id="acc-${cat.replace(/\s/g, '').replace(/\//g, '')}">
-          <button class="cat-trigger" onclick="toggleAccordion('acc-${cat.replace(/\s/g, '').replace(/\//g, '')}')">${cat}</button>
+      document.getElementById('catalogList').innerHTML = Object.keys(grouped).map(cat => {
+        const catId = `acc-${cat.replace(/\s/g, '').replace(/\//g, '')}`;
+        return `
+        <div class="cat-accordion" id="${catId}">
+          <button class="cat-trigger" onclick="toggleAccordion('${catId}')">${cat}</button>
           <div class="cat-content">
-            ${grouped[cat].map(i => `
+            ${grouped[cat].map(i => {
+              // Limpiamos los textos para evitar que rompan el HTML
+              const acomp = (i.acompanamiento || "").replace(/'/g, "\\'");
+              const p = (i.pollo || "").replace(/'/g, "\\'");
+              const c = (i.cerdo || "").replace(/'/g, "\\'");
+              const r = (i.carne_roja || "").replace(/'/g, "\\'");
+              const catEscaped = cat.replace(/'/g, "\\'");
+
+              return `
               <div class="food-card">
                 <b>${i.acompanamiento}</b>
                 <div class="btn-grid">
-                  <!-- AQUÍ ESTÁ EL CAMBIO: Los botones ahora muestran el texto de la base de datos -->
-                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.pollo}', '${cat}')">${i.pollo}</button>
-                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.cerdo}', '${cat}')">${i.cerdo}</button>
-                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">${i.carne_roja}</button>
+                  <button class="btn-quick" onclick="addPlate('${acomp}', '${p}', '${catEscaped}')">${i.pollo}</button>
+                  <button class="btn-quick" onclick="addPlate('${acomp}', '${c}', '${catEscaped}')">${i.cerdo}</button>
+                  <button class="btn-quick" onclick="addPlate('${acomp}', '${r}', '${catEscaped}')">${i.carne_roja}</button>
                 </div>
-              </div>`).join('')}
+              </div>`;
+            }).join('')}
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     window.toggleAccordion = function(id) {
@@ -188,7 +194,12 @@
     };
 
     window.addPlate = function(acomp, prote, cat) {
-      draft.push({ name: `${acomp} + ${prote}`.toUpperCase(), category: cat, description: `BASE: ${acomp} | PREP: ${prote}` });
+      if (!prote || prote.trim() === "" || prote === "null") return;
+      draft.push({ 
+        name: `${acomp} + ${prote}`.toUpperCase(), 
+        category: cat, 
+        description: `BASE: ${acomp} | PREP: ${prote}` 
+      });
       renderDraft();
     };
 
@@ -204,13 +215,15 @@
         </div>`).join('');
     }
 
-    function removePlate(i) { draft.splice(i, 1); renderDraft(); }
-    function clearDraft() { draft = []; renderDraft(); }
+    window.removePlate = function(i) { draft.splice(i, 1); renderDraft(); };
+    window.clearDraft = function() { draft = []; renderDraft(); };
 
     document.getElementById('btnSaveFull').onclick = async () => {
       const name = menuName.value; const date = menuDate.value;
       if (!date || draft.length === 0) return alert("FALTA FECHA O PLATOS");
-      const { data: menu } = await sb.from('menus').insert([{ name, menu_date: date }]).select().single();
+      const { data: menu, error: mErr } = await sb.from('menus').insert([{ name, menu_date: date }]).select().single();
+      if (mErr) return alert("Error Menú: " + mErr.message);
+      
       for (const p of draft) {
         const { data: item } = await sb.from('menu_items').insert([p]).select().single();
         if (item) await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
@@ -218,12 +231,12 @@
       alert("MENÚ PUBLICADO ✅"); clearDraft();
     };
 
-    async function deleteOldMenus() {
-      if(!confirm("¿BORRAR HISTORIAL?")) return;
+    window.deleteOldMenus = async () => {
+      if(!confirm("¿BORRAR TODO EL HISTORIAL?")) return;
       await sb.from('menu_menu_items').delete().neq('id', 0);
       await sb.from('menus').delete().neq('id', 0);
       alert("LIMPIADO.");
-    }
+    };
 
     document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
     checkAuth();
