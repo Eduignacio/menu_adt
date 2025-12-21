@@ -5,69 +5,138 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ADMIN MATRIX - ADT</title>
   <style>
-    :root { --sidebar: #0f172a; --accent: #6366f1; --bg: #f1f5f9; --card: #fff; }
-    * { box-sizing: border-box; text-transform: uppercase; font-family: sans-serif; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
+    :root {
+      --sidebar-bg: #0f172a;
+      --accent: #6366f1;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --radius: 12px;
+    }
 
-    /* SIDEBAR CATÁLOGO */
-    .sidebar { width: 360px; background: var(--sidebar); color: #fff; display: flex; flex-direction: column; border-right: 1px solid #e2e8f0; }
-    .sb-header { padding: 20px; background: #1e293b; border-bottom: 1px solid #334155; }
-    .sb-content { flex: 1; overflow-y: auto; padding: 15px; }
+    /* Estilo global: Todo en mayúsculas excepto inputs específicos */
+    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', system-ui, sans-serif; }
     
-    .cat-group { margin-bottom: 20px; }
-    .cat-name { font-size: 11px; font-weight: 900; color: var(--accent); margin-bottom: 8px; border-left: 3px solid var(--accent); padding-left: 8px; }
-    .food-card { background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; }
-    .food-card b { display: block; font-size: 12px; margin-bottom: 8px; color: #f1f5f9; }
-    .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-    .btn-quick { font-size: 8px; padding: 6px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: 800; }
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
+
+    /* LOGIN OVERLAY */
+    #loginOverlay { 
+      position: fixed; inset: 0; background: var(--sidebar-bg); 
+      z-index: 999; display: flex; align-items: center; justify-content: center; 
+    }
+    .login-card { 
+      background: white; padding: 40px; border-radius: 20px; width: 350px; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    /* El login NO debe verse en mayúsculas forzadas para evitar errores visuales */
+    .login-card input { text-transform: none !important; }
+
+    /* BARRA LATERAL */
+    .catalog-sidebar {
+      width: 380px;
+      background: var(--sidebar-bg);
+      color: white;
+      display: flex; flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+    .sidebar-header { padding: 20px; background: #1e293b; border-bottom: 1px solid #334155; }
+    .catalog-scroll { flex: 1; overflow-y: auto; padding: 15px; }
+
+    .cat-group { margin-bottom: 25px; }
+    .cat-name { 
+      font-size: 11px; font-weight: 900; color: var(--accent); 
+      margin-bottom: 10px; border-left: 3px solid var(--accent); padding-left: 8px;
+    }
+    .food-card { background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 8px; border: 1px solid #334155; }
+    .food-card b { display: block; font-size: 13px; margin-bottom: 8px; color: #f1f5f9; }
+    
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+    .btn-quick { 
+      font-size: 9px; padding: 8px 2px; background: #334155; border: none; 
+      color: white; cursor: pointer; border-radius: 4px; font-weight: 700;
+    }
     .btn-quick:hover { background: var(--accent); }
 
-    /* ÁREA PRINCIPAL */
-    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-    .top-nav { padding: 15px 30px; background: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
-    .content { padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; }
-    
-    .builder-card { background: #fff; border-radius: 12px; padding: 25px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    .row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-    .plate-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    
-    input, select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-weight: 800; font-size: 13px; }
+    /* CONTENIDO PRINCIPAL */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .top-bar { 
+      padding: 15px 30px; background: white; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .content-padding { padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%; }
+
+    .builder-box { background: white; border-radius: var(--radius); padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+
+    .plate-item { 
+      background: #f9fafb; border: 1px solid var(--border); border-radius: 10px; 
+      padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* BOTONES Y FORMS */
     label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    .btn-save { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 900; width: 100%; }
+    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; }
+    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 12px; transition: 0.2s; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-danger { background: #ef4444; color: white; }
     
-    #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 999; display: flex; align-items: center; justify-content: center; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
+  <!-- LOGIN -->
   <div id="loginOverlay">
-    <div style="background:white; padding:30px; border-radius:15px; width:300px;">
-      <h3 style="text-align:center;">LOGIN ADMIN</h3>
-      <input id="lemail" placeholder="EMAIL" style="margin-bottom:10px;">
-      <input id="lpass" type="password" placeholder="CONTRASEÑA">
-      <button onclick="login()" class="btn-save" style="margin-top:15px;">ENTRAR</button>
+    <div class="login-card">
+      <h2 style="margin: 0 0 20px 0; text-align: center;">LOGIN ADMIN</h2>
+      <label>EMAIL</label>
+      <input id="lEmail" type="email" placeholder="tu@email.com">
+      <div style="margin-top:15px;">
+        <label>CONTRASEÑA</label>
+        <input id="lPass" type="password" placeholder="••••••">
+      </div>
+      <button class="btn btn-primary" id="btnLogin" style="width: 100%; margin-top: 25px;">ENTRAR</button>
+      <div id="loginError" style="color:red; font-size:10px; margin-top:10px; text-align:center; display:none;">ERROR DE ACCESO</div>
     </div>
   </div>
 
-  <aside class="sidebar">
-    <div class="sb-header"><h2>CATÁLOGO RÁPIDO</h2></div>
-    <div class="sb-content" id="catalogBox"></div>
+  <!-- SIDEBAR SELECCIÓN RÁPIDA -->
+  <aside class="catalog-sidebar">
+    <div class="sidebar-header">
+      <h2 style="font-size: 14px; margin:0;">CATÁLOGO DE ALIMENTOS</h2>
+    </div>
+    <div class="catalog-scroll" id="catalogList">
+      <!-- Se carga dinámicamente -->
+    </div>
   </aside>
 
-  <main class="main hidden" id="app">
-    <div class="top-nav">
-      <b>CONSTRUCTOR DE MENÚS</b>
-      <button onclick="logout()">SALIR</button>
+  <!-- ÁREA DE TRABAJO -->
+  <main class="main-area hidden" id="appMain">
+    <div class="top-bar">
+      <h1 style="font-size: 16px; margin:0;">CONSTRUCTOR DE MENÚS</h1>
+      <button class="btn" style="background:#e2e8f0" onclick="logout()">CERRAR SESIÓN</button>
     </div>
-    <div class="content">
-      <div class="builder-card">
-        <div class="row">
-          <div><label>NOMBRE DEL MENÚ</label><input id="mName" value="ALMUERZO DEL DÍA"></div>
-          <div><label>FECHA</label><input id="mDate" type="date"></div>
-          <div style="display:flex; align-items:flex-end;"><button class="btn-save" onclick="saveMenu()">PUBLICAR MENÚ</button></div>
+
+    <div class="content-padding">
+      <div class="builder-box">
+        <div class="input-row">
+          <div>
+            <label>NOMBRE DEL MENÚ</label>
+            <input id="menuName" value="MENÚ PRINCIPAL">
+          </div>
+          <div>
+            <label>FECHA</label>
+            <input id="menuDate" type="date">
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button class="btn btn-primary" id="btnSaveFull" style="width: 100%;">PUBLICAR TODO</button>
+          </div>
         </div>
-        <div id="plateList"></div>
+
+        <div id="platesDraft">
+          <!-- Platos seleccionados aparecerán aquí -->
+        </div>
       </div>
     </div>
   </main>
@@ -78,71 +147,106 @@
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const supabase = window.supabase.createClient(S_URL, S_KEY);
 
-    let currentPlates = [];
+    let draft = [];
 
-    async function login() {
-      const { error } = await supabase.auth.signInWithPassword({ email: lemail.value, password: lpass.value });
-      if (error) alert("ERROR"); else location.reload();
-    }
-    
-    async function logout() { await supabase.auth.signOut(); location.reload(); }
-
-    async function check() {
+    // --- ACCESO ---
+    async function checkAuth() {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        loginOverlay.classList.add('hidden');
-        app.classList.remove('hidden');
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('appMain').classList.remove('hidden');
         loadCatalog();
       }
     }
 
+    document.getElementById('btnLogin').onclick = async () => {
+      const email = document.getElementById('lEmail').value.trim();
+      const password = document.getElementById('lPass').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+        document.getElementById('loginError').style.display = 'block';
+        console.error(error.message);
+      } else {
+        location.reload();
+      }
+    };
+
+    async function logout() { 
+      await supabase.auth.signOut(); 
+      location.reload(); 
+    }
+
+    // --- CATÁLOGO ---
     async function loadCatalog() {
       const { data } = await supabase.from('food_catalog').select('*').order('categoria');
-      const box = document.getElementById('catalogBox');
-      const grouped = data.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
+      const list = document.getElementById('catalogList');
       
-      box.innerHTML = Object.keys(grouped).map(cat => `
+      const grouped = data.reduce((acc, item) => {
+        (acc[item.categoria] = acc[item.categoria] || []).push(item);
+        return acc;
+      }, {});
+
+      list.innerHTML = Object.keys(grouped).map(cat => `
         <div class="cat-group">
           <div class="cat-name">${cat}</div>
           ${grouped[cat].map(i => `
             <div class="food-card">
               <b>${i.acompanamiento}</b>
               <div class="btn-grid">
-                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.pollo}', '${cat}')">POLLO</button>
-                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.cerdo}', '${cat}')">CERDO</button>
-                <button class="btn-quick" onclick="add('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">CARNE</button>
+                <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.pollo}', '${cat}')">POLLO</button>
+                <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.cerdo}', '${cat}')">CERDO</button>
+                <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">CARNE</button>
               </div>
             </div>`).join('')}
         </div>`).join('');
     }
 
-    function add(a, p, c) {
-      currentPlates.push({ name: `${a} + ${p}`, category: c, description: `ACOMPAÑAMIENTO: ${a} | PROTEÍNA: ${p}` });
-      render();
+    function addPlate(acomp, prote, cat) {
+      draft.push({ name: `${acomp} + ${prote}`, category: cat, description: `ACOMPAÑAMIENTO: ${acomp} | PROTEÍNA: ${prote}` });
+      renderDraft();
     }
 
-    function render() {
-      plateList.innerHTML = currentPlates.map((p, i) => `
+    function renderDraft() {
+      const container = document.getElementById('platesDraft');
+      container.innerHTML = draft.map((p, i) => `
         <div class="plate-item">
-          <div><b>${p.name}</b><br><small>${p.category}</small></div>
-          <button onclick="currentPlates.splice(${i},1);render()">X</button>
+          <div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div>
+          <button class="btn btn-danger" style="padding:5px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button>
         </div>`).join('');
     }
 
-    async function saveMenu() {
-      const name = mName.value, date = mDate.value;
-      if (!date || !currentPlates.length) return alert("FALTA FECHA O PLATOS");
-      
-      const { data: menu } = await supabase.from('menus').insert([{ name, menu_date: date }]).select().single();
-      for (const p of currentPlates) {
+    // --- GUARDAR ---
+    document.getElementById('btnSaveFull').onclick = async () => {
+      const name = document.getElementById('menuName').value;
+      const date = document.getElementById('menuDate').value;
+
+      if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
+
+      const { data: menu, error: mErr } = await supabase.from('menus').insert([{ name, menu_date: date }]).select().single();
+      if (mErr) return alert("ERROR: " + mErr.message);
+
+      for (const p of draft) {
         const { data: item } = await supabase.from('menu_items').insert([p]).select().single();
         await supabase.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
       }
-      alert("MENÚ PUBLICADO"); currentPlates = []; render();
-    }
 
-    mDate.value = new Date().toISOString().split('T')[0];
-    check();
+      alert("MENÚ PUBLICADO EXITOSAMENTE");
+      draft = []; renderDraft();
+    };
+
+    // --- LÓGICA DE MAYÚSCULAS INTELIGENTE ---
+    document.addEventListener('input', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // NO convertir a mayúsculas si es email o password
+        if (e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
+          e.target.value = e.target.value.toUpperCase();
+        }
+      }
+    });
+
+    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
+    checkAuth();
   </script>
 </body>
 </html>
