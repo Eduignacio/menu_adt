@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ADT - ADMIN PRO TOTAL</title>
+  <title>SISTEMA ADT - ADMIN PRO</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --sidebar-bg: #0f172a;
       --accent: #6366f1;
+      --accent-hover: #4f46e5;
       --bg: #f1f5f9;
       --card: #ffffff;
-      --text: #0f172a;
+      --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
       --radius: 12px;
@@ -21,140 +22,285 @@
     }
 
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
+    
+    body { 
+      margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden;
+    }
 
-    /* SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: margin-left 0.3s ease, transform 0.3s ease; z-index: 1000; border-right: 1px solid #1e293b; }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
+    /* --- PANTALLA DE LOGIN (ENCIMA DE TODO) --- */
+    #loginOverlay { 
+      position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; 
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-card { 
+      background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+    }
+    .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+
+    /* --- SIDEBAR --- */
+    .sidebar { 
+      width: var(--sidebar-width); background: var(--sidebar-bg); color: white; 
+      display: flex; flex-direction: column; flex-shrink: 0; 
+      transition: margin-left 0.3s ease; z-index: 100; border-right: 1px solid #1e293b;
+    }
     body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
+
     .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; }
+    .sidebar-brand h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 2px; }
+
     .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-    .nav-btn { width: 100%; padding: 12px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; }
+    .nav-btn { 
+      width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; 
+      text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px;
+    }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
 
-    /* CATALOGO SIDEBAR */
+    /* CATÁLOGO RÁPIDO */
+    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; border-top: 1px solid #1e293b; }
     .search-cat { padding: 10px; background: #0b1222; }
     .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; }
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
+
     .cat-accordion { margin-bottom: 5px; }
-    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; cursor: pointer; font-size: 10px; font-weight: 800; display: flex; justify-content: space-between; }
-    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s; }
+    .cat-trigger { 
+      width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
+      text-align: left; cursor: pointer; font-size: 10px; font-weight: 800; border-radius: 6px;
+      display: flex; justify-content: space-between; 
+    }
+    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
     .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
-    .food-card { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; }
+    
+    .food-card { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; margin: 0 5px; }
     .food-card b { display: block; font-size: 11px; margin-bottom: 8px; color: #94a3b8; }
-    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .btn-quick { font-size: 8px; padding: 8px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: 800; }
+    .btn-quick { width: 100%; font-size: 9px; padding: 9px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; margin-top: 4px; font-weight: 800; transition: 0.2s; }
     .btn-quick:hover { background: var(--accent); }
 
-    /* MAIN */
+    /* --- ÁREA PRINCIPAL --- */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .top-bar { padding: 15px 25px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .btn-toggle { background: var(--sidebar-bg); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
+    
     .view-port { flex: 1; overflow-y: auto; padding: 25px; }
     .container { max-width: 1100px; margin: 0 auto; width: 100%; }
 
-    /* CARDS */
+    /* COMPONENTES */
     .card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-    label { font-size: 9px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 12px; }
-
-    .btn { padding: 12px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
+    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
+    
+    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-danger { background: #fee2e2; color: #ef4444; }
-    .btn-warning { background: #fff7ed; color: var(--warning); }
-    
-    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .draft-actions { display: flex; gap: 5px; }
-
-    .table-wrap { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-size: 9px; color: #64748b; padding: 12px; border-bottom: 2px solid var(--bg); }
-    td { padding: 12px; border-bottom: 1px solid var(--bg); font-size: 11px; font-weight: 700; }
 
     .hidden { display: none !important; }
+    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+    /* TABLAS */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 10px; color: #64748b; padding: 12px; border-bottom: 2px solid var(--bg); }
+    td { padding: 12px; border-bottom: 1px solid var(--bg); font-size: 11px; font-weight: 700; }
 
     @media (max-width: 850px) {
       .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); margin-left: 0 !important; }
       body.sidebar-open .sidebar { transform: translateX(0); }
+      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
       body.sidebar-open .sidebar-overlay { display: block; }
     }
   </style>
 </head>
 <body id="mainBody">
 
+  <!-- LOGIN -->
   <div id="loginOverlay">
-    <div class="login-card" style="background:white; padding:40px; border-radius:20px; width:350px;">
-      <h2 style="text-align:center;">ADT ADMIN</h2>
+    <div class="login-card">
+      <h2 style="text-align: center; margin: 0 0 25px;">ADT ADMIN</h2>
       <label>EMAIL</label><input id="lEmail" type="email">
       <label>PASSWORD</label><input id="lPass" type="password">
-      <button class="btn btn-primary" style="width:100%; margin-top:15px; justify-content:center;" onclick="handleLogin()">ENTRAR</button>
-      <p id="loginErr" style="color:red; font-size:10px; text-align:center; display:none;"></p>
+      <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 15px;" onclick="handleLogin()">ENTRAR</button>
+      <p id="loginError" style="color:red; font-size:10px; text-align:center; margin-top:15px; display:none; text-transform:none;"></p>
     </div>
   </div>
 
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <!-- APP (Oculto hasta entrar) -->
+  <div id="appMain" class="hidden" style="display: flex; width: 100%;">
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <aside class="sidebar">
+      <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
+        <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
+        <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
+        <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
+      </nav>
+      <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"></div>
+      <div id="catalogList" class="catalog-scroll"></div>
+    </aside>
 
-  <aside class="sidebar">
-    <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
-    <nav class="sidebar-nav">
-      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
-      <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
-      <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
-      <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
-    </nav>
-    <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"></div>
-    <div id="catalogList" class="catalog-scroll"></div>
-  </aside>
-
-  <main class="main-area hidden" id="appMain">
-    <header class="top-bar">
-      <div style="display: flex; align-items: center; gap:10px;">
-        <button class="btn-toggle" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0;">🛠 CONSTRUCTOR</h1>
-      </div>
-      <div style="display:flex; align-items:center; gap:15px;">
-        <span id="userBadge" style="font-size:9px; font-weight:900; color:var(--accent); text-transform:lowercase;"></span>
-        <button class="btn" style="background:#e2e8f0; padding:8px;" onclick="handleLogout()">SALIR</button>
-      </div>
-    </header>
-
-    <section class="view-port">
-      <div class="container">
-        
-        <!-- CONSTRUCTOR -->
-        <div id="viewBuilder">
-          <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" onchange="calcName()"></div>
-              <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:18px; font-weight:900; color:var(--accent); margin-top:8px;">MENU 1</div></div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; justify-content:center;" onclick="publishMenu()">PUBLICAR MENÚ AHORA</button>
-            <div id="draftList" style="margin-top: 25px;"></div>
-            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:20px;">BORRADOR VACÍO. SELECCIONA ALIMENTOS A LA IZQUIERDA.</div>
-          </div>
+    <main class="main-area">
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <button class="btn-toggle" onclick="toggleSidebar()">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+          </button>
+          <h1 id="viewTitle" style="font-size: 14px; margin: 0;">🛠 CONSTRUCTOR</h1>
         </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <span id="userBadge" style="font-size: 9px; font-weight: 800; color: var(--accent); text-transform: lowercase;"></span>
+          <button onclick="handleLogout()" style="background: #e2e8f0; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 10px;">SALIR</button>
+        </div>
+      </header>
 
-        <!-- CATALOGO -->
-        <div id="viewCatalog" class="hidden">
+      <section class="view-port">
+        <div class="container">
+          
+          <div id="viewBuilder">
             <div class="card">
-                <h3 id="catFormTitle" style="margin-top:0; font-size:13px;">GESTIÓN DE ALIMENTOS</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" onchange="calcName()"></div>
+                <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:5px;">MENU 1</div></div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 25px; padding: 18px; justify-content: center;" onclick="publishMenu()">PUBLICAR AHORA</button>
+              <div id="draftList" style="margin-top: 25px;"></div>
+            </div>
+          </div>
+
+          <div id="viewHistory" class="hidden"><div class="card"><table><tbody id="historyTable"></tbody></table></div></div>
+          <div id="viewCatalog" class="hidden">
+            <div class="card">
                 <div class="grid-form">
                     <input type="hidden" id="editCatId">
                     <div><label>CAT.</label><input id="cCat"></div>
                     <div><label>ACOMP.</label><input id="cAcomp"></div>
-                    <div><label>OPC 1</label><input id="cPollo"></div>
-                    <div><label>OPC 2</label><input id="cCerdo"></div>
-                    <div><label>OPC 3</label><input id="cCarne"></div>
-                    <div><label>OPC 4</label><input id="cOpc4"></div>
-                    <div style="display:flex; align-items:flex-end; gap:5px;">
-                        <button class="btn btn-primary" id="btnSaveCat" onclick="saveFood()">GUARDAR</button>
-                        <button class="btn btn-ghost hidden" id="btnCancelCat" onclick="resetCatForm()">✕</button>
-                    </div>
+                    <div><label>POLLO</label><input id="cPollo"></div>
+                    <div><label>CERDO</label><input id="cCerdo"></div>
+                    <div><label>CARNE</label><input id="cCarne"></div>
+                    <div style="display:flex; align-items:flex-end;"><button class="btn btn-primary" onclick="saveFood()">GUARDAR</button></div>
                 </div>
             </div>
-            <div class="table-wrap"><table><tbody id="catTable"></tbody></table></div>
-        </div>
+            <div class="card"><table><tbody id="catTable"></tbody></table></div>
+          </div>
+          <div id="viewUsers" class="hidden"><div class="card"><table><tbody id="usrTable"></tbody></table></div></div>
 
-        <!-- HISTORIAL Y USUARIOS -->
-        <div id="viewHisto
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const sb = window.supabase.createClient(S_URL, S_KEY);
+
+    let perms = { cat: false, usr: false };
+    let draft = [];
+    let curName = "MENU 1";
+    let catalogCache = [];
+
+    const overlay = document.getElementById('loginOverlay');
+    const app = document.getElementById('appMain');
+    const loginError = document.getElementById('loginError');
+
+    function toggleSidebar() { 
+      if(window.innerWidth < 850) mainBody.classList.toggle('sidebar-open');
+      else mainBody.classList.toggle('sidebar-hidden');
+    }
+
+    async function check() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        const email = session.user.email.toLowerCase();
+        document.getElementById('userBadge').innerText = email;
+
+        if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
+        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
+        
+        overlay.classList.add('hidden');
+        app.classList.remove('hidden');
+        
+        if (perms.cat) navC.classList.remove('hidden');
+        if (perms.usr) navU.classList.remove('hidden');
+        loadCatalogData(); calcName();
+      }
+    }
+
+    async function handleLogin() {
+      const email = lEmail.value.trim();
+      const password = lPass.value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { 
+        const errP = document.getElementById('loginError');
+        errP.innerText = "ERROR: " + error.message; 
+        errP.style.display = "block"; 
+      }
+      else location.reload();
+    }
+
+    function handleLogout() { sb.auth.signOut(); location.reload(); }
+
+    function switchView(v) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
+      const btnMap = {builder:'navB', history:'navH', catalog:'navC', users:'navU'};
+      document.getElementById(btnMap[v]).classList.add('active');
+      document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
+      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
+    }
+
+    async function calcName() {
+      const date = menuDate.value; if(!date) return;
+      const { count } = await sb.from('menus').select('*', {count:'exact', head:true}).eq('menu_date', date);
+      curName = "MENU " + ((count || 0) + 1); autoName.innerText = curName;
+    }
+
+    async function loadCatalogData() {
+      const { data } = await sb.from('food_catalog').select('*').order('categoria');
+      catalogCache = data || [];
+      renderCatalog(catalogCache);
+    }
+
+    function renderCatalog(items) {
+      const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
+      catalogList.innerHTML = Object.keys(grouped).map(cat => `
+        <div class="cat-accordion">
+          <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">${cat} <span>▼</span></button>
+          <div class="cat-content">
+            ${grouped[cat].map(i => `<div class="food-card"><b>${i.acompanamiento}</b>
+              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.pollo}</button>
+              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.cerdo}</button>
+              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.carne_roja}</button>
+            </div>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    function filterCatalog() {
+      const q = catSearch.value.toUpperCase();
+      const filtered = catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q));
+      renderCatalog(filtered);
+      if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
+    }
+
+    function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` }); renderD(); }
+    function renderD() { draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button onclick="draft.splice(${i},1);renderD()" style="background: #fee2e2; color: #ef4444; border:none; padding:8px 12px; border-radius:6px; font-weight:800; cursor:pointer;">X</button></div>`).join(''); }
+
+    async function publishMenu() {
+      if(!menuDate.value || !draft.length) return alert("FALTA INFO");
+      await calcName();
+      const { data: m, error } = await sb.from('menus').insert([{ name: curName, menu_date: menuDate.value }]).select().single();
+      if(error) return alert("ERROR AL GUARDAR");
+      for(const p of draft) {
+        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
+        await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
+      }
+      alert("PUBLICADO: " + curName); draft = []; renderD(); calcName();
+    }
+
+    document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
+    menuDate.value = new Date().toISOString().split('T')[0];
+    check();
+  </script>
+</body>
+</html>
