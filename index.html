@@ -3,63 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <title>Menú ADT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
     }
     h1 {
       text-align: center;
     }
     .item {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,.1);
+      margin-bottom: 12px;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    .nombre {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .descripcion {
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-<h1>Menú</h1>
-<div id="menu">Cargando menú...</div>
+  <h1>Menú</h1>
+  <div id="menu">Cargando menú...</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabaseUrl = 'https://wljgbmgpjqvmaphrlwyh.supabase.co'
-  const supabaseKey = 'PEGA_AQUÍ_TU_ANON_KEY'
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  <!-- 1️⃣ Librería Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  async function cargarMenu() {
-    const { data, error } = await supabase
-      .from('menu_items')
-      .select('*')
-      .order('id')
+  <!-- 2️⃣ Cliente Supabase (UNA sola vez) -->
+  <script>
+    const SUPABASE_URL = 'https://wljgbmgpjqvmaphrlwyh.supabase.co'
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg'
 
-    const contenedor = document.getElementById('menu')
-    contenedor.innerHTML = ''
+    const supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    )
+  </script>
 
-    if (error) {
-      contenedor.innerHTML = 'Error cargando el menú'
-      console.error(error)
-      return
+  <!-- 3️⃣ Lógica de carga del menú -->
+  <script>
+    async function cargarMenu() {
+      const contenedor = document.getElementById('menu')
+
+      const { data, error } = await supabase
+        .from('menu_items') // 👈 nombre EXACTO de la tabla
+        .select('*')
+
+      if (error) {
+        contenedor.innerHTML = '❌ Error cargando menú'
+        console.error(error)
+        return
+      }
+
+      if (!data || data.length === 0) {
+        contenedor.innerHTML = 'No hay productos disponibles'
+        return
+      }
+
+      contenedor.innerHTML = ''
+      data.forEach(item => {
+        contenedor.innerHTML += `
+          <div class="item">
+            <div class="nombre">${item.nombre}</div>
+            <div class="descripcion">${item.descripcion ?? ''}</div>
+          </div>
+        `
+      })
     }
 
-    data.forEach(item => {
-      contenedor.innerHTML += `
-        <div class="item">
-          <h3>${item.name}</h3>
-          <p>${item.description ?? ''}</p>
-        </div>
-      `
-    })
-  }
-
-  cargarMenu()
-</script>
+    cargarMenu()
+  </script>
 
 </body>
 </html>
