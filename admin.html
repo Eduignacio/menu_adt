@@ -1,333 +1,178 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ADMIN MATRIX - ADT</title>
-  <style>
-    :root {
-      --sidebar-bg: #0f172a;
-      --accent: #6366f1;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
-      --radius: 12px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+  const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
 
-    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', system-ui, sans-serif; }
+  // ✅ OJO: renombrado para evitar choque por doble declaración
+  const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
+  let draft = [];
 
-    /* LOGIN OVERLAY */
-    #loginOverlay {
-      position: fixed; inset: 0; background: var(--sidebar-bg);
-      z-index: 999; display: flex; align-items: center; justify-content: center;
-    }
-    .login-card {
-      background: white; padding: 40px; border-radius: 20px; width: 360px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-    .login-card input { text-transform: none !important; }
+  const loginOverlay = document.getElementById('loginOverlay');
+  const appMain = document.getElementById('appMain');
+  const loginError = document.getElementById('loginError');
 
-    /* BARRA LATERAL */
-    .catalog-sidebar {
-      width: 380px;
-      background: var(--sidebar-bg);
-      color: white;
-      display: flex; flex-direction: column;
-      border-right: 1px solid var(--border);
-    }
-    .sidebar-header { padding: 20px; background: #1e293b; border-bottom: 1px solid #334155; }
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 15px; }
+  function showError(msg) {
+    loginError.style.display = 'block';
+    loginError.textContent = msg;
+  }
+  function clearError() {
+    loginError.style.display = 'none';
+    loginError.textContent = '';
+  }
 
-    .cat-group { margin-bottom: 25px; }
-    .cat-name {
-      font-size: 11px; font-weight: 900; color: var(--accent);
-      margin-bottom: 10px; border-left: 3px solid var(--accent); padding-left: 8px;
-    }
-    .food-card { background: #1e293b; border-radius: 8px; padding: 12px; margin-bottom: 8px; border: 1px solid #334155; }
-    .food-card b { display: block; font-size: 13px; margin-bottom: 8px; color: #f1f5f9; }
+  function openApp() {
+    loginOverlay.classList.add('hidden');
+    appMain.classList.remove('hidden');
 
-    .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
-    .btn-quick {
-      font-size: 9px; padding: 8px 2px; background: #334155; border: none;
-      color: white; cursor: pointer; border-radius: 4px; font-weight: 700;
-    }
-    .btn-quick:hover { background: var(--accent); }
+    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
+    loadCatalog();
+  }
 
-    /* CONTENIDO PRINCIPAL */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-    .top-bar {
-      padding: 15px 30px; background: white; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .content-padding { padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%; }
+  function closeApp() {
+    loginOverlay.classList.remove('hidden');
+    appMain.classList.add('hidden');
+  }
 
-    .builder-box { background: white; border-radius: var(--radius); padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    .input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-
-    .plate-item {
-      background: #f9fafb; border: 1px solid var(--border); border-radius: 10px;
-      padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-    }
-
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; }
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 12px; transition: 0.2s; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-danger { background: #ef4444; color: white; }
-
-    .hidden { display: none !important; }
-
-    .hint {
-      margin-top: 10px;
-      font-size: 10px;
-      color: #64748b;
-      text-transform: none;
-      line-height: 1.4;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- LOGIN -->
-  <div id="loginOverlay">
-    <div class="login-card">
-      <h2 style="margin: 0 0 20px 0; text-align: center;">LOGIN ADMIN</h2>
-
-      <label style="text-transform: uppercase;">EMAIL</label>
-      <input id="lEmail" type="email" placeholder="tu@email.com" autocomplete="email">
-
-      <div style="margin-top:15px;">
-        <label style="text-transform: uppercase;">CONTRASEÑA</label>
-        <input id="lPass" type="password" placeholder="••••••" autocomplete="current-password">
-      </div>
-
-      <button class="btn btn-primary" id="btnLogin" style="width: 100%; margin-top: 25px;">
-        ENTRAR
-      </button>
-
-      <div id="loginError" style="color:#ef4444; font-size:11px; margin-top:12px; text-align:center; display:none; text-transform:none;"></div>
-
-      <div class="hint">
-        Si falla, revisa en Supabase: Authentication → Users (email confirmado + password) y Providers → Email habilitado.
-      </div>
-    </div>
-  </div>
-
-  <!-- SIDEBAR -->
-  <aside class="catalog-sidebar">
-    <div class="sidebar-header">
-      <h2 style="font-size: 14px; margin:0;">CATÁLOGO DE ALIMENTOS</h2>
-    </div>
-    <div class="catalog-scroll" id="catalogList"></div>
-  </aside>
-
-  <!-- ÁREA DE TRABAJO -->
-  <main class="main-area hidden" id="appMain">
-    <div class="top-bar">
-      <h1 style="font-size: 16px; margin:0;">CONSTRUCTOR DE MENÚS</h1>
-      <button class="btn" style="background:#e2e8f0" id="btnLogoutTop">CERRAR SESIÓN</button>
-    </div>
-
-    <div class="content-padding">
-      <div class="builder-box">
-        <div class="input-row">
-          <div>
-            <label>NOMBRE DEL MENÚ</label>
-            <input id="menuName" value="MENÚ PRINCIPAL">
-          </div>
-          <div>
-            <label>FECHA</label>
-            <input id="menuDate" type="date">
-          </div>
-          <div style="display: flex; align-items: flex-end;">
-            <button class="btn btn-primary" id="btnSaveFull" style="width: 100%;">PUBLICAR TODO</button>
-          </div>
-        </div>
-
-        <div id="platesDraft"></div>
-      </div>
-    </div>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    
-    // Cambiamos el nombre de la variable para evitar conflicto con la librería
-    const supabaseClient = window.supabase.createClient(S_URL, S_KEY);
-
-    let draft = [];
-
-    const loginOverlay = document.getElementById('loginOverlay');
-    const appMain = document.getElementById('appMain');
-    const loginError = document.getElementById('loginError');
-
-    function showError(msg) {
-      loginError.style.display = 'block';
-      loginError.textContent = msg;
-    }
-    function clearError() {
-      loginError.style.display = 'none';
-      loginError.textContent = '';
-    }
-
-    function openApp() {
-      loginOverlay.classList.add('hidden');
-      appMain.classList.remove('hidden');
-      document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
-      loadCatalog();
-    }
-
-    function closeApp() {
-      loginOverlay.classList.remove('hidden');
-      appMain.classList.add('hidden');
-    }
-
-    // --- AUTH ---
-    async function checkAuth() {
-      const { data, error } = await supabaseClient.auth.getSession();
-      if (error) {
-        console.error("getSession error:", error);
-        closeApp();
-        return;
-      }
-      if (data.session) openApp();
-      else closeApp();
-    }
-
-    document.getElementById('btnLogin').onclick = async () => {
-      clearError();
-      const email = document.getElementById('lEmail').value.trim();
-      const password = document.getElementById('lPass').value;
-
-      if (!email || !password) return showError("Completa email y contraseña.");
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        console.error("LOGIN ERROR:", error);
-        return showError(error.message);
-      }
-
-      if (data.session) openApp();
-      else showError("No se pudo iniciar sesión.");
-    };
-
-    document.getElementById('btnLogoutTop').onclick = async () => {
-      await supabaseClient.auth.signOut();
+  async function checkAuth() {
+    const { data, error } = await sb.auth.getSession();
+    if (error) {
+      console.error("getSession error:", error);
       closeApp();
-    };
+      return;
+    }
+    if (data.session) openApp();
+    else closeApp();
+  }
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-      if (session) openApp();
-      else closeApp();
+  document.getElementById('btnLogin').onclick = async () => {
+    clearError();
+
+    const email = document.getElementById('lEmail').value.trim();
+    const password = document.getElementById('lPass').value;
+
+    if (!email || !password) return showError("Completa email y contraseña.");
+
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error("LOGIN ERROR:", error);
+      return showError(error.message);
+    }
+
+    if (data.session) openApp();
+    else showError("No se pudo iniciar sesión (sin sesión). Revisa configuración Auth.");
+  };
+
+  document.getElementById('btnLogoutTop').onclick = async () => {
+    await sb.auth.signOut();
+    closeApp();
+  };
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) openApp();
+    else closeApp();
+  });
+
+  async function loadCatalog() {
+    const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
+    const list = document.getElementById('catalogList');
+
+    if (error) {
+      console.error("food_catalog error:", error);
+      list.innerHTML = `<div style="color:#fff; font-size:12px;">Error cargando catálogo: ${error.message}</div>`;
+      return;
+    }
+
+    const grouped = (data || []).reduce((acc, item) => {
+      (acc[item.categoria] = acc[item.categoria] || []).push(item);
+      return acc;
+    }, {});
+
+    const cats = Object.keys(grouped);
+    if (cats.length === 0) {
+      list.innerHTML = `<div style="color:#fff; font-size:12px;">No hay datos en food_catalog.</div>`;
+      return;
+    }
+
+    list.innerHTML = cats.map(cat => `
+      <div class="cat-group">
+        <div class="cat-name">${cat}</div>
+        ${grouped[cat].map(i => `
+          <div class="food-card">
+            <b>${i.acompanamiento ?? ""}</b>
+            <div class="btn-grid">
+              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.pollo ?? "")}, ${JSON.stringify(cat)})">POLLO</button>
+              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.cerdo ?? "")}, ${JSON.stringify(cat)})">CERDO</button>
+              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.carne_roja ?? "")}, ${JSON.stringify(cat)})">CARNE</button>
+            </div>
+          </div>`).join('')}
+      </div>`).join('');
+  }
+
+  window.addPlate = function(acomp, prote, cat) {
+    draft.push({
+      name: `${acomp} + ${prote}`.trim(),
+      category: cat,
+      description: `ACOMPAÑAMIENTO: ${acomp} | PROTEÍNA: ${prote}`
     });
+    renderDraft();
+  }
 
-    // --- CATÁLOGO ---
-    async function loadCatalog() {
-      const { data, error } = await supabaseClient.from('food_catalog').select('*').order('categoria');
-      const list = document.getElementById('catalogList');
+  function renderDraft() {
+    const container = document.getElementById('platesDraft');
+    container.innerHTML = draft.map((p, i) => `
+      <div class="plate-item">
+        <div>
+          <b>${p.name}</b><br>
+          <small style="color:#64748b">${p.category}</small>
+        </div>
+        <button class="btn btn-danger" style="padding:6px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button>
+      </div>`).join('');
+  }
 
-      if (error) {
-        console.error("food_catalog error:", error);
-        list.innerHTML = `<div style="color:#fff; font-size:12px;">Error cargando catálogo.</div>`;
-        return;
-      }
+  document.getElementById('btnSaveFull').onclick = async () => {
+    const name = document.getElementById('menuName').value;
+    const date = document.getElementById('menuDate').value;
 
-      const grouped = (data || []).reduce((acc, item) => {
-        (acc[item.categoria] = acc[item.categoria] || []).push(item);
-        return acc;
-      }, {});
+    if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
 
-      const cats = Object.keys(grouped);
-      if (cats.length === 0) {
-        list.innerHTML = `<div style="color:#fff; font-size:12px;">No hay datos en food_catalog.</div>`;
-        return;
-      }
+    const { data: menu, error: mErr } = await sb
+      .from('menus')
+      .insert([{ name, menu_date: date }])
+      .select()
+      .single();
 
-      list.innerHTML = cats.map(cat => `
-        <div class="cat-group">
-          <div class="cat-name">${cat}</div>
-          ${grouped[cat].map(i => `
-            <div class="food-card">
-              <b>${i.acompanamiento ?? ""}</b>
-              <div class="btn-grid">
-                <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.pollo ?? "")}, ${JSON.stringify(cat)})">POLLO</button>
-                <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.cerdo ?? "")}, ${JSON.stringify(cat)})">CERDO</button>
-                <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.carne_roja ?? "")}, ${JSON.stringify(cat)})">CARNE</button>
-              </div>
-            </div>`).join('')}
-        </div>`).join('');
-    }
+    if (mErr) return alert("ERROR MENÚ: " + mErr.message);
 
-    window.addPlate = function(acomp, prote, cat) {
-      draft.push({
-        name: `${acomp} + ${prote}`.trim(),
-        category: cat,
-        description: `ACOMPAÑAMIENTO: ${acomp} | PROTEÍNA: ${prote}`
-      });
-      renderDraft();
-    }
-
-    function renderDraft() {
-      const container = document.getElementById('platesDraft');
-      container.innerHTML = draft.map((p, i) => `
-        <div class="plate-item">
-          <div>
-            <b>${p.name}</b><br>
-            <small style="color:#64748b">${p.category}</small>
-          </div>
-          <button class="btn btn-danger" style="padding:6px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button>
-        </div>`).join('');
-    }
-
-    // --- GUARDAR ---
-    document.getElementById('btnSaveFull').onclick = async () => {
-      const name = document.getElementById('menuName').value;
-      const date = document.getElementById('menuDate').value;
-
-      if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
-
-      const { data: menu, error: mErr } = await supabaseClient
-        .from('menus')
-        .insert([{ name, menu_date: date }])
+    for (const p of draft) {
+      const { data: item, error: iErr } = await sb
+        .from('menu_items')
+        .insert([p])
         .select()
         .single();
 
-      if (mErr) return alert("ERROR MENÚ: " + mErr.message);
+      if (iErr) return alert("ERROR PLATO: " + iErr.message);
 
-      for (const p of draft) {
-        const { data: item, error: iErr } = await supabaseClient
-          .from('menu_items')
-          .insert([p])
-          .select()
-          .single();
+      const { error: linkErr } = await sb
+        .from('menu_menu_items')
+        .insert([{ menu_id: menu.id, menu_item_id: item.id }]);
 
-        if (iErr) return alert("ERROR PLATO: " + iErr.message);
+      if (linkErr) return alert("ERROR LINK: " + linkErr.message);
+    }
 
-        await supabaseClient
-          .from('menu_menu_items')
-          .insert([{ menu_id: menu.id, menu_item_id: item.id }]);
+    alert("MENÚ PUBLICADO EXITOSAMENTE");
+    draft = [];
+    renderDraft();
+  };
+
+  document.addEventListener('input', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      if (e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
+        e.target.value = e.target.value.toUpperCase();
       }
+    }
+  });
 
-      alert("MENÚ PUBLICADO EXITOSAMENTE");
-      draft = []; renderDraft();
-    };
-
-    // --- MAYÚSCULAS INTELIGENTE ---
-    document.addEventListener('input', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        if (e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
-          e.target.value = e.target.value.toUpperCase();
-        }
-      }
-    });
-
-    checkAuth();
-  </script>
-</body>
-</html>
+  checkAuth();
+</script>
