@@ -1,178 +1,338 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-  const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-
-  // ✅ OJO: renombrado para evitar choque por doble declaración
-  const sb = window.supabase.createClient(S_URL, S_KEY);
-
-  let draft = [];
-
-  const loginOverlay = document.getElementById('loginOverlay');
-  const appMain = document.getElementById('appMain');
-  const loginError = document.getElementById('loginError');
-
-  function showError(msg) {
-    loginError.style.display = 'block';
-    loginError.textContent = msg;
-  }
-  function clearError() {
-    loginError.style.display = 'none';
-    loginError.textContent = '';
-  }
-
-  function openApp() {
-    loginOverlay.classList.add('hidden');
-    appMain.classList.remove('hidden');
-
-    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
-    loadCatalog();
-  }
-
-  function closeApp() {
-    loginOverlay.classList.remove('hidden');
-    appMain.classList.add('hidden');
-  }
-
-  async function checkAuth() {
-    const { data, error } = await sb.auth.getSession();
-    if (error) {
-      console.error("getSession error:", error);
-      closeApp();
-      return;
-    }
-    if (data.session) openApp();
-    else closeApp();
-  }
-
-  document.getElementById('btnLogin').onclick = async () => {
-    clearError();
-
-    const email = document.getElementById('lEmail').value.trim();
-    const password = document.getElementById('lPass').value;
-
-    if (!email || !password) return showError("Completa email y contraseña.");
-
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      console.error("LOGIN ERROR:", error);
-      return showError(error.message);
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ADMIN PRO - MENU ADT</title>
+  <style>
+    :root {
+      --sidebar-bg: #1e293b;
+      --accent: #6366f1;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+      --radius: 12px;
     }
 
-    if (data.session) openApp();
-    else showError("No se pudo iniciar sesión (sin sesión). Revisa configuración Auth.");
-  };
+    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', system-ui, sans-serif; }
+    
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
 
-  document.getElementById('btnLogoutTop').onclick = async () => {
-    await sb.auth.signOut();
-    closeApp();
-  };
+    /* LOGIN OVERLAY */
+    #loginOverlay { 
+      position: fixed; inset: 0; background: #0f172a; 
+      z-index: 999; display: flex; align-items: center; justify-content: center; 
+    }
+    .login-card { 
+      background: white; padding: 40px; border-radius: 20px; width: 360px; 
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .login-card input { text-transform: none !important; }
 
-  sb.auth.onAuthStateChange((_event, session) => {
-    if (session) openApp();
-    else closeApp();
-  });
+    /* SIDEBAR - CATÁLOGO DESPLEGABLE */
+    .catalog-sidebar {
+      width: 350px; background: var(--sidebar-bg); color: white;
+      display: flex; flex-direction: column; border-right: 1px solid var(--border);
+    }
+    .sidebar-header { padding: 20px; background: #0f172a; border-bottom: 1px solid #334155; }
+    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; }
 
-  async function loadCatalog() {
-    const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
-    const list = document.getElementById('catalogList');
+    /* Estilo Acordeón */
+    .cat-accordion { margin-bottom: 5px; border-radius: 8px; overflow: hidden; }
+    .cat-trigger {
+      width: 100%; padding: 12px 15px; background: #334155; border: none;
+      color: white; font-weight: 800; text-align: left; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.2s;
+    }
+    .cat-trigger:hover { background: #475569; }
+    .cat-trigger::after { content: '▼'; font-size: 10px; opacity: 0.5; transition: transform 0.3s; }
+    .cat-accordion.active .cat-trigger { background: var(--accent); }
+    .cat-accordion.active .cat-trigger::after { transform: rotate(180deg); }
+    
+    .cat-content { 
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: #1e293b;
+    }
+    .cat-accordion.active .cat-content { max-height: 1000px; padding: 10px 5px; }
 
-    if (error) {
-      console.error("food_catalog error:", error);
-      list.innerHTML = `<div style="color:#fff; font-size:12px;">Error cargando catálogo: ${error.message}</div>`;
-      return;
+    .food-card { 
+      background: #0f172a; border-radius: 8px; padding: 10px; margin-bottom: 8px;
+      border: 1px solid #334155; 
+    }
+    .food-card b { display: block; font-size: 12px; margin-bottom: 8px; color: #cbd5e1; }
+    
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+    .btn-quick { 
+      font-size: 8px; padding: 7px 2px; background: #334155; border: none; 
+      color: white; cursor: pointer; border-radius: 4px; font-weight: 700;
+    }
+    .btn-quick:hover { background: var(--accent); }
+
+    /* CONTENIDO PRINCIPAL */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .top-bar { 
+      padding: 15px 30px; background: white; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
     }
 
-    const grouped = (data || []).reduce((acc, item) => {
-      (acc[item.categoria] = acc[item.categoria] || []).push(item);
-      return acc;
-    }, {});
+    .view-container { padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; }
 
-    const cats = Object.keys(grouped);
-    if (cats.length === 0) {
-      list.innerHTML = `<div style="color:#fff; font-size:12px;">No hay datos en food_catalog.</div>`;
-      return;
+    /* CONSTRUCTOR CARD */
+    .builder-card { 
+      background: white; border-radius: var(--radius); padding: 25px; 
+      border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
     }
+    .header-inputs { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
 
-    list.innerHTML = cats.map(cat => `
-      <div class="cat-group">
-        <div class="cat-name">${cat}</div>
-        ${grouped[cat].map(i => `
-          <div class="food-card">
-            <b>${i.acompanamiento ?? ""}</b>
-            <div class="btn-grid">
-              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.pollo ?? "")}, ${JSON.stringify(cat)})">POLLO</button>
-              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.cerdo ?? "")}, ${JSON.stringify(cat)})">CERDO</button>
-              <button class="btn-quick" onclick="addPlate(${JSON.stringify(i.acompanamiento ?? "")}, ${JSON.stringify(i.carne_roja ?? "")}, ${JSON.stringify(cat)})">CARNE</button>
-            </div>
-          </div>`).join('')}
-      </div>`).join('');
-  }
+    .plate-item { 
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; 
+      padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  window.addPlate = function(acomp, prote, cat) {
-    draft.push({
-      name: `${acomp} + ${prote}`.trim(),
-      category: cat,
-      description: `ACOMPAÑAMIENTO: ${acomp} | PROTEÍNA: ${prote}`
-    });
-    renderDraft();
-  }
+    /* UI ELEMENTS */
+    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
+    input, select { 
+      width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; 
+      font-weight: 800; font-size: 13px; background: #fff;
+    }
+    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 12px; }
+    .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.3); }
+    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #ef4444; color: white; }
+    .btn-ghost { background: transparent; color: #64748b; font-size: 10px; }
 
-  function renderDraft() {
-    const container = document.getElementById('platesDraft');
-    container.innerHTML = draft.map((p, i) => `
-      <div class="plate-item">
-        <div>
-          <b>${p.name}</b><br>
-          <small style="color:#64748b">${p.category}</small>
+    .empty-state { text-align: center; padding: 40px; color: #94a3b8; border: 2px dashed #e2e8f0; border-radius: 12px; font-size: 12px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginOverlay">
+    <div class="login-card">
+      <h2 style="margin: 0 0 20px 0; text-align: center;">ACCESO ADMINISTRADOR</h2>
+      <label>EMAIL</label>
+      <input id="lEmail" type="email" placeholder="admin@adt.com">
+      <div style="margin-top:15px;">
+        <label>CONTRASEÑA</label>
+        <input id="lPass" type="password" placeholder="••••••">
+      </div>
+      <button class="btn btn-primary" id="btnLogin" style="width: 100%; margin-top: 25px;">ENTRAR AL SISTEMA</button>
+      <div id="loginError" style="color:#ef4444; font-size:11px; margin-top:12px; text-align:center; display:none;"></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR SELECCIÓN -->
+  <aside class="catalog-sidebar">
+    <div class="sidebar-header">
+      <h2 style="font-size: 14px; margin:0; letter-spacing: 1px;">CATÁLOGO</h2>
+      <p style="font-size: 9px; color: #64748b; margin: 5px 0 0;">CLIC EN CATEGORÍA PARA DESPLEGAR</p>
+    </div>
+    <div class="catalog-scroll" id="catalogList">
+      <!-- Acordeones dinámicos aquí -->
+    </div>
+  </aside>
+
+  <!-- ÁREA DE TRABAJO -->
+  <main class="main-area hidden" id="appMain">
+    <div class="top-bar">
+      <h1 style="font-size: 16px; margin:0; font-weight: 900;">ADT | GESTIÓN DE MENÚ</h1>
+      <div style="display:flex; gap:10px;">
+        <a href="index.html" target="_blank" class="btn btn-ghost">VER VISTA CLIENTE</a>
+        <button class="btn btn-ghost" id="btnLogoutTop">CERRAR SESIÓN</button>
+      </div>
+    </div>
+
+    <div class="view-container">
+      <div class="builder-card">
+        <div class="header-inputs">
+          <div>
+            <label>NOMBRE DEL MENÚ (EJ: OPCIÓN A)</label>
+            <input id="menuName" value="MENÚ PRINCIPAL">
+          </div>
+          <div>
+            <label>FECHA DEL DÍA</label>
+            <input id="menuDate" type="date">
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button class="btn btn-primary" id="btnSaveFull" style="width: 100%;">PUBLICAR MENÚ</button>
+          </div>
         </div>
-        <button class="btn btn-danger" style="padding:6px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button>
-      </div>`).join('');
-  }
 
-  document.getElementById('btnSaveFull').onclick = async () => {
-    const name = document.getElementById('menuName').value;
-    const date = document.getElementById('menuDate').value;
+        <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="font-size: 11px; color: #64748b; margin:0;">PLATOS SELECCIONADOS</h3>
+            <button class="btn btn-ghost" style="padding:5px;" onclick="clearDraft()">LIMPIAR LISTA</button>
+          </div>
+          
+          <div id="platesDraft">
+            <!-- Items de borrador -->
+          </div>
+          
+          <div id="emptyMsg" class="empty-state">
+            EL MENÚ ESTÁ VACÍO.<br>SELECCIONA ALIMENTOS DEL CATÁLOGO A LA IZQUIERDA.
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top:20px; text-align:center;">
+        <button class="btn btn-danger" style="font-size: 10px;" onclick="deleteOldMenus()">BORRAR TODOS LOS MENÚS ANTERIORES</button>
+      </div>
+    </div>
+  </main>
 
-    if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    const { data: menu, error: mErr } = await sb
-      .from('menus')
-      .insert([{ name, menu_date: date }])
-      .select()
-      .single();
+    let draft = [];
 
-    if (mErr) return alert("ERROR MENÚ: " + mErr.message);
-
-    for (const p of draft) {
-      const { data: item, error: iErr } = await sb
-        .from('menu_items')
-        .insert([p])
-        .select()
-        .single();
-
-      if (iErr) return alert("ERROR PLATO: " + iErr.message);
-
-      const { error: linkErr } = await sb
-        .from('menu_menu_items')
-        .insert([{ menu_id: menu.id, menu_item_id: item.id }]);
-
-      if (linkErr) return alert("ERROR LINK: " + linkErr.message);
-    }
-
-    alert("MENÚ PUBLICADO EXITOSAMENTE");
-    draft = [];
-    renderDraft();
-  };
-
-  document.addEventListener('input', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      if (e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
-        e.target.value = e.target.value.toUpperCase();
+    // --- ACCESO Y SEGURIDAD ---
+    async function checkAuth() {
+      const { data } = await sb.auth.getSession();
+      if (data.session) {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('appMain').classList.remove('hidden');
+        loadCatalog();
       }
     }
-  });
 
-  checkAuth();
-</script>
+    document.getElementById('btnLogin').onclick = async () => {
+      const email = document.getElementById('lEmail').value.trim();
+      const password = document.getElementById('lPass').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        const errDiv = document.getElementById('loginError');
+        errDiv.style.display = 'block';
+        errDiv.textContent = error.message.toUpperCase();
+      } else location.reload();
+    };
+
+    document.getElementById('btnLogoutTop').onclick = async () => {
+      await sb.auth.signOut();
+      location.reload();
+    };
+
+    // --- CARGAR CATÁLOGO CON ACORDEÓN ---
+    async function loadCatalog() {
+      const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
+      if (error) return alert("ERROR CARGANDO DATOS");
+
+      const list = document.getElementById('catalogList');
+      const grouped = data.reduce((acc, item) => {
+        (acc[item.categoria] = acc[item.categoria] || []).push(item);
+        return acc;
+      }, {});
+
+      list.innerHTML = Object.keys(grouped).map(cat => `
+        <div class="cat-accordion" id="acc-${cat.replace(/\s/g, '')}">
+          <button class="cat-trigger" onclick="toggleAccordion('acc-${cat.replace(/\s/g, '')}')">
+            ${cat}
+          </button>
+          <div class="cat-content">
+            ${grouped[cat].map(i => `
+              <div class="food-card">
+                <b>${i.acompanamiento ?? ""}</b>
+                <div class="btn-grid">
+                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.pollo}', '${cat}')">POLLO</button>
+                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.cerdo}', '${cat}')">CERDO</button>
+                  <button class="btn-quick" onclick="addPlate('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">CARNE</button>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    function toggleAccordion(id) {
+      const el = document.getElementById(id);
+      const isActive = el.classList.contains('active');
+      // Cerrar otros (opcional, si quieres que solo uno esté abierto a la vez)
+      document.querySelectorAll('.cat-accordion').forEach(a => a.classList.remove('active'));
+      if (!isActive) el.classList.add('active');
+    }
+
+    // --- MANEJO DEL BORRADOR ---
+    window.addPlate = function(acomp, prote, cat) {
+      draft.push({
+        name: `${acomp} + ${prote}`.toUpperCase(),
+        category: cat,
+        description: `ACOMPAÑAMIENTO: ${acomp} | PROTEÍNA: ${prote}`
+      });
+      renderDraft();
+    }
+
+    function renderDraft() {
+      const container = document.getElementById('platesDraft');
+      const emptyMsg = document.getElementById('emptyMsg');
+      
+      if (draft.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        container.innerHTML = "";
+        return;
+      }
+
+      emptyMsg.classList.add('hidden');
+      container.innerHTML = draft.map((p, i) => `
+        <div class="plate-item">
+          <div>
+            <b style="font-size: 14px;">${p.name}</b>
+            <div style="font-size: 10px; color:#64748b; margin-top:4px;">${p.category}</div>
+          </div>
+          <button class="btn btn-danger" style="padding:8px 12px" onclick="removePlate(${i})">BORRAR</button>
+        </div>`).join('');
+    }
+
+    function removePlate(i) { draft.splice(i, 1); renderDraft(); }
+    function clearDraft() { draft = []; renderDraft(); }
+
+    // --- GUARDAR EN BASE DE DATOS ---
+    document.getElementById('btnSaveFull').onclick = async () => {
+      const name = document.getElementById('menuName').value;
+      const date = document.getElementById('menuDate').value;
+
+      if (!date || draft.length === 0) return alert("COMPLETA LA FECHA Y SELECCIONA AL MENOS UN PLATO");
+
+      // 1. Crear el menú
+      const { data: menu, error: mErr } = await sb.from('menus').insert([{ name, menu_date: date }]).select().single();
+      if (mErr) return alert("ERROR AL CREAR MENÚ: " + mErr.message);
+
+      // 2. Crear platos y relaciones
+      for (const p of draft) {
+        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
+        if (item) {
+          await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
+        }
+      }
+
+      alert("MENÚ PUBLICADO EXITOSAMENTE ✅");
+      clearDraft();
+    };
+
+    // --- UTILIDADES ---
+    async function deleteOldMenus() {
+      if(!confirm("¿BORRAR TODO EL HISTORIAL DE MENÚS? ESTO NO SE PUEDE DESHACER.")) return;
+      // Borrar relaciones primero por integridad
+      await sb.from('menu_menu_items').delete().neq('id', 0); // Borra todo
+      await sb.from('menus').delete().neq('id', 0);
+      alert("HISTORIAL LIMPIADO.");
+    }
+
+    document.addEventListener('input', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        if (e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
+          e.target.value = e.target.value.toUpperCase();
+        }
+      }
+    });
+
+    document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
+    checkAuth();
+  </script>
+</body>
+</html>
