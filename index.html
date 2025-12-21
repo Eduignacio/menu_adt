@@ -1,41 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Menu ADT</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <title>Menú ADT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; padding: 40px; }
-    input, button { padding: 8px; margin: 5px 0; }
-    pre { background: #f4f4f4; padding: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .item {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    }
   </style>
 </head>
 <body>
 
-  <h1>Consulta Menu ADT</h1>
+<h1>Menú</h1>
+<div id="menu">Cargando menú...</div>
 
-  <input id="texto" placeholder="Buscar..." />
-  <button onclick="buscar()">Buscar</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://wljgbmgpjqvmaphrlwyh.supabase.co'
+  const supabaseKey = 'PEGA_AQUÍ_TU_ANON_KEY'
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-  <pre id="resultado"></pre>
+  async function cargarMenu() {
+    const { data, error } = await supabase
+      .from('menu_items')
+      .select('*')
+      .order('id')
 
-  <script>
-    const supabaseUrl = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const supabaseKey = "PEGA_AQUI_TU_ANON_KEY";
-    const supabase = supabaseJs.createClient(supabaseUrl, supabaseKey);
+    const contenedor = document.getElementById('menu')
+    contenedor.innerHTML = ''
 
-    async function buscar() {
-      const texto = document.getElementById("texto").value;
-
-      const { data, error } = await supabase
-        .from("menu_items")
-        .select("*")
-        .ilike("name", `%${texto}%`);
-
-      document.getElementById("resultado").textContent =
-        error ? error.message : JSON.stringify(data, null, 2);
+    if (error) {
+      contenedor.innerHTML = 'Error cargando el menú'
+      console.error(error)
+      return
     }
-  </script>
+
+    data.forEach(item => {
+      contenedor.innerHTML += `
+        <div class="item">
+          <h3>${item.name}</h3>
+          <p>${item.description ?? ''}</p>
+        </div>
+      `
+    })
+  }
+
+  cargarMenu()
+</script>
 
 </body>
 </html>
