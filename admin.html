@@ -1,306 +1,209 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SISTEMA ADT - ADMIN PRO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --sidebar-bg: #0f172a;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 12px;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --sidebar-width: 320px;
-    }
-
-    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
-    
-    body { 
-      margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden;
-    }
-
-    /* --- PANTALLA DE LOGIN (ENCIMA DE TODO) --- */
-    #loginOverlay { 
-      position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; 
-      display: flex; align-items: center; justify-content: center; padding: 20px;
-    }
-    .login-card { 
-      background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-    }
-    .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
-
-    /* --- SIDEBAR --- */
-    .sidebar { 
-      width: var(--sidebar-width); background: var(--sidebar-bg); color: white; 
-      display: flex; flex-direction: column; flex-shrink: 0; 
-      transition: margin-left 0.3s ease; z-index: 100; border-right: 1px solid #1e293b;
-    }
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-
-    .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; }
-    .sidebar-brand h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 2px; }
-
-    .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-    .nav-btn { 
-      width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; 
-      text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px;
-    }
-    .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
-
-    /* CATÁLOGO RÁPIDO */
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; border-top: 1px solid #1e293b; }
-    .search-cat { padding: 10px; background: #0b1222; }
-    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; }
-
-    .cat-accordion { margin-bottom: 5px; }
-    .cat-trigger { 
-      width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
-      text-align: left; cursor: pointer; font-size: 10px; font-weight: 800; border-radius: 6px;
-      display: flex; justify-content: space-between; 
-    }
-    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
-    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
-    
-    .food-card { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; margin: 0 5px; }
-    .food-card b { display: block; font-size: 11px; margin-bottom: 8px; color: #94a3b8; }
-    .btn-quick { width: 100%; font-size: 9px; padding: 9px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; margin-top: 4px; font-weight: 800; transition: 0.2s; }
-    .btn-quick:hover { background: var(--accent); }
-
-    /* --- ÁREA PRINCIPAL --- */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 25px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .btn-toggle { background: var(--sidebar-bg); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
-    
-    .view-port { flex: 1; overflow-y: auto; padding: 25px; }
-    .container { max-width: 1100px; margin: 0 auto; width: 100%; }
-
-    /* COMPONENTES */
-    .card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-danger { background: #fee2e2; color: #ef4444; }
-
-    .hidden { display: none !important; }
-    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-
-    /* TABLAS */
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-size: 10px; color: #64748b; padding: 12px; border-bottom: 2px solid var(--bg); }
-    td { padding: 12px; border-bottom: 1px solid var(--bg); font-size: 11px; font-weight: 700; }
-
-    @media (max-width: 850px) {
-      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); margin-left: 0 !important; }
-      body.sidebar-open .sidebar { transform: translateX(0); }
-      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
-      body.sidebar-open .sidebar-overlay { display: block; }
-    }
-  </style>
-</head>
-<body id="mainBody">
-
-  <!-- LOGIN -->
-  <div id="loginOverlay">
-    <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 25px;">ADT ADMIN</h2>
-      <label>EMAIL</label><input id="lEmail" type="email">
-      <label>PASSWORD</label><input id="lPass" type="password">
-      <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 15px;" onclick="handleLogin()">ENTRAR</button>
-      <p id="loginError" style="color:red; font-size:10px; text-align:center; margin-top:15px; display:none; text-transform:none;"></p>
-    </div>
-  </div>
-
-  <!-- APP (Oculto hasta entrar) -->
-  <div id="appMain" class="hidden" style="display: flex; width: 100%;">
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-    
-    <aside class="sidebar">
-      <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
-      <nav class="sidebar-nav">
-        <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
-        <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
-        <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
-        <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
-      </nav>
-      <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"></div>
-      <div id="catalogList" class="catalog-scroll"></div>
-    </aside>
-
-    <main class="main-area">
-      <header class="top-bar">
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <button class="btn-toggle" onclick="toggleSidebar()">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-          </button>
-          <h1 id="viewTitle" style="font-size: 14px; margin: 0;">🛠 CONSTRUCTOR</h1>
+<!-- REEMPLAZA EL DIV id="viewCatalog" POR ESTE -->
+<div id="viewCatalog" class="hidden">
+    <div class="card" style="border-top: 4px solid var(--accent);">
+        <div class="card-title">
+            <span id="catIcon" style="font-size: 20px;">📂</span> 
+            <span id="catFormTitle" style="font-size: 14px; font-weight: 800; margin-left: 10px;">GESTIÓN DEL CATÁLOGO DE ALIMENTOS</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <span id="userBadge" style="font-size: 9px; font-weight: 800; color: var(--accent); text-transform: lowercase;"></span>
-          <button onclick="handleLogout()" style="background: #e2e8f0; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 10px;">SALIR</button>
-        </div>
-      </header>
-
-      <section class="view-port">
-        <div class="container">
-          
-          <div id="viewBuilder">
-            <div class="card">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" onchange="calcName()"></div>
-                <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:5px;">MENU 1</div></div>
-              </div>
-              <button class="btn btn-primary" style="width: 100%; margin-top: 25px; padding: 18px; justify-content: center;" onclick="publishMenu()">PUBLICAR AHORA</button>
-              <div id="draftList" style="margin-top: 25px;"></div>
-            </div>
-          </div>
-
-          <div id="viewHistory" class="hidden"><div class="card"><table><tbody id="historyTable"></tbody></table></div></div>
-          <div id="viewCatalog" class="hidden">
-            <div class="card">
-                <div class="grid-form">
-                    <input type="hidden" id="editCatId">
-                    <div><label>CAT.</label><input id="cCat"></div>
-                    <div><label>ACOMP.</label><input id="cAcomp"></div>
-                    <div><label>POLLO</label><input id="cPollo"></div>
-                    <div><label>CERDO</label><input id="cCerdo"></div>
-                    <div><label>CARNE</label><input id="cCarne"></div>
-                    <div style="display:flex; align-items:flex-end;"><button class="btn btn-primary" onclick="saveFood()">GUARDAR</button></div>
+        
+        <!-- Formulario con Orientación Horizontal -->
+        <div class="horizontal-form">
+            <input type="hidden" id="editCatId">
+            
+            <div class="form-row main-fields">
+                <div class="input-group">
+                    <label>CATEGORÍA</label>
+                    <input id="cCat" placeholder="EJ: ARROZ">
+                </div>
+                <div class="input-group">
+                    <label>ACOMPAÑAMIENTO</label>
+                    <input id="cAcomp" placeholder="EJ: ARROZ BLANCO">
                 </div>
             </div>
-            <div class="card"><table><tbody id="catTable"></tbody></table></div>
-          </div>
-          <div id="viewUsers" class="hidden"><div class="card"><table><tbody id="usrTable"></tbody></table></div></div>
 
+            <div class="form-row option-fields">
+                <div class="input-group">
+                    <label>OPCIÓN 1</label>
+                    <input id="cPollo" placeholder="PREPARACIÓN 1">
+                </div>
+                <div class="input-group">
+                    <label>OPCIÓN 2</label>
+                    <input id="cCerdo" placeholder="PREPARACIÓN 2">
+                </div>
+                <div class="input-group">
+                    <label>OPCIÓN 3</label>
+                    <input id="cCarne" placeholder="PREPARACIÓN 3">
+                </div>
+                <div class="input-group">
+                    <label>OPCIÓN 4</label>
+                    <input id="cOpc4" placeholder="PREPARACIÓN 4">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end;">
+                <button class="btn btn-ghost hidden" id="btnCancelCat" onclick="resetCatForm()">✕ CANCELAR</button>
+                <button class="btn btn-primary" id="btnSaveCat" onclick="saveFood()" style="min-width: 200px;">
+                    <span id="btnTextCat">GUARDAR ALIMENTO</span>
+                </button>
+            </div>
         </div>
-      </section>
-    </main>
-  </div>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const sb = window.supabase.createClient(S_URL, S_KEY);
+    <!-- Tabla de Alimentos -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="table-header">
+            <h3 style="margin:0; font-size: 12px; color: var(--muted);">LISTADO DE ALIMENTOS DISPONIBLES</h3>
+            <span id="catCounter" class="badge-count">0 ITEMS</span>
+        </div>
+        <div class="table-wrap" style="border: none; border-radius: 0;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>CATEGORÍA</th>
+                        <th>ACOMPAÑAMIENTO</th>
+                        <th>OPCIONES CONFIGURADAS (1 / 2 / 3 / 4)</th>
+                        <th style="text-align: right; width: 120px;">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="catTableBody">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-    let perms = { cat: false, usr: false };
-    let draft = [];
-    let curName = "MENU 1";
-    let catalogCache = [];
+<style>
+    /* Estilos para la orientación horizontal */
+    .horizontal-form { display: flex; flex-direction: column; gap: 20px; }
+    .form-row { display: grid; gap: 15px; width: 100%; }
+    .main-fields { grid-template-columns: 1fr 2fr; }
+    .option-fields { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    
+    .input-group { display: flex; flex-direction: column; }
+    .table-header { padding: 20px 25px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .badge-count { font-size: 10px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 800; }
 
-    const overlay = document.getElementById('loginOverlay');
-    const app = document.getElementById('appMain');
-    const loginError = document.getElementById('loginError');
-
-    function toggleSidebar() { 
-      if(window.innerWidth < 850) mainBody.classList.toggle('sidebar-open');
-      else mainBody.classList.toggle('sidebar-hidden');
+    @media (max-width: 900px) {
+        .main-fields, .option-fields { grid-template-columns: 1fr 1fr; }
     }
-
-    async function check() {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        const email = session.user.email.toLowerCase();
-        document.getElementById('userBadge').innerText = email;
-
-        if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
-        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
-        
-        overlay.classList.add('hidden');
-        app.classList.remove('hidden');
-        
-        if (perms.cat) navC.classList.remove('hidden');
-        if (perms.usr) navU.classList.remove('hidden');
-        loadCatalogData(); calcName();
-      }
+    @media (max-width: 600px) {
+        .main-fields, .option-fields { grid-template-columns: 1fr; }
     }
+</style>
 
-    async function handleLogin() {
-      const email = lEmail.value.trim();
-      const password = lPass.value;
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) { 
-        const errP = document.getElementById('loginError');
-        errP.innerText = "ERROR: " + error.message; 
-        errP.style.display = "block"; 
-      }
-      else location.reload();
+<script>
+// --- ACTUALIZAR ESTAS FUNCIONES EN EL SCRIPT ---
+
+async function loadCatTable() {
+    const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
+    if (error) return;
+    
+    catalogCache = data || [];
+    const container = document.getElementById('catTableBody');
+    document.getElementById('catCounter').innerText = `${catalogCache.length} ITEMS`;
+
+    container.innerHTML = catalogCache.map(i => `
+        <tr>
+            <td style="font-weight: 800; color: var(--accent);">${i.categoria}</td>
+            <td style="font-weight: 700;">${i.acompanamiento}</td>
+            <td style="font-size: 10px; color: var(--muted); text-transform: none;">
+                ${i.pollo || '-'} / ${i.cerdo || '-'} / ${i.carne_roja || '-'} / ${i.opcion_4 || '-'}
+            </td>
+            <td style="text-align: right;">
+                <button class="btn btn-warning btn-icon" onclick="editCat(${i.id})" style="padding:8px">✏️</button>
+                <button class="btn btn-danger btn-icon" onclick="delCat(${i.id})" style="padding:8px">🗑️</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function saveFood() {
+    const id = document.getElementById('editCatId').value;
+    const btn = document.getElementById('btnSaveCat');
+    
+    const payload = {
+        categoria: document.getElementById('cCat').value.toUpperCase().trim(),
+        acompanamiento: document.getElementById('cAcomp').value.toUpperCase().trim(),
+        pollo: document.getElementById('cPollo').value.toUpperCase().trim(),
+        cerdo: document.getElementById('cCerdo').value.toUpperCase().trim(),
+        carne_roja: document.getElementById('cCarne').value.toUpperCase().trim(),
+        opcion_4: document.getElementById('cOpc4').value.toUpperCase().trim()
+    };
+
+    if (!payload.categoria || !payload.acompanamiento) return alert("COMPLETA CATEGORÍA Y ACOMPAÑAMIENTO");
+
+    btn.disabled = true;
+    btn.innerText = "GUARDANDO...";
+
+    const { error } = id 
+        ? await sb.from('food_catalog').update(payload).eq('id', id)
+        : await sb.from('food_catalog').insert([payload]);
+
+    if (error) {
+        alert("ERROR: " + error.message);
+    } else {
+        alert("¡CATÁLOGO ACTUALIZADO! ✅");
+        resetCatForm();
+        loadCatTable();
+        loadCatalog(); // Esto refresca el sidebar para que aparezca la Opción 4
     }
+    btn.disabled = false;
+    btn.innerText = id ? "ACTUALIZAR ALIMENTO" : "GUARDAR ALIMENTO";
+}
 
-    function handleLogout() { sb.auth.signOut(); location.reload(); }
-
-    function switchView(v) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
-      const btnMap = {builder:'navB', history:'navH', catalog:'navC', users:'navU'};
-      document.getElementById(btnMap[v]).classList.add('active');
-      document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
-      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
-    }
-
-    async function calcName() {
-      const date = menuDate.value; if(!date) return;
-      const { count } = await sb.from('menus').select('*', {count:'exact', head:true}).eq('menu_date', date);
-      curName = "MENU " + ((count || 0) + 1); autoName.innerText = curName;
-    }
-
-    async function loadCatalogData() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || [];
-      renderCatalog(catalogCache);
-    }
-
-    function renderCatalog(items) {
-      const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
-      catalogList.innerHTML = Object.keys(grouped).map(cat => `
+// ACTUALIZA TAMBIÉN EL SIDEBAR PARA MOSTRAR LOS 4 BOTONES
+async function loadCatalog() {
+    const { data } = await sb.from('food_catalog').select('*').order('categoria');
+    if (!data) return;
+    const grouped = data.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
+    
+    document.getElementById('catalogList').innerHTML = Object.keys(grouped).map(cat => `
         <div class="cat-accordion">
-          <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">${cat} <span>▼</span></button>
-          <div class="cat-content">
-            ${grouped[cat].map(i => `<div class="food-card"><b>${i.acompanamiento}</b>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.pollo}</button>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.cerdo}</button>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.carne_roja}</button>
-            </div>`).join('')}
-          </div>
+            <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">${cat} <span>▼</span></button>
+            <div class="cat-content">
+                ${grouped[cat].map(i => `
+                    <div class="food-card">
+                        <b>${i.acompanamiento}</b>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                            <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat}')">${i.pollo || 'OPC 1'}</button>
+                            <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat}')">${i.cerdo || 'OPC 2'}</button>
+                            <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat}')">${i.carne_roja || 'OPC 3'}</button>
+                            <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.opcion_4.replace(/'/g,"\\'")}','${cat}')">${i.opcion_4 || 'OPC 4'}</button>
+                        </div>
+                    </div>`).join('')}
+            </div>
         </div>`).join('');
-    }
+}
 
-    function filterCatalog() {
-      const q = catSearch.value.toUpperCase();
-      const filtered = catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q));
-      renderCatalog(filtered);
-      if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
-    }
+function editCat(id) {
+    const i = catalogCache.find(x => x.id === id);
+    document.getElementById('editCatId').value = i.id;
+    document.getElementById('cCat').value = i.categoria;
+    document.getElementById('cAcomp').value = i.acompanamiento;
+    document.getElementById('cPollo').value = i.pollo;
+    document.getElementById('cCerdo').value = i.cerdo;
+    document.getElementById('cCarne').value = i.carne_roja;
+    document.getElementById('cOpc4').value = i.opcion_4 || "";
 
-    function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` }); renderD(); }
-    function renderD() { draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button onclick="draft.splice(${i},1);renderD()" style="background: #fee2e2; color: #ef4444; border:none; padding:8px 12px; border-radius:6px; font-weight:800; cursor:pointer;">X</button></div>`).join(''); }
+    document.getElementById('catFormTitle').innerText = "EDITANDO ALIMENTO";
+    document.getElementById('btnTextCat').innerText = "ACTUALIZAR ALIMENTO";
+    document.getElementById('btnSaveCat').className = "btn btn-warning";
+    document.getElementById('btnCancelCat').classList.remove('hidden');
+    document.querySelector('.view-port').scrollTo({top: 0, behavior: 'smooth'});
+}
 
-    async function publishMenu() {
-      if(!menuDate.value || !draft.length) return alert("FALTA INFO");
-      await calcName();
-      const { data: m, error } = await sb.from('menus').insert([{ name: curName, menu_date: menuDate.value }]).select().single();
-      if(error) return alert("ERROR AL GUARDAR");
-      for(const p of draft) {
-        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
-        await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
-      }
-      alert("PUBLICADO: " + curName); draft = []; renderD(); calcName();
-    }
-
-    document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
-    menuDate.value = new Date().toISOString().split('T')[0];
-    check();
-  </script>
-</body>
-</html>
+function resetCatForm() {
+    document.getElementById('editCatId').value = "";
+    document.getElementById('cCat').value = "";
+    document.getElementById('cAcomp').value = "";
+    document.getElementById('cPollo').value = "";
+    document.getElementById('cCerdo').value = "";
+    document.getElementById('cCarne').value = "";
+    document.getElementById('cOpc4').value = "";
+    document.getElementById('catFormTitle').innerText = "AÑADIR NUEVO ALIMENTO";
+    document.getElementById('btnTextCat').innerText = "GUARDAR ALIMENTO";
+    document.getElementById('btnSaveCat').className = "btn btn-primary";
+    document.getElementById('btnCancelCat').classList.add('hidden');
+}
+</script>
