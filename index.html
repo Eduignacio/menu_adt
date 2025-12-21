@@ -3,162 +3,198 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Menú ADT</title>
+  <title>MENÚ ADT - VISTA PÚBLICA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9;}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--text);}
-    .wrap{max-width:980px; margin:0 auto; padding:30px 18px 60px;}
-    header{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-    h1{font-size:44px; margin:10px 0;}
-    .btn{display:inline-block; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; font-weight:800; text-decoration:none; color:#111;}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03);}
-    .menuBar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0;}
-    select{padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff; font-weight:700;}
-    .grid{display:grid; grid-template-columns:1fr; gap:12px;}
-    .itemTitle{font-size:18px; font-weight:900; margin:0;}
-    .muted{color:var(--muted);}
-    .pill{display:inline-block; padding:4px 10px; border:1px solid var(--line); border-radius:999px; font-weight:800; font-size:12px; background:#fff;}
-    .row{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
-    .categoryTitle{font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.05em; color:#888; margin:20px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line);}
-    .categoryTitle:first-child{margin-top:0;}
+    :root {
+      --sidebar-bg: #0f172a;
+      --accent: #6366f1;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    /* Forzado de mayúsculas visual */
+    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
+    
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
+
+    /* BARRA LATERAL (BRANDING) */
+    .sidebar { 
+      width: 300px; background: var(--sidebar-bg); color: white; 
+      display: flex; flex-direction: column; flex-shrink: 0; 
+    }
+    .sidebar-header { padding: 40px 30px; border-bottom: 1px solid #1e293b; text-align: center; }
+    .sidebar-header h1 { margin: 0; font-size: 24px; color: white; font-weight: 800; letter-spacing: 2px; }
+    .sidebar-content { padding: 30px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    
+    .date-box { 
+      background: #1e293b; padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent);
+      text-align: center; 
+    }
+    .date-box span { display: block; font-size: 10px; color: #94a3b8; margin-bottom: 5px; font-weight: 800; }
+    .date-box b { font-size: 18px; color: white; }
+
+    /* ÁREA PRINCIPAL */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; scroll-behavior: smooth; }
+    .top-nav { padding: 20px 40px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .container { max-width: 900px; margin: 0 auto; width: 100%; padding: 40px; }
+
+    /* MENÚ CARDS (CASCADA) */
+    .menu-card { 
+      background: var(--card); border-radius: var(--radius); padding: 35px; 
+      border: 1px solid var(--border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); 
+      margin-bottom: 40px; animation: slideUp 0.5s ease-out forwards;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .menu-badge { 
+      display: inline-block; background: var(--accent); color: white; 
+      padding: 6px 15px; border-radius: 8px; font-size: 14px; font-weight: 900;
+      margin-bottom: 25px; letter-spacing: 1px;
+    }
+
+    /* CATEGORÍAS Y ITEMS */
+    .category-group { margin-bottom: 30px; }
+    .category-title { 
+      font-size: 11px; font-weight: 900; color: var(--accent); 
+      margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--bg);
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .item-row { 
+      padding: 12px 0; border-bottom: 1px solid #f8fafc; display: flex; 
+      flex-direction: column; gap: 4px;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-size: 16px; font-weight: 800; color: var(--text); }
+    .item-desc { font-size: 12px; color: var(--muted); text-transform: none; font-weight: 500; }
+
+    /* ESTADOS */
+    .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; letter-spacing: 2px; }
+    .empty-state { text-align: center; padding: 60px; color: var(--muted); background: white; border-radius: var(--radius); border: 2px dashed var(--border); }
+
+    @media (max-width: 800px) {
+      body { flex-direction: column; overflow-y: auto; }
+      .sidebar { width: 100%; height: auto; }
+      .main-area { height: auto; overflow: visible; }
+      .sidebar-header { padding: 20px; }
+      .sidebar-content { display: none; }
+    }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Menú ADT</h1>
-      <a class="btn" href="./admin.html">Admin</a>
-    </header>
 
-    <div class="card">
-      <div class="menuBar">
-        <span class="muted" style="font-weight:800;">Menú:</span>
-        <select id="menuSelect">
-          <option value="">Cargando menús...</option>
-        </select>
-      </div>
-
-      <div id="status" class="muted" style="margin:8px 0 12px;">Cargando menú...</div>
-
-      <div id="list" class="grid"></div>
+  <!-- SIDEBAR IZQUIERDO -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>ADT</h1>
     </div>
-  </div>
+    <div class="sidebar-content">
+      <div class="date-box">
+        <span>MENÚ DEL DÍA</span>
+        <b id="dateDisplay">...</b>
+      </div>
+      <p style="font-size: 9px; color: #475569; text-align: center; margin-top: 20px; font-weight: 800;">PLATOS ELABORADOS DIARIAMENTE</p>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-area">
+    <div class="top-nav">
+      <div style="font-size: 12px; font-weight: 800; color: var(--muted);">BIENVENIDO AL MENÚ DIGITAL</div>
+      <a href="admin.html" style="font-size: 10px; color: var(--accent); text-decoration: none; font-weight: 900; opacity: 0.5;">ADMIN</a>
+    </div>
+
+    <div class="container" id="menusContainer">
+      <div class="loader" id="status">INICIANDO...</div>
+    </div>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const menuSelect = document.getElementById("menuSelect");
-    const statusEl = document.getElementById("status");
-    const listEl = document.getElementById("list");
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const sb = window.supabase.createClient(S_URL, S_KEY);
 
     function fmtDate(d) {
       if (!d) return "";
-      try {
-        const [y,m,dd] = d.split("-");
-        return `${dd}-${m}-${y}`;
-      } catch { return d; }
+      const [y, m, dd] = d.split("-");
+      return `${dd}-${m}-${y}`;
     }
 
-    function renderItems(items) {
-      listEl.innerHTML = "";
-      if (!items || items.length === 0) {
-        statusEl.textContent = "No hay platos en este menú.";
+    async function init() {
+      const container = document.getElementById('menusContainer');
+      const status = document.getElementById('status');
+      const dateBox = document.getElementById('dateDisplay');
+
+      // 1. Obtener última fecha publicada
+      const { data: latest, error: e1 } = await sb.from('menus').select('menu_date').order('menu_date', {ascending: false}).limit(1).maybeSingle();
+
+      if (e1 || !latest) {
+        container.innerHTML = '<div class="empty-state">NO HAY MENÚS PUBLICADOS DISPONIBLES.</div>';
         return;
       }
 
-      const grouped = {};
-      items.forEach(it => {
-        const cat = it.category || "Sin categoría";
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(it);
-      });
+      const targetDate = latest.menu_date;
+      dateBox.innerText = fmtDate(targetDate);
 
-      const categories = Object.keys(grouped).sort();
-      statusEl.textContent = `Mostrando ${items.length} plato(s) en ${categories.length} categoría(s).`;
+      // 2. Traer menús y platos de esa fecha
+      const { data: menus, error: e2 } = await sb
+        .from('menus')
+        .select(`id, name, menu_menu_items ( menu_items (*) )`)
+        .eq('menu_date', targetDate)
+        .order('created_at', { ascending: true });
 
-      categories.forEach(cat => {
-        const catDiv = document.createElement("div");
-        catDiv.innerHTML = `<div class="categoryTitle">${cat}</div>`;
-        listEl.appendChild(catDiv);
+      if (e2 || !menus.length) {
+        container.innerHTML = '<div class="empty-state">ERROR AL CARGAR LOS PLATOS.</div>';
+        return;
+      }
 
-        grouped[cat].forEach(it => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.style.borderRadius = "14px";
-          div.style.marginBottom = "8px";
-          div.innerHTML = `
-            <div class="row">
-              <div style="flex:1;">
-                <p class="itemTitle">${it.name || "Sin nombre"}</p>
-                ${it.description ? `<div style="margin-top:8px; color:#333;">${it.description}</div>` : ""}
-              </div>
-              ${it.item_date ? `<div style="white-space:nowrap;"><span class="pill">${fmtDate(it.item_date)}</span></div>` : ""}
-            </div>
-          `;
-          listEl.appendChild(div);
+      container.innerHTML = ""; // Limpiar loader
+
+      // 3. Renderizar cada menú en cascada
+      menus.forEach(m => {
+        const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
+        
+        // Agrupar por categoría
+        const grouped = items.reduce((acc, it) => {
+          const cat = it.category || "VARIOS";
+          if (!acc[cat]) acc[cat] = [];
+          acc[cat].push(it);
+          return acc;
+        }, {});
+
+        // Construir el HTML de categorías e items
+        let bodyHtml = "";
+        Object.keys(grouped).sort().forEach(cat => {
+            bodyHtml += `<div class="category-group"><div class="category-title">${cat}</div>`;
+            grouped[cat].forEach(it => {
+                bodyHtml += `
+                    <div class="item-row">
+                        <div class="item-name">${it.name}</div>
+                        ${it.description ? `<div class="item-desc">${it.description}</div>` : ""}
+                    </div>`;
+            });
+            bodyHtml += `</div>`;
         });
+
+        const card = document.createElement('div');
+        card.className = 'menu-card';
+        card.innerHTML = `
+          <div class="menu-badge">${m.name}</div>
+          <div class="menu-body">
+            ${bodyHtml || '<p style="text-align:center; color:#94a3b8;">SIN PLATOS ASIGNADOS.</p>'}
+          </div>
+        `;
+        container.appendChild(card);
       });
     }
 
-    async function loadMenus() {
-      const { data: menus, error } = await supabaseClient
-        .from("menus")
-        .select("id,name,menu_date,created_at")
-        .order("menu_date", { ascending: false })
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        statusEl.textContent = "Error cargando menús.";
-        console.error(error);
-        menuSelect.innerHTML = `<option value="">(Error)</option>`;
-        return;
-      }
-
-      if (!menus || menus.length === 0) {
-        menuSelect.innerHTML = `<option value="">No hay menús creados</option>`;
-        statusEl.textContent = "Aún no hay menús. Entra a Admin para crear uno.";
-        return;
-      }
-
-      menuSelect.innerHTML = menus.map(m => {
-        const label = `${m.name || "Menú"}${m.menu_date ? " — " + fmtDate(m.menu_date) : ""}`;
-        return `<option value="${m.id}">${label}</option>`;
-      }).join("");
-
-      await loadMenuItems(menuSelect.value);
-    }
-
-    async function loadMenuItems(menuId) {
-      listEl.innerHTML = "";
-      if (!menuId) {
-        statusEl.textContent = "Selecciona un menú.";
-        return;
-      }
-      statusEl.textContent = "Cargando menú...";
-
-      const { data, error } = await supabaseClient
-        .from("menu_menu_items")
-        .select("menu_item_id, menu_items:menu_item_id (id,name,category,description,item_date)")
-        .eq("menu_id", menuId)
-        .order("menu_item_id", { ascending: true });
-
-      if (error) {
-        statusEl.textContent = "Error cargando platos del menú.";
-        console.error(error);
-        return;
-      }
-
-      const items = (data || []).map(r => r.menu_items).filter(Boolean);
-      renderItems(items);
-    }
-
-    menuSelect.addEventListener("change", () => loadMenuItems(menuSelect.value));
-
-    loadMenus();
+    init();
   </script>
 </body>
 </html>
