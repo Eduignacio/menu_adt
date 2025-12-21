@@ -2,498 +2,719 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Menú</title>
   <style>
-    body { font-family: system-ui, Arial; margin:0; background:#f6f6f6; }
-    .wrap { max-width: 1100px; margin:0 auto; padding: 30px 18px 60px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    h1 { margin:0; }
-    .btn { padding: 10px 14px; border-radius: 12px; border:1px solid #ddd; background:#fff; cursor:pointer; }
-    .btn.primary { background:#111; color:#fff; border-color:#111; }
-    .btn.danger { background:#b42318; color:#fff; border-color:#b42318; }
-    .card { background:#fff; border-radius: 16px; padding: 18px; box-shadow: 0 6px 18px rgba(0,0,0,.08); margin-top: 16px; }
-    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width: 850px){ .grid { grid-template-columns: 1fr; } }
-    label { font-weight: 700; font-size: 13px; display:block; margin: 10px 0 6px; }
-    input, textarea, select { width:100%; padding: 10px; border-radius: 12px; border:1px solid #ddd; font: inherit; }
-    textarea { min-height: 90px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    table { width:100%; border-collapse: collapse; }
-    th, td { text-align:left; padding: 10px; border-bottom:1px solid #eee; vertical-align: top; }
-    th { font-size: 13px; color:#333; }
-    .muted { color:#666; }
-    .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; background:#eee; font-size: 12px; }
+    :root{--bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9;--btn:#111;--danger:#c0392b;}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--text);}
+    .wrap{max-width:1100px; margin:0 auto; padding:26px 18px 60px;}
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+    h1{font-size:44px; margin:10px 0;}
+    .actions{display:flex; gap:10px; flex-wrap:wrap;}
+    button, .btn{
+      border:1px solid var(--line); background:#fff; padding:10px 14px;
+      border-radius:999px; cursor:pointer; font-weight:700;
+    }
+    .btnPrimary{background:var(--btn); color:#fff; border-color:var(--btn);}
+    .btnDanger{background:var(--danger); color:#fff; border-color:var(--danger);}
+    .btnGhost{background:#fff;}
+    .btn:hover{filter:brightness(.98)}
+    .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:14px; margin-top:16px;}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03);}
+    .title{font-size:22px; font-weight:900; margin:0 0 12px;}
+    .muted{color:var(--muted);}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    @media (max-width: 700px){.row{grid-template-columns:1fr;}}
+    label{display:block; font-weight:800; margin:10px 0 6px;}
+    input, textarea, select{
+      width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:12px;
+      padding:12px 12px; font-size:15px; background:#fff;
+    }
+    textarea{min-height:84px; resize:vertical;}
+    .hr{height:1px; background:var(--line); margin:14px 0;}
+    .list{display:flex; flex-direction:column; gap:10px;}
+    .item{border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:#fff;}
+    .itemTop{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;}
+    .badge{font-size:12px; border:1px solid var(--line); padding:4px 10px; border-radius:999px; background:#fff;}
+    .badgeActive{border-color:#0a7; color:#0a7; font-weight:900;}
+    .smallActions{display:flex; gap:8px; flex-wrap:wrap;}
+    .table{width:100%; border-collapse:collapse;}
+    .table th,.table td{padding:10px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
+    .table th{font-size:13px; color:var(--muted); font-weight:900;}
+    .pill{display:inline-flex; gap:8px; align-items:center; border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:13px;}
+    .notice{padding:10px 12px; border-radius:12px; border:1px dashed var(--line); background:#fff;}
+    .right{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;}
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
       <h1>Admin Menú</h1>
-      <div class="row">
-        <a class="btn" href="/index.html">← Volver al menú</a>
-        <button class="btn" id="btnLogout">Cerrar sesión</button>
+      <div class="actions">
+        <a class="btn btnGhost" href="./index.html">← Volver al menú</a>
+        <button class="btn" id="btnLogout" style="display:none;">Cerrar sesión</button>
       </div>
     </header>
 
     <!-- LOGIN -->
     <div class="card" id="loginCard">
-      <h2 style="margin:0 0 10px">Iniciar sesión</h2>
-      <div class="grid">
+      <p class="title">Iniciar sesión</p>
+      <p class="muted">Solo usuarios autenticados pueden crear/editar/borrar menús y platos.</p>
+      <div class="row">
         <div>
           <label>Email</label>
-          <input id="loginEmail" placeholder="tu@email.com" />
+          <input id="loginEmail" type="email" placeholder="tu@email.com" />
         </div>
         <div>
           <label>Contraseña</label>
           <input id="loginPass" type="password" placeholder="••••••••" />
         </div>
       </div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="btnLogin">Entrar</button>
-        <span class="muted" id="loginMsg"></span>
+      <div class="right" style="margin-top:12px;">
+        <button class="btn btnPrimary" id="btnLogin">Entrar</button>
+      </div>
+      <div class="notice" style="margin-top:12px;">
+        Si no tienes usuario, créalo en Supabase: <b>Authentication → Users → Add user</b> (email + password).
       </div>
     </div>
 
-    <!-- ADMIN -->
-    <div id="adminArea" style="display:none">
-      <!-- MENÚS -->
-      <div class="card">
-        <h2 style="margin:0 0 10px">Menús (historial)</h2>
+    <!-- APP -->
+    <div id="app" style="display:none;">
+      <div class="grid">
 
-        <div class="grid">
-          <div>
-            <label>Seleccionar menú existente</label>
-            <select id="menuHistory"></select>
-            <div class="row" style="margin-top:10px">
-              <button class="btn" id="btnLoadMenu">Editar menú</button>
-              <button class="btn danger" id="btnDeleteMenu">Borrar menú</button>
+        <!-- MENUS -->
+        <div class="card">
+          <p class="title">Menús (historial)</p>
+          <p class="muted">Crea, edita y borra menús. Quedan guardados para seleccionarlos después.</p>
+
+          <div class="hr"></div>
+
+          <div class="row">
+            <div>
+              <label>Menú seleccionado</label>
+              <select id="menuSelect"></select>
+              <p class="muted" style="margin:6px 0 0;">No mostramos IDs. Solo nombre/fecha.</p>
+            </div>
+            <div>
+              <label>Acciones</label>
+              <div class="smallActions">
+                <button class="btn btnPrimary" id="btnNewMenu">Agregar menú</button>
+                <button class="btn" id="btnEditMenu">Editar menú</button>
+                <button class="btn btnDanger" id="btnDeleteMenu">Borrar menú</button>
+              </div>
+              <div class="smallActions" style="margin-top:8px;">
+                <button class="btn" id="btnSetActive">Marcar como menú activo (público)</button>
+              </div>
             </div>
           </div>
 
-          <div>
-            <label>Crear menú nuevo</label>
-            <input id="newMenuTitle" placeholder="Ej: Menú lunes / Menú especial" />
-            <label style="margin-top:10px">Fecha (recomendado)</label>
-            <input id="newMenuDate" type="date" />
-            <div class="row" style="margin-top:10px">
-              <button class="btn primary" id="btnCreateMenu">Agregar menú</button>
-              <span class="muted" id="menuMsg"></span>
+          <div class="hr"></div>
+
+          <p class="title" style="font-size:18px;">Platos del menú seleccionado</p>
+          <div id="menuItemsBox" class="notice">Selecciona un menú para ver sus platos.</div>
+
+          <div class="hr"></div>
+
+          <p class="title" style="font-size:18px;">Agregar platos al menú</p>
+          <div class="row">
+            <div>
+              <label>Buscar plato (biblioteca)</label>
+              <input id="dishSearch" placeholder="Ej: hamburguesa, bebida, entrada…" />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- EDITAR MENÚ SELECCIONADO -->
-      <div class="card">
-        <h2 style="margin:0 0 10px">Editar menú seleccionado</h2>
-        <div class="grid">
-          <div>
-            <label>Título</label>
-            <input id="editMenuTitle" />
-          </div>
-          <div>
-            <label>Fecha</label>
-            <input id="editMenuDate" type="date" />
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:12px">
-          <button class="btn primary" id="btnSaveMenuMeta">Guardar cambios del menú</button>
-          <span class="muted" id="menuMetaMsg"></span>
-        </div>
-
-        <hr style="margin:16px 0; border:none; border-top:1px solid #eee">
-
-        <div class="grid">
-          <div>
-            <label>Agregar plato desde catálogo</label>
-            <select id="catalogSelect"></select>
-            <label style="margin-top:10px">Orden (opcional)</label>
-            <input id="sortOrder" type="number" value="0" />
-            <div class="row" style="margin-top:10px">
-              <button class="btn primary" id="btnAddItemToMenu">Agregar al menú</button>
-              <span class="muted" id="menuItemsMsg"></span>
+            <div style="display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+              <button class="btn" id="btnRefresh">Refrescar</button>
             </div>
           </div>
 
-          <div>
-            <label>Platos en este menú</label>
-            <div id="menuItemsList" class="muted">Selecciona un menú para ver platos.</div>
+          <div style="margin-top:10px;">
+            <table class="table" id="dishTable">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Categoría</th>
+                  <th>Descripción</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p class="muted" id="dishCount" style="margin-top:8px;"></p>
           </div>
         </div>
-      </div>
 
-      <!-- CATÁLOGO DE PLATOS -->
-      <div class="card">
-        <h2 style="margin:0 0 10px">Catálogo de platos (reutilizable)</h2>
+        <!-- PLATOS -->
+        <div class="card">
+          <p class="title">Biblioteca de platos</p>
+          <p class="muted">Estos platos quedan guardados y los puedes reutilizar en distintos menús/días.</p>
 
-        <div class="grid">
+          <div class="hr"></div>
+
+          <p class="title" style="font-size:18px;">Crear / Editar plato</p>
           <div>
+            <!-- ID oculto -->
+            <input type="hidden" id="dishIdHidden" />
+
             <label>Nombre</label>
-            <input id="dishName" placeholder="Ej: Hamburguesa clásica" />
-          </div>
-          <div>
+            <input id="dishName" placeholder="Hamburguesa clásica" />
+
             <label>Categoría</label>
-            <input id="dishCategory" placeholder="Ej: Principal / Entrada / Bebida" />
+            <input id="dishCategory" placeholder="Principal / Entrada / Bebida" />
+
+            <label>Fecha (opcional)</label>
+            <input id="dishDate" type="date" />
+
+            <label>Descripción</label>
+            <textarea id="dishDesc" placeholder="Carne, queso, tomate y papas"></textarea>
+
+            <div class="smallActions" style="margin-top:12px;">
+              <button class="btn btnPrimary" id="btnSaveDish">Guardar plato</button>
+              <button class="btn" id="btnClearDish">Limpiar</button>
+              <button class="btn btnDanger" id="btnDeleteDish">Borrar plato</button>
+            </div>
+
+            <p class="muted" style="margin-top:10px;">
+              Tip: para editar, elige un plato desde la lista de la izquierda (o desde el menú seleccionado) y lo cargo acá.
+            </p>
           </div>
         </div>
 
-        <label>Descripción</label>
-        <textarea id="dishDesc" placeholder="Ej: Carne, queso, tomate y papas"></textarea>
-
-        <div class="row" style="margin-top:12px">
-          <button class="btn primary" id="btnCreateDish">Crear plato</button>
-          <span class="muted" id="dishMsg"></span>
-        </div>
-
-        <hr style="margin:16px 0; border:none; border-top:1px solid #eee">
-
-        <h3 style="margin:0 0 10px">Platos existentes</h3>
-        <div id="dishTable"></div>
       </div>
     </div>
   </div>
 
   <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI
+    // UI refs
     const loginCard = document.getElementById("loginCard");
-    const adminArea = document.getElementById("adminArea");
-    const loginMsg = document.getElementById("loginMsg");
+    const app = document.getElementById("app");
+    const btnLogout = document.getElementById("btnLogout");
+    const btnLogin = document.getElementById("btnLogin");
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPass = document.getElementById("loginPass");
 
-    const menuHistory = document.getElementById("menuHistory");
-    const menuMsg = document.getElementById("menuMsg");
-    const menuMetaMsg = document.getElementById("menuMetaMsg");
-    const menuItemsMsg = document.getElementById("menuItemsMsg");
+    const menuSelect = document.getElementById("menuSelect");
+    const btnNewMenu = document.getElementById("btnNewMenu");
+    const btnEditMenu = document.getElementById("btnEditMenu");
+    const btnDeleteMenu = document.getElementById("btnDeleteMenu");
+    const btnSetActive = document.getElementById("btnSetActive");
 
-    const catalogSelect = document.getElementById("catalogSelect");
-    const menuItemsList = document.getElementById("menuItemsList");
+    const menuItemsBox = document.getElementById("menuItemsBox");
 
-    const dishMsg = document.getElementById("dishMsg");
-    const dishTable = document.getElementById("dishTable");
+    const dishSearch = document.getElementById("dishSearch");
+    const dishTableBody = document.querySelector("#dishTable tbody");
+    const dishCount = document.getElementById("dishCount");
+    const btnRefresh = document.getElementById("btnRefresh");
 
-    let currentMenuId = null;
-    let cachedMenus = [];
-    let cachedDishes = [];
+    const dishIdHidden = document.getElementById("dishIdHidden");
+    const dishName = document.getElementById("dishName");
+    const dishCategory = document.getElementById("dishCategory");
+    const dishDate = document.getElementById("dishDate");
+    const dishDesc = document.getElementById("dishDesc");
+    const btnSaveDish = document.getElementById("btnSaveDish");
+    const btnClearDish = document.getElementById("btnClearDish");
+    const btnDeleteDish = document.getElementById("btnDeleteDish");
 
-    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c])); }
+    let menusCache = [];
+    let dishesCache = [];
+    let linkItemColumn = null; // se detecta: "item_id" o "menu_item_id"
 
+    function fmtDate(d) {
+      if (!d) return "";
+      try {
+        const dt = new Date(d);
+        if (Number.isNaN(dt.getTime())) return d;
+        return dt.toLocaleDateString("es-CL", { year:"numeric", month:"2-digit", day:"2-digit" });
+      } catch { return d; }
+    }
+
+    function currentMenuId() {
+      const v = menuSelect.value;
+      return v ? Number(v) : null;
+    }
+
+    function requireMenuSelected() {
+      const id = currentMenuId();
+      if (!id) {
+        alert("Selecciona un menú primero.");
+        return null;
+      }
+      return id;
+    }
+
+    // ---------------- AUTH ----------------
     async function refreshAuthUI() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        loginCard.style.display = "none";
-        adminArea.style.display = "block";
-        await reloadAll();
-      } else {
-        loginCard.style.display = "block";
-        adminArea.style.display = "none";
+      const { data } = await supabaseClient.auth.getSession();
+      const loggedIn = !!data.session;
+
+      loginCard.style.display = loggedIn ? "none" : "block";
+      app.style.display = loggedIn ? "block" : "none";
+      btnLogout.style.display = loggedIn ? "inline-block" : "none";
+
+      if (loggedIn) {
+        await loadAll();
       }
     }
 
-    // LOGIN
-    document.getElementById("btnLogin").addEventListener("click", async () => {
-      loginMsg.textContent = "";
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPass").value;
+    btnLogin.addEventListener("click", async () => {
+      const email = loginEmail.value.trim();
+      const password = loginPass.value;
+      if (!email || !password) return alert("Completa email y contraseña.");
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        loginMsg.textContent = "Error: " + error.message;
-        return;
-      }
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) return alert("Error: " + error.message);
+
       await refreshAuthUI();
     });
 
-    document.getElementById("btnLogout").addEventListener("click", async () => {
-      await supabase.auth.signOut();
+    btnLogout.addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
       await refreshAuthUI();
     });
 
-    // LOAD MENUS
+    supabaseClient.auth.onAuthStateChange(() => refreshAuthUI());
+
+    // ---------------- DATA LOAD ----------------
     async function loadMenus() {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("menus")
-        .select("id,title,menu_date,created_at")
-        .order("menu_date", { ascending: false, nullsFirst: false })
-        .order("created_at", { ascending: false });
+        .select("*")
+        .order("date", { ascending:false, nullsFirst:false })
+        .order("created_at", { ascending:false });
 
-      if (error) { console.error(error); return; }
-      cachedMenus = data || [];
-
-      if (!cachedMenus.length) {
-        menuHistory.innerHTML = `<option value="">No hay menús aún</option>`;
-        return;
-      }
-
-      menuHistory.innerHTML = `<option value="">(Selecciona un menú)</option>` + cachedMenus.map(m => {
-        const label = `${m.menu_date ? m.menu_date + " - " : ""}${m.title}`;
-        return `<option value="${m.id}">${esc(label)}</option>`;
-      }).join("");
+      if (error) throw error;
+      menusCache = data || [];
+      renderMenuSelect();
     }
 
-    // CREATE MENU
-    document.getElementById("btnCreateMenu").addEventListener("click", async () => {
-      menuMsg.textContent = "";
-      const title = document.getElementById("newMenuTitle").value.trim();
-      const menu_date = document.getElementById("newMenuDate").value || null;
-
-      if (!title) { menuMsg.textContent = "Ponle un título al menú."; return; }
-
-      const { data, error } = await supabase
-        .from("menus")
-        .insert([{ title, menu_date }])
-        .select("id,title,menu_date")
-        .single();
-
-      if (error) { menuMsg.textContent = "Error: " + error.message; return; }
-
-      menuMsg.textContent = "Menú creado ✅";
-      document.getElementById("newMenuTitle").value = "";
-      document.getElementById("newMenuDate").value = "";
-
-      await loadMenus();
-      // auto seleccionar el nuevo
-      menuHistory.value = String(data.id);
-      await loadMenuForEdit(data.id);
-    });
-
-    // EDIT MENU (load)
-    document.getElementById("btnLoadMenu").addEventListener("click", async () => {
-      const id = menuHistory.value;
-      if (!id) return;
-      await loadMenuForEdit(id);
-    });
-
-    async function loadMenuForEdit(menuId) {
-      currentMenuId = Number(menuId);
-
-      const menu = cachedMenus.find(m => Number(m.id) === Number(menuId));
-      document.getElementById("editMenuTitle").value = menu?.title || "";
-      document.getElementById("editMenuDate").value = menu?.menu_date || "";
-
-      await renderMenuItems(menuId);
-    }
-
-    // SAVE MENU META
-    document.getElementById("btnSaveMenuMeta").addEventListener("click", async () => {
-      menuMetaMsg.textContent = "";
-      if (!currentMenuId) { menuMetaMsg.textContent = "Selecciona un menú."; return; }
-
-      const title = document.getElementById("editMenuTitle").value.trim();
-      const menu_date = document.getElementById("editMenuDate").value || null;
-
-      if (!title) { menuMetaMsg.textContent = "El título no puede ir vacío."; return; }
-
-      const { error } = await supabase
-        .from("menus")
-        .update({ title, menu_date })
-        .eq("id", currentMenuId);
-
-      if (error) { menuMetaMsg.textContent = "Error: " + error.message; return; }
-
-      menuMetaMsg.textContent = "Guardado ✅";
-      await loadMenus();
-      menuHistory.value = String(currentMenuId);
-    });
-
-    // DELETE MENU
-    document.getElementById("btnDeleteMenu").addEventListener("click", async () => {
-      if (!menuHistory.value) return;
-      const id = Number(menuHistory.value);
-
-      const menu = cachedMenus.find(m => Number(m.id) === id);
-      const label = `${menu?.menu_date ? menu.menu_date + " - " : ""}${menu?.title || ""}`;
-      if (!confirm(`¿Seguro que quieres borrar este menú?\n\n${label}\n\n(No borra los platos del catálogo)`)) return;
-
-      const { error } = await supabase.from("menus").delete().eq("id", id);
-      if (error) { alert("Error: " + error.message); return; }
-
-      currentMenuId = null;
-      menuItemsList.innerHTML = `<span class="muted">Menú borrado.</span>`;
-      await loadMenus();
-    });
-
-    // LOAD DISH CATALOG
     async function loadDishes() {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("menu_items")
-        .select("id,name,category,description")
-        .order("name", { ascending: true });
+        .select("*")
+        .order("category", { ascending:true })
+        .order("name", { ascending:true });
 
-      if (error) { console.error(error); return; }
-      cachedDishes = data || [];
-
-      catalogSelect.innerHTML = cachedDishes.length
-        ? `<option value="">(Elige un plato)</option>` + cachedDishes.map(d => {
-            const label = `${d.name}${d.category ? " — " + d.category : ""}`;
-            return `<option value="${d.id}">${esc(label)}</option>`;
-          }).join("")
-        : `<option value="">No hay platos en el catálogo</option>`;
-
+      if (error) throw error;
+      dishesCache = data || [];
       renderDishTable();
     }
 
-    // CREATE DISH (NO mostramos ID en la UI)
-    document.getElementById("btnCreateDish").addEventListener("click", async () => {
-      dishMsg.textContent = "";
-      const name = document.getElementById("dishName").value.trim();
-      const category = document.getElementById("dishCategory").value.trim() || null;
-      const description = document.getElementById("dishDesc").value.trim() || null;
-
-      if (!name) { dishMsg.textContent = "Ponle nombre al plato."; return; }
-
-      const { error } = await supabase
-        .from("menu_items")
-        .insert([{ name, category, description }]);
-
-      if (error) { dishMsg.textContent = "Error: " + error.message; return; }
-
-      dishMsg.textContent = "Plato creado ✅";
-      document.getElementById("dishName").value = "";
-      document.getElementById("dishCategory").value = "";
-      document.getElementById("dishDesc").value = "";
-
-      await loadDishes();
-    });
-
-    function renderDishTable() {
-      if (!cachedDishes.length) {
-        dishTable.innerHTML = `<div class="muted">No hay platos todavía.</div>`;
-        return;
-      }
-
-      // NO mostramos ID
-      dishTable.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${cachedDishes.map(d => `
-              <tr>
-                <td><strong>${esc(d.name)}</strong></td>
-                <td>${esc(d.category || "-")}</td>
-                <td>${esc(d.description || "")}</td>
-                <td>
-                  <button class="btn danger" data-del-dish="${d.id}">Borrar</button>
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-
-      dishTable.querySelectorAll("[data-del-dish]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = Number(btn.getAttribute("data-del-dish"));
-          const dish = cachedDishes.find(x => Number(x.id) === id);
-          if (!confirm(`¿Borrar plato "${dish?.name}"?\n(Ojo: si está usado en algún menú, no lo dejará borrar)`)) return;
-
-          const { error } = await supabase.from("menu_items").delete().eq("id", id);
-          if (error) { alert("Error: " + error.message); return; }
-          await loadDishes();
-          if (currentMenuId) await renderMenuItems(currentMenuId);
-        });
-      });
-    }
-
-    // MENU ITEMS LIST
-    async function renderMenuItems(menuId) {
-      const { data, error } = await supabase
-        .from("menu_menu_items")
-        .select("menu_id,item_id,sort_order, menu_items:menu_items(name,category,description)")
-        .eq("menu_id", menuId)
-        .order("sort_order", { ascending: true });
-
-      if (error) { console.error(error); menuItemsList.textContent = "Error cargando platos."; return; }
-
-      const rows = data || [];
-      if (!rows.length) {
-        menuItemsList.innerHTML = `<div class="muted">Este menú no tiene platos todavía.</div>`;
-        return;
-      }
-
-      menuItemsList.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Orden</th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Descripción</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td>${esc(r.sort_order)}</td>
-                <td><strong>${esc(r.menu_items?.name || "")}</strong></td>
-                <td>${esc(r.menu_items?.category || "-")}</td>
-                <td>${esc(r.menu_items?.description || "")}</td>
-                <td><button class="btn danger" data-remove-item="${r.item_id}">Quitar</button></td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-
-      menuItemsList.querySelectorAll("[data-remove-item]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const itemId = Number(btn.getAttribute("data-remove-item"));
-          const { error } = await supabase
-            .from("menu_menu_items")
-            .delete()
-            .eq("menu_id", menuId)
-            .eq("item_id", itemId);
-
-          if (error) { alert("Error: " + error.message); return; }
-          await renderMenuItems(menuId);
-        });
-      });
-    }
-
-    // ADD ITEM TO MENU
-    document.getElementById("btnAddItemToMenu").addEventListener("click", async () => {
-      menuItemsMsg.textContent = "";
-      if (!currentMenuId) { menuItemsMsg.textContent = "Selecciona un menú."; return; }
-
-      const itemId = Number(catalogSelect.value);
-      if (!itemId) { menuItemsMsg.textContent = "Elige un plato."; return; }
-
-      const sort_order = Number(document.getElementById("sortOrder").value || 0);
-
-      // upsert para que si ya está, actualice el orden
-      const { error } = await supabase
-        .from("menu_menu_items")
-        .upsert([{ menu_id: currentMenuId, item_id: itemId, sort_order }], { onConflict: "menu_id,item_id" });
-
-      if (error) { menuItemsMsg.textContent = "Error: " + error.message; return; }
-
-      menuItemsMsg.textContent = "Agregado ✅";
-      await renderMenuItems(currentMenuId);
-    });
-
-    async function reloadAll() {
+    async function loadAll() {
       await loadMenus();
       await loadDishes();
-      currentMenuId = null;
-      menuItemsList.innerHTML = `<div class="muted">Selecciona un menú para gestionarlo.</div>`;
+      await renderSelectedMenuItems();
     }
 
-    supabase.auth.onAuthStateChange(() => refreshAuthUI());
+    function renderMenuSelect() {
+      const prev = menuSelect.value;
+      menuSelect.innerHTML = "";
+
+      if (!menusCache.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No hay menús. Crea uno con 'Agregar menú'.";
+        menuSelect.appendChild(opt);
+        return;
+      }
+
+      for (const m of menusCache) {
+        const opt = document.createElement("option");
+        opt.value = String(m.id);
+        const name = m.name || m.title || "Menú";
+        const date = m.date ? `• ${fmtDate(m.date)}` : "";
+        const active = (m.is_active === true) ? " • (Activo)" : "";
+        opt.textContent = `${name} ${date}${active}`.trim();
+        menuSelect.appendChild(opt);
+      }
+
+      // mantener selección si existe
+      if (prev && menusCache.some(m => String(m.id) === prev)) {
+        menuSelect.value = prev;
+      } else {
+        menuSelect.value = String(menusCache[0].id);
+      }
+    }
+
+    function renderDishTable() {
+      const q = dishSearch.value.trim().toLowerCase();
+      const filtered = dishesCache.filter(d => {
+        if (!q) return true;
+        return (d.name || "").toLowerCase().includes(q)
+          || (d.category || "").toLowerCase().includes(q)
+          || (d.description || "").toLowerCase().includes(q);
+      });
+
+      dishTableBody.innerHTML = "";
+      for (const d of filtered) {
+        const tr = document.createElement("tr");
+
+        const tdName = document.createElement("td");
+        tdName.innerHTML = `<b>${d.name || "Sin nombre"}</b>`;
+        const tdCat = document.createElement("td");
+        tdCat.textContent = d.category || "—";
+        const tdDesc = document.createElement("td");
+        tdDesc.textContent = d.description || "—";
+
+        const tdAct = document.createElement("td");
+        const btnAdd = document.createElement("button");
+        btnAdd.className = "btn btnPrimary";
+        btnAdd.textContent = "Agregar al menú";
+        btnAdd.addEventListener("click", () => addDishToMenu(d.id));
+
+        const btnEdit = document.createElement("button");
+        btnEdit.className = "btn";
+        btnEdit.textContent = "Editar";
+        btnEdit.style.marginLeft = "8px";
+        btnEdit.addEventListener("click", () => loadDishIntoForm(d));
+
+        tdAct.appendChild(btnAdd);
+        tdAct.appendChild(btnEdit);
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdCat);
+        tr.appendChild(tdDesc);
+        tr.appendChild(tdAct);
+
+        dishTableBody.appendChild(tr);
+      }
+
+      dishCount.textContent = `${filtered.length} plato(s) en biblioteca.`;
+    }
+
+    dishSearch.addEventListener("input", renderDishTable);
+
+    menuSelect.addEventListener("change", async () => {
+      await renderSelectedMenuItems();
+    });
+
+    btnRefresh.addEventListener("click", async () => {
+      await loadAll();
+      alert("Refrescado ✅");
+    });
+
+    // ---------------- MENU ITEMS (por menú) ----------------
+    async function getMenuLinks(menuId) {
+      const { data, error } = await supabaseClient
+        .from("menu_menu_items")
+        .select("*")
+        .eq("menu_id", menuId);
+
+      if (error) throw error;
+      return data || [];
+    }
+
+    async function renderSelectedMenuItems() {
+      const menuId = currentMenuId();
+      if (!menuId) {
+        menuItemsBox.innerHTML = "Selecciona un menú para ver sus platos.";
+        return;
+      }
+
+      const links = await getMenuLinks(menuId);
+      const ids = links.map(r => r.item_id ?? r.menu_item_id).filter(Boolean);
+
+      if (!ids.length) {
+        menuItemsBox.innerHTML = "Este menú no tiene platos todavía. Agrega desde la biblioteca.";
+        return;
+      }
+
+      const { data: items, error } = await supabaseClient
+        .from("menu_items")
+        .select("*")
+        .in("id", ids);
+
+      if (error) throw error;
+
+      // ordenar según el orden del puente
+      const order = new Map(ids.map((id, idx) => [id, idx]));
+      items.sort((a,b) => (order.get(a.id) ?? 9999) - (order.get(b.id) ?? 9999));
+
+      let html = `<table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th><th>Categoría</th><th>Descripción</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      for (const it of items) {
+        html += `
+          <tr>
+            <td><b>${it.name || "Sin nombre"}</b></td>
+            <td>${it.category || "—"}</td>
+            <td>${it.description || "—"}</td>
+            <td>
+              <button class="btn" data-edit="${it.id}">Editar</button>
+              <button class="btn btnDanger" data-remove="${it.id}" style="margin-left:8px;">Quitar del menú</button>
+            </td>
+          </tr>
+        `;
+      }
+
+      html += `</tbody></table>`;
+      menuItemsBox.innerHTML = html;
+
+      // bind
+      menuItemsBox.querySelectorAll("[data-edit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.getAttribute("data-edit"));
+          const dish = dishesCache.find(d => d.id === id);
+          if (dish) loadDishIntoForm(dish);
+        });
+      });
+
+      menuItemsBox.querySelectorAll("[data-remove]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-remove"));
+          await removeDishFromMenu(id);
+        });
+      });
+    }
+
+    async function detectLinkColumnIfNeeded(menuId, dishId) {
+      if (linkItemColumn) return linkItemColumn;
+
+      // probamos item_id primero
+      let { error } = await supabaseClient
+        .from("menu_menu_items")
+        .insert([{ menu_id: menuId, item_id: dishId }]);
+
+      if (!error) {
+        linkItemColumn = "item_id";
+        // borra el insert de prueba (para no duplicar)
+        await supabaseClient
+          .from("menu_menu_items")
+          .delete()
+          .eq("menu_id", menuId)
+          .eq("item_id", dishId);
+        return linkItemColumn;
+      }
+
+      // si falló por columna, probamos menu_item_id
+      ({ error } = await supabaseClient
+        .from("menu_menu_items")
+        .insert([{ menu_id: menuId, menu_item_id: dishId }]));
+
+      if (!error) {
+        linkItemColumn = "menu_item_id";
+        await supabaseClient
+          .from("menu_menu_items")
+          .delete()
+          .eq("menu_id", menuId)
+          .eq("menu_item_id", dishId);
+        return linkItemColumn;
+      }
+
+      throw new Error("No pude detectar la columna del plato en menu_menu_items (item_id / menu_item_id). Revisa tu esquema.");
+    }
+
+    async function addDishToMenu(dishId) {
+      const menuId = requireMenuSelected();
+      if (!menuId) return;
+
+      const col = await detectLinkColumnIfNeeded(menuId, dishId);
+
+      const payload = col === "item_id"
+        ? { menu_id: menuId, item_id: dishId }
+        : { menu_id: menuId, menu_item_id: dishId };
+
+      const { error } = await supabaseClient.from("menu_menu_items").insert([payload]);
+
+      if (error) {
+        // si hay unique constraint, avisa “ya existe”
+        if ((error.message || "").toLowerCase().includes("duplicate")) {
+          alert("Ese plato ya está en este menú.");
+          return;
+        }
+        alert("Error agregando al menú: " + error.message);
+        return;
+      }
+
+      await renderSelectedMenuItems();
+    }
+
+    async function removeDishFromMenu(dishId) {
+      const menuId = requireMenuSelected();
+      if (!menuId) return;
+
+      // intenta borrar por item_id y por menu_item_id (el que exista)
+      let res = await supabaseClient
+        .from("menu_menu_items")
+        .delete()
+        .eq("menu_id", menuId)
+        .eq("item_id", dishId);
+
+      if (res.error && !linkItemColumn) {
+        // intenta la otra
+        res = await supabaseClient
+          .from("menu_menu_items")
+          .delete()
+          .eq("menu_id", menuId)
+          .eq("menu_item_id", dishId);
+      }
+
+      if (res.error) {
+        alert("Error quitando del menú: " + res.error.message);
+        return;
+      }
+
+      await renderSelectedMenuItems();
+    }
+
+    // ---------------- MENUS CRUD ----------------
+    btnNewMenu.addEventListener("click", async () => {
+      const name = prompt("Nombre del menú (ej: Menú del día)")?.trim();
+      if (!name) return;
+
+      const date = prompt("Fecha (YYYY-MM-DD) opcional. Enter para omitir:")?.trim() || null;
+
+      const insertObj = { name };
+      if (date) insertObj.date = date;
+
+      const { error } = await supabaseClient.from("menus").insert([insertObj]);
+      if (error) return alert("Error creando menú: " + error.message);
+
+      await loadMenus();
+      alert("Menú creado ✅");
+    });
+
+    btnEditMenu.addEventListener("click", async () => {
+      const id = requireMenuSelected();
+      if (!id) return;
+
+      const m = menusCache.find(x => x.id === id);
+      const currentName = (m?.name || m?.title || "").trim();
+      const currentDate = (m?.date || "");
+
+      const name = prompt("Nuevo nombre del menú:", currentName)?.trim();
+      if (!name) return;
+
+      const date = prompt("Nueva fecha (YYYY-MM-DD) o vacío para dejar igual:", currentDate)?.trim();
+
+      const updateObj = { name };
+      if (date !== "") updateObj.date = date || null;
+
+      const { error } = await supabaseClient.from("menus").update(updateObj).eq("id", id);
+      if (error) return alert("Error editando menú: " + error.message);
+
+      await loadMenus();
+      alert("Menú actualizado ✅");
+    });
+
+    btnDeleteMenu.addEventListener("click", async () => {
+      const id = requireMenuSelected();
+      if (!id) return;
+
+      if (!confirm("¿Seguro que quieres borrar este menú? (Los platos NO se borran, solo el menú y sus asociaciones)")) return;
+
+      // borrar links primero
+      const { error: e1 } = await supabaseClient.from("menu_menu_items").delete().eq("menu_id", id);
+      if (e1) return alert("Error borrando enlaces del menú: " + e1.message);
+
+      const { error: e2 } = await supabaseClient.from("menus").delete().eq("id", id);
+      if (e2) return alert("Error borrando menú: " + e2.message);
+
+      await loadMenus();
+      await renderSelectedMenuItems();
+      alert("Menú borrado ✅");
+    });
+
+    btnSetActive.addEventListener("click", async () => {
+      const id = requireMenuSelected();
+      if (!id) return;
+
+      // intenta marcar como activo (si existe is_active)
+      // 1) poner todos false
+      let res = await supabaseClient.from("menus").update({ is_active: false }).neq("id", -1);
+      if (res.error && (res.error.message || "").toLowerCase().includes("column") ) {
+        alert("Tu tabla 'menus' no tiene columna is_active. Si quieres menú activo, agrega esa columna.");
+        return;
+      }
+
+      // 2) set true al seleccionado
+      res = await supabaseClient.from("menus").update({ is_active: true }).eq("id", id);
+      if (res.error) return alert("Error marcando activo: " + res.error.message);
+
+      await loadMenus();
+      alert("Listo. Ese quedó como menú público ✅");
+    });
+
+    // ---------------- DISH FORM CRUD ----------------
+    function clearDishForm() {
+      dishIdHidden.value = "";
+      dishName.value = "";
+      dishCategory.value = "";
+      dishDate.value = "";
+      dishDesc.value = "";
+    }
+
+    function loadDishIntoForm(d) {
+      dishIdHidden.value = d.id;
+      dishName.value = d.name || "";
+      dishCategory.value = d.category || "";
+      dishDate.value = d.date || "";
+      dishDesc.value = d.description || "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    btnClearDish.addEventListener("click", clearDishForm);
+
+    btnSaveDish.addEventListener("click", async () => {
+      const name = dishName.value.trim();
+      if (!name) return alert("El plato debe tener nombre.");
+
+      const obj = {
+        name,
+        category: dishCategory.value.trim() || null,
+        date: dishDate.value || null,
+        description: dishDesc.value.trim() || null
+      };
+
+      const id = dishIdHidden.value ? Number(dishIdHidden.value) : null;
+
+      let error;
+      if (id) {
+        ({ error } = await supabaseClient.from("menu_items").update(obj).eq("id", id));
+      } else {
+        ({ error } = await supabaseClient.from("menu_items").insert([obj]));
+      }
+
+      if (error) return alert("Error guardando plato: " + error.message);
+
+      await loadDishes();
+      await renderSelectedMenuItems();
+      clearDishForm();
+      alert("Plato guardado ✅");
+    });
+
+    btnDeleteDish.addEventListener("click", async () => {
+      const id = dishIdHidden.value ? Number(dishIdHidden.value) : null;
+      if (!id) return alert("Selecciona un plato para borrar.");
+
+      if (!confirm("¿Seguro? Esto borra el plato de la biblioteca. (Si está usado en menús, puede fallar por FK)")) return;
+
+      // intenta quitar de todos los menús primero (por si hay FK)
+      await supabaseClient.from("menu_menu_items").delete().eq("item_id", id);
+      await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
+
+      const { error } = await supabaseClient.from("menu_items").delete().eq("id", id);
+      if (error) return alert("Error borrando plato: " + error.message);
+
+      await loadDishes();
+      await renderSelectedMenuItems();
+      clearDishForm();
+      alert("Plato borrado ✅");
+    });
+
+    // init
     refreshAuthUI();
   </script>
 </body>
