@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ADMIN PRO - ADT</title>
+  <title>ADMIN PRO MATRIX - ADT</title>
   <style>
     :root {
-      --sidebar-bg: #1e293b;
+      --sidebar-bg: #0f172a;
       --accent: #6366f1;
       --bg: #f1f5f9;
       --card: #ffffff;
@@ -15,17 +15,27 @@
       --radius: 12px;
     }
 
+    /* Forzado de mayúsculas visual */
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', system-ui, sans-serif; }
     
     body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
 
-    /* LOGIN */
-    #loginOverlay { position: fixed; inset: 0; background: #0f172a; z-index: 999; display: flex; align-items: center; justify-content: center; }
-    .login-card { background: white; padding: 40px; border-radius: 20px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    /* LOGIN OVERLAY */
+    #loginOverlay { 
+      position: fixed; inset: 0; background: #0f172a; 
+      z-index: 999; display: flex; align-items: center; justify-content: center; 
+    }
+    .login-card { 
+      background: white; padding: 40px; border-radius: 20px; width: 360px; 
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
     .login-card input { text-transform: none !important; }
 
-    /* SIDEBAR */
-    .catalog-sidebar { width: 350px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+    /* SIDEBAR - CATÁLOGO DESPLEGABLE */
+    .catalog-sidebar {
+      width: 350px; background: var(--sidebar-bg); color: white;
+      display: flex; flex-direction: column; border-right: 1px solid var(--border);
+    }
     .sidebar-header { padding: 20px; background: #0f172a; border-bottom: 1px solid #334155; }
     .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; }
 
@@ -47,23 +57,29 @@
     
     .btn-grid { display: flex; flex-direction: column; gap: 6px; }
     .btn-quick { 
-      font-size: 10px; padding: 10px; background: #334155; border: none; 
+      font-size: 9px; padding: 10px; background: #334155; border: none; 
       color: white; cursor: pointer; border-radius: 6px; font-weight: 700;
       text-align: center; transition: all 0.2s;
     }
-    .btn-quick:hover { background: var(--accent); transform: scale(1.02); }
-    .btn-quick:active { transform: scale(0.98); }
+    .btn-quick:hover { background: var(--accent); }
 
-    /* MAIN */
+    /* MAIN AREA */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .top-bar { 
+      padding: 15px 30px; background: white; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
     .view-container { padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; }
 
     .builder-card { background: white; border-radius: var(--radius); padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .header-inputs { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
 
-    .plate-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .plate-item { 
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; 
+      padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+    }
 
+    /* UI ELEMENTS */
     label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
     input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; }
     .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 12px; }
@@ -77,37 +93,53 @@
 </head>
 <body>
 
+  <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align:center;">LOGIN ADMIN</h2>
+      <h2 style="text-align: center;">LOGIN ADMIN</h2>
       <label>EMAIL</label>
-      <input id="lEmail" type="email">
-      <div style="margin-top:15px;"><label>PASSWORD</label><input id="lPass" type="password"></div>
-      <button class="btn btn-primary" id="btnLogin" style="width:100%; margin-top:25px;">ENTRAR</button>
-      <div id="loginError" style="color:red; font-size:11px; margin-top:12px; text-align:center; display:none;"></div>
+      <input id="lEmail" type="email" placeholder="admin@adt.com">
+      <div style="margin-top:15px;">
+        <label>PASSWORD</label>
+        <input id="lPass" type="password">
+      </div>
+      <button class="btn btn-primary" id="btnLogin" style="width: 100%; margin-top: 25px;">ENTRAR</button>
+      <div id="loginError" style="color:#ef4444; font-size:11px; margin-top:12px; text-align:center; display:none;"></div>
     </div>
   </div>
 
+  <!-- SIDEBAR SELECCIÓN -->
   <aside class="catalog-sidebar">
     <div class="sidebar-header">
       <h2 style="font-size: 14px; margin:0;">CATÁLOGO</h2>
-      <p style="font-size: 9px; color: #64748b; margin: 5px 0 0;">SELECCIONA PARA AÑADIR AL MENÚ</p>
+      <p style="font-size: 9px; color: #64748b; margin: 5px 0 0;">CLIC PARA DESPLEGAR</p>
     </div>
-    <div class="catalog-scroll" id="catalogList"></div>
+    <div class="catalog-scroll" id="catalogList">
+      <!-- Cargando... -->
+    </div>
   </aside>
 
+  <!-- ÁREA DE TRABAJO -->
   <main class="main-area hidden" id="appMain">
     <div class="top-bar">
       <h1 style="font-size: 16px; margin:0; font-weight: 900;">ADT | GESTIÓN DE MENÚ</h1>
-      <button class="btn btn-ghost" onclick="logout()">CERRAR SESIÓN</button>
+      <button class="btn btn-ghost" id="btnLogoutTop">CERRAR SESIÓN</button>
     </div>
 
     <div class="view-container">
       <div class="builder-card">
         <div class="header-inputs">
-          <div><label>NOMBRE DEL MENÚ</label><input id="menuName" value="MENÚ PRINCIPAL"></div>
-          <div><label>FECHA</label><input id="menuDate" type="date"></div>
-          <div style="display:flex; align-items:flex-end;"><button class="btn btn-primary" id="btnSaveFull" style="width:100%;">PUBLICAR MENÚ</button></div>
+          <div>
+            <label>NOMBRE DEL MENÚ (EJ: OPCIÓN A)</label>
+            <input id="menuName" value="MENÚ PRINCIPAL">
+          </div>
+          <div>
+            <label>FECHA</label>
+            <input id="menuDate" type="date">
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button class="btn btn-primary" id="btnSaveFull" style="width: 100%;">PUBLICAR MENÚ</button>
+          </div>
         </div>
 
         <div style="border-top: 1px solid var(--border); padding-top: 20px;">
@@ -115,11 +147,16 @@
             <h3 style="font-size: 11px; color: #64748b; margin:0;">PLATOS SELECCIONADOS</h3>
             <button class="btn btn-ghost" onclick="clearDraft()">LIMPIAR LISTA</button>
           </div>
+          
           <div id="platesDraft"></div>
+          
           <div id="emptyMsg" class="empty-state">MENÚ VACÍO</div>
         </div>
       </div>
-      <div style="margin-top:20px; text-align:center;"><button class="btn btn-danger" onclick="deleteOldMenus()">BORRAR HISTORIAL</button></div>
+      
+      <div style="margin-top:20px; text-align:center;">
+        <button class="btn btn-danger" style="font-size: 10px;" onclick="deleteOldMenus()">BORRAR TODO EL HISTORIAL</button>
+      </div>
     </div>
   </main>
 
@@ -131,6 +168,7 @@
 
     let draft = [];
 
+    // --- SEGURIDAD ---
     async function checkAuth() {
       const { data } = await sb.auth.getSession();
       if (data.session) {
@@ -141,13 +179,22 @@
     }
 
     document.getElementById('btnLogin').onclick = async () => {
-      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value, password: lPass.value });
-      if (error) { loginError.style.display = 'block'; loginError.textContent = error.message.toUpperCase(); }
-      else location.reload();
+      const email = document.getElementById('lEmail').value.trim();
+      const password = document.getElementById('lPass').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        const errDiv = document.getElementById('loginError');
+        errDiv.style.display = 'block';
+        errDiv.textContent = error.message.toUpperCase();
+      } else location.reload();
     };
 
-    window.logout = async () => { await sb.auth.signOut(); location.reload(); };
+    document.getElementById('btnLogoutTop').onclick = async () => {
+      await sb.auth.signOut();
+      location.reload();
+    };
 
+    // --- CATÁLOGO ---
     async function loadCatalog() {
       const { data, error } = await sb.from('food_catalog').select('*').order('categoria');
       if (error) return;
@@ -164,13 +211,12 @@
           <button class="cat-trigger" onclick="toggleAccordion('${catId}')">${cat}</button>
           <div class="cat-content">
             ${grouped[cat].map(i => {
-              // Limpiamos los textos para evitar que rompan el HTML
               const acomp = (i.acompanamiento || "").replace(/'/g, "\\'");
               const p = (i.pollo || "").replace(/'/g, "\\'");
               const c = (i.cerdo || "").replace(/'/g, "\\'");
               const r = (i.carne_roja || "").replace(/'/g, "\\'");
               const catEscaped = cat.replace(/'/g, "\\'");
-
+              
               return `
               <div class="food-card">
                 <b>${i.acompanamiento}</b>
@@ -218,17 +264,30 @@
     window.removePlate = function(i) { draft.splice(i, 1); renderDraft(); };
     window.clearDraft = function() { draft = []; renderDraft(); };
 
+    // --- GUARDAR ---
     document.getElementById('btnSaveFull').onclick = async () => {
-      const name = menuName.value; const date = menuDate.value;
-      if (!date || draft.length === 0) return alert("FALTA FECHA O PLATOS");
+      const name = document.getElementById('menuName').value;
+      const date = document.getElementById('menuDate').value;
+
+      if (!date || draft.length === 0) return alert("FALTA FECHA O SELECCIONAR PLATOS");
+
+      // 1. Crear Menú
       const { data: menu, error: mErr } = await sb.from('menus').insert([{ name, menu_date: date }]).select().single();
-      if (mErr) return alert("Error Menú: " + mErr.message);
-      
-      for (const p of draft) {
-        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
-        if (item) await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
+      if (mErr) return alert("ERROR AL CREAR MENÚ: " + mErr.message);
+
+      // 2. Crear platos y relaciones
+      try {
+        for (const p of draft) {
+          const { data: item, error: iErr } = await sb.from('menu_items').insert([p]).select().single();
+          if (iErr) throw new Error("Error en plato: " + iErr.message);
+          
+          await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
+        }
+        alert("¡MENÚ PUBLICADO EXITOSAMENTE! ✅");
+        clearDraft();
+      } catch (err) {
+        alert("ERROR AL GUARDAR PLATOS: " + err.message);
       }
-      alert("MENÚ PUBLICADO ✅"); clearDraft();
     };
 
     window.deleteOldMenus = async () => {
@@ -237,6 +296,13 @@
       await sb.from('menus').delete().neq('id', 0);
       alert("LIMPIADO.");
     };
+
+    // Mayúsculas inteligentes
+    document.addEventListener('input', (e) => {
+      if (e.target.tagName === 'INPUT' && e.target.type !== 'email' && e.target.type !== 'password' && e.target.type !== 'date') {
+        e.target.value = e.target.value.toUpperCase();
+      }
+    });
 
     document.getElementById('menuDate').value = new Date().toISOString().split('T')[0];
     checkAuth();
