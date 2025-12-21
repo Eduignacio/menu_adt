@@ -19,55 +19,81 @@
 
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
     
-    body { margin: 0; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+    body { margin: 0; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; transition: all 0.3s ease; }
 
-    /* LOGIN OVERLAY - TOTALMENTE ENFRENTE */
+    /* LOGIN OVERLAY */
     #loginOverlay { 
       position: fixed; inset: 0; background: var(--sidebar-bg); 
       z-index: 9999; display: flex; align-items: center; justify-content: center; 
     }
-    .login-card { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    .login-card { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
     .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; font-weight: 600; }
-
-    /* LAYOUT PRINCIPAL (OCULTO HASTA LOGIN) */
-    #appMain { display: flex; height: 100vh; width: 100vw; transition: opacity 0.3s; }
 
     /* SIDEBAR */
     .sidebar { 
       width: var(--sidebar-width); background: var(--sidebar-bg); color: white; 
       display: flex; flex-direction: column; flex-shrink: 0; 
-      transition: transform 0.3s ease, margin-left 0.3s ease;
+      transition: margin-left 0.3s ease;
       z-index: 100; border-right: 1px solid #1e293b;
     }
 
-    /* OCULTAR SIDEBAR */
     body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
 
     .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; }
+    .sidebar-brand h2 { margin: 0; font-size: 16px; color: white; letter-spacing: 2px; }
+
     .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; }
+    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; display: flex; align-items: center; gap: 10px; }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
 
-    /* CATÁLOGO RÁPIDO */
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; border-top: 1px solid #1e293b; }
-    .search-cat { padding: 10px; background: #0b1222; }
-    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 8px; border-radius: 6px; color: white; font-size: 10px; }
+    /* BUSCADOR Y CATÁLOGO EN SIDEBAR */
+    .search-cat { padding: 15px; background: #0b1222; }
+    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; }
 
-    /* CONTENIDO */
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 25px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .view-port { flex: 1; overflow-y: auto; padding: 25px; }
+    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
+    
+    /* ACORDEÓN MEJORADO */
+    .cat-accordion { margin-bottom: 5px; }
+    .cat-trigger { 
+        width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
+        text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; 
+        display: flex; justify-content: space-between; border-radius: 6px; 
+    }
+    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; background: #0f172a; }
+    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
+    
+    .food-card { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; margin: 0 5px; }
+    .food-card b { display: block; font-size: 11px; margin-bottom: 8px; color: #94a3b8; }
+    
+    /* BOTONES DE SELECCIÓN EN SIDEBAR */
+    .btn-quick { 
+        width: 100%; font-size: 9px; padding: 10px; background: #334155; border: none; 
+        color: white; cursor: pointer; border-radius: 6px; margin-top: 4px; 
+        font-weight: 800; transition: 0.2s; text-align: left;
+    }
+    .btn-quick:hover { background: var(--accent); }
+
+    /* CONTENIDO PRINCIPAL */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .view-port { flex: 1; overflow-y: auto; padding: 30px; }
     .container { max-width: 1000px; margin: 0 auto; width: 100%; }
 
-    /* UI COMPONENTS */
-    .card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary { background: var(--accent); color: white; }
+    /* COMPONENTES CLAROS */
+    .card { background: white; padding: 30px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
     .btn-toggle { background: var(--sidebar-bg); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
+    
+    input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; }
+    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 6px; display: block; }
+    
+    .btn-publish { background: var(--accent); color: white; padding: 18px; border-radius: 8px; width: 100%; font-weight: 900; border: none; cursor: pointer; font-size: 12px; }
+    .btn-publish:hover { opacity: 0.9; }
 
     .hidden { display: none !important; }
+    
+    /* ITEM EN EL BORRADOR (CENTRO) */
+    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-    /* RESPONSIVO */
     @media (max-width: 850px) {
       .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
       body.sidebar-open .sidebar { transform: translateX(0); }
@@ -78,23 +104,19 @@
 </head>
 <body id="mainBody">
 
-  <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 25px; letter-spacing: 1px;">ADT ADMIN</h2>
-      <label style="font-size: 10px; font-weight: 900; color: #64748b;">EMAIL</label>
-      <input id="lEmail" type="email" placeholder="usuario@gmail.com">
-      <label style="font-size: 10px; font-weight: 900; color: #64748b;">PASSWORD</label>
-      <input id="lPass" type="password" placeholder="••••••">
-      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="handleLogin()">ENTRAR AL PANEL</button>
+      <h2 style="text-align: center; margin: 0 0 25px;">ADT ADMIN</h2>
+      <label>EMAIL</label><input id="lEmail" type="email">
+      <label>PASSWORD</label><input id="lPass" type="password">
+      <button class="btn-publish" style="padding:15px;" onclick="handleLogin()">ENTRAR</button>
       <p id="loginMsg" style="color: red; font-size: 10px; text-align: center; margin-top: 15px; display: none; text-transform: none;"></p>
     </div>
   </div>
 
-  <div id="appMain" class="hidden">
+  <div id="appMain" class="hidden" style="display: flex; width: 100%;">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     
-    <!-- BARRA LATERAL -->
     <aside class="sidebar">
       <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
       <nav class="sidebar-nav">
@@ -107,8 +129,7 @@
       <div id="catalogList" class="catalog-scroll"></div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
-    <main class="main-content">
+    <main class="main-area">
       <header class="top-bar">
         <div style="display: flex; align-items: center; gap: 15px;">
           <button class="btn-toggle" onclick="toggleSidebar()">
@@ -118,7 +139,7 @@
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
           <span id="userBadge" style="font-size: 9px; font-weight: 800; color: var(--accent); text-transform: lowercase;"></span>
-          <button class="btn" style="background:#e2e8f0" onclick="handleLogout()">SALIR</button>
+          <button onclick="handleLogout()" style="background: #e2e8f0; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 10px;">SALIR</button>
         </div>
       </header>
 
@@ -127,17 +148,30 @@
           
           <div id="viewBuilder">
             <div class="card">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
                 <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" onchange="calcName()"></div>
-                <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:5px;">MENU 1</div></div>
+                <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:22px; font-weight:900; color:var(--accent); margin-top:5px;">...</div></div>
               </div>
-              <button class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; justify-content: center;" onclick="publishMenu()">PUBLICAR AHORA</button>
-              <div id="draftList" style="margin-top: 25px;"></div>
+              <button class="btn-publish" style="margin-top: 25px;" onclick="publishMenu()">PUBLICAR AHORA</button>
+              <div id="draftList" style="margin-top: 30px;"></div>
             </div>
           </div>
 
           <div id="viewHistory" class="hidden"><div class="card"><table id="historyTable" style="width:100%"></table></div></div>
-          <div id="viewCatalog" class="hidden"><div class="card"><div id="catForm"></div><table id="catTable" style="width:100%"></table></div></div>
+          <div id="viewCatalog" class="hidden">
+            <div class="card">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                <input type="hidden" id="editCatId">
+                <div><label>CAT.</label><input id="cCat"></div>
+                <div><label>ACOMP.</label><input id="cAcomp"></div>
+                <div><label>POLLO</label><input id="cPollo"></div>
+                <div><label>CERDO</label><input id="cCerdo"></div>
+                <div><label>CARNE</label><input id="cCarne"></div>
+                <div style="display:flex; align-items:flex-end;"><button class="btn-publish" style="padding:12px;" onclick="saveFood()">GUARDAR</button></div>
+              </div>
+            </div>
+            <div class="card"><table id="catTable" style="width:100%"></table></div>
+          </div>
           <div id="viewUsers" class="hidden"><div class="card"><div id="usrForm"></div><table id="usrTable" style="width:100%"></table></div></div>
 
         </div>
@@ -154,6 +188,7 @@
     let perms = { cat: false, usr: false };
     let draft = [];
     let curName = "MENU 1";
+    let catalogCache = [];
 
     function toggleSidebar() { 
       if(window.innerWidth < 850) mainBody.classList.toggle('sidebar-open');
@@ -168,19 +203,16 @@
         if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
         if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
-        
         loginOverlay.classList.add('hidden');
         appMain.classList.remove('hidden');
-        
         if (perms.cat) navC.classList.remove('hidden');
         if (perms.usr) navU.classList.remove('hidden');
-        loadCatalog(); calcName();
+        loadCatalogData(); calcName();
       }
     }
 
     async function handleLogin() {
-      loginMsg.style.display = "none";
-      const { data, error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim(), password: lPass.value });
+      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim(), password: lPass.value });
       if (error) { loginMsg.innerText = "ERROR: " + error.message; loginMsg.style.display = "block"; }
       else location.reload();
     }
@@ -194,7 +226,6 @@
       document.getElementById(btn).classList.add('active');
       document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
       viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
-      if(window.innerWidth < 850) toggleSidebar();
     }
 
     async function calcName() {
@@ -203,24 +234,45 @@
       curName = "MENU " + ((count || 0) + 1); autoName.innerText = curName;
     }
 
-    async function loadCatalog() {
+    async function loadCatalogData() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      const grouped = data.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
+      catalogCache = data || [];
+      renderCatalog(catalogCache);
+    }
+
+    function renderCatalog(items) {
+      const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
       catalogList.innerHTML = Object.keys(grouped).map(cat => `
         <div class="cat-accordion">
           <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">${cat} <span>▼</span></button>
           <div class="cat-content">
-            ${grouped[cat].map(i => `<div class="food-card"><b>${i.acompanamiento}</b>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.pollo}</button>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.cerdo}</button>
-              <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.carne_roja}</button>
-            </div>`).join('')}
+            ${grouped[cat].map(i => `
+              <div class="food-card">
+                <b>${i.acompanamiento}</b>
+                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.pollo}</button>
+                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.cerdo}</button>
+                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat.replace(/'/g,"\\'")}')">${i.carne_roja}</button>
+              </div>`).join('')}
           </div>
         </div>`).join('');
     }
 
+    function filterCat() {
+      const q = catSearch.value.toUpperCase();
+      const filtered = catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q));
+      renderCatalog(filtered);
+      if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
+    }
+
     function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` }); renderD(); }
-    function renderD() { draftList.innerHTML = draft.map((p, i) => `<div style="background:white; border:1px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button class="btn btn-danger" style="padding:8px" onclick="draft.splice(${i},1);renderD()">X</button></div>`).join(''); }
+    
+    function renderD() {
+      draftList.innerHTML = draft.map((p, i) => `
+        <div class="draft-item">
+          <div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div>
+          <button onclick="draft.splice(${i},1);renderD()" style="background: #fee2e2; color: #ef4444; border:none; padding:8px 12px; border-radius:6px; font-weight:800; cursor:pointer;">X</button>
+        </div>`).join('');
+    }
 
     async function publishMenu() {
       if(!menuDate.value || !draft.length) return alert("FALTA INFO");
