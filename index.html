@@ -3,301 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Menú</title>
-  <meta name="description" content="Menú digital actualizado">
-  <meta property="og:title" content="Menú">
-  <meta property="og:type" content="website">
-  <!-- Agrega tu URL e imagen cuando esté disponible -->
-  <!-- <meta property="og:image" content="https://tudominio.com/logo.png"> -->
+  <title>Menú ADT</title>
   <style>
-    :root {
-      /* Colores claros (modo claro por defecto) */
-      --bg: #f6f6f6;
-      --card: #fff;
-      --text: #111;
-      --muted: #666;
-      --line: #e9e9e9;
-      --accent: #2c3e50;
-      --error: #e74c3c;
-      --success: #27ae60;
-      
-      /* Espaciado */
-      --radius: 14px;
-      --spacing: 16px;
-      --spacing-small: 8px;
-      --spacing-large: 28px;
-      
-      /* Tipografía */
-      --font-size-large: 44px;
-      --font-size-medium: 22px;
-      --font-size-small: 14px;
-      --font-size-xsmall: 13px;
-      
-      /* Transiciones */
-      --transition: all 0.2s ease;
-    }
-    
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1a1a1a;
-        --card: #2d2d2d;
-        --text: #f0f0f0;
-        --muted: #aaa;
-        --line: #444;
-        --accent: #3498db;
-      }
-    }
-    
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      transition: var(--transition);
-      min-height: 100vh;
-    }
-    
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: var(--spacing-large) var(--spacing) 60px;
-    }
-    
-    h1 {
-      font-size: var(--font-size-large);
-      text-align: center;
-      margin: 20px 0 var(--spacing-small);
-    }
-    
-    .sub {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      color: var(--muted);
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-    
-    .pill {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: var(--font-size-xsmall);
-      transition: var(--transition);
-    }
-    
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: var(--spacing) 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.03);
-      transition: var(--transition);
-    }
-    
-    .cat {
-      font-size: var(--font-size-medium);
-      margin: 18px 0 8px;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    
-    .item {
-      padding: 12px 0;
-      border-top: 1px dashed var(--line);
-      transition: var(--transition);
-    }
-    
-    .item:first-child {
-      border-top: none;
-    }
-    
-    .name {
-      font-weight: 800;
-      font-size: 18px;
-      margin: 0 0 4px;
-    }
-    
-    .meta {
-      color: var(--muted);
-      font-size: var(--font-size-small);
-      margin: 0 0 6px;
-    }
-    
-    .desc {
-      margin: 0;
-      color: var(--text);
-      opacity: 0.9;
-      line-height: 1.5;
-    }
-    
-    .price {
-      font-weight: bold;
-      color: var(--accent);
-      margin-top: 6px;
-      display: inline-block;
-      background: rgba(52, 152, 219, 0.1);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 15px;
-    }
-    
-    .price::before {
-      content: "$ ";
-    }
-    
-    .empty {
-      color: var(--muted);
-      text-align: center;
-      margin-top: 20px;
-      padding: 40px 20px;
-      border: 2px dashed var(--line);
-      border-radius: var(--radius);
-      background: var(--card);
-    }
-    
-    .footer {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .link {
-      color: var(--text);
-      text-decoration: none;
-      border: 1px solid var(--line);
-      background: var(--card);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-size: 14px;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-    
-    .link:hover {
-      filter: brightness(.98);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0,0,0,.05);
-    }
-    
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--line);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    #loading {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-    }
-    
-    .error-message {
-      background: rgba(231, 76, 60, 0.1);
-      border: 1px solid var(--error);
-      color: var(--error);
-      padding: 16px;
-      border-radius: var(--radius);
-      text-align: center;
-      margin: 20px 0;
-    }
-    
-    .update-indicator {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--success);
-      color: white;
-      padding: 10px 16px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.1);
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-      z-index: 1000;
-    }
-    
-    .update-indicator.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .wrap {
-        padding: var(--spacing) 12px 40px;
-      }
-      
-      h1 {
-        font-size: 32px;
-      }
-      
-      .cat {
-        font-size: 20px;
-        margin: 14px 0 6px;
-      }
-      
-      .name {
-        font-size: 16px;
-      }
-      
-      .card {
-        padding: 14px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 28px;
-        margin: 10px 0 6px;
-      }
-      
-      .pill {
-        font-size: 12px;
-        padding: 4px 10px;
-      }
-      
-      .sub {
-        margin-bottom: 18px;
-      }
-      
-      .update-indicator {
-        bottom: 10px;
-        right: 10px;
-        left: 10px;
-        text-align: center;
-      }
-    }
-    
-    /* Imágenes */
-    .item-image {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-      display: block;
-      max-height: 200px;
-      object-fit: cover;
-      width: 100%;
-    }
+    :root{--bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9;}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--text);}
+    .wrap{max-width:980px; margin:0 auto; padding:30px 18px 60px;}
+    header{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+    h1{font-size:44px; margin:10px 0;}
+    .btn{display:inline-block; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; font-weight:800; text-decoration:none; color:#111;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03);}
+    .menuBar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0;}
+    select{padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff; font-weight:700;}
+    .grid{display:grid; grid-template-columns:1fr; gap:12px;}
+    .itemTitle{font-size:18px; font-weight:900; margin:0;}
+    .muted{color:var(--muted);}
+    .pill{display:inline-block; padding:4px 10px; border:1px solid var(--line); border-radius:999px; font-weight:800; font-size:12px; background:#fff;}
+    .row{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
   </style>
 </head>
 
@@ -305,374 +26,126 @@
   <div class="wrap">
     <header>
       <h1>Menú</h1>
-      <div class="sub" id="menuMeta">
-        <span class="pill"><span class="loading-spinner"></span>Cargando menú…</span>
-      </div>
+      <a class="btn" href="./admin.html">Admin</a>
     </header>
 
-    <main role="main">
-      <div id="loading" style="display: block;">
-        <div class="loading-spinner"></div>
-        <p>Cargando contenido...</p>
+    <div class="card">
+      <div class="menuBar">
+        <span class="muted" style="font-weight:800;">Menú:</span>
+        <select id="menuSelect">
+          <option value="">Cargando menús...</option>
+        </select>
       </div>
-      
-      <div id="error-container" style="display: none;"></div>
-      
-      <article id="content" role="region" aria-live="polite" style="display: none;"></article>
-    </main>
 
-    <div class="footer">
-      <a class="link" href="./admin.html">Administrar</a>
-      <button class="link" id="refreshBtn" type="button">Actualizar</button>
+      <div id="status" class="muted" style="margin:8px 0 12px;">Cargando menú...</div>
+
+      <div id="list" class="grid"></div>
     </div>
   </div>
 
-  <div class="update-indicator" id="updateIndicator">
-    Menú actualizado ✓
-  </div>
-
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const menuSelect = document.getElementById("menuSelect");
+    const statusEl = document.getElementById("status");
+    const listEl = document.getElementById("list");
 
-    // Constantes de configuración
-    const CACHE_KEY = 'menu_cache';
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
-    const UPDATE_CHECK_INTERVAL = 300000; // 5 minutos
-    const LOAD_TIMEOUT = 10000; // 10 segundos
-
-    // Elementos DOM
-    const menuMetaEl = document.getElementById("menuMeta");
-    const contentEl = document.getElementById("content");
-    const loadingEl = document.getElementById("loading");
-    const errorContainerEl = document.getElementById("error-container");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const updateIndicator = document.getElementById("updateIndicator");
-
-    // Estado global
-    let currentMenuId = null;
-    let updateCheckInterval = null;
-
-    // Función para sanitizar HTML (protección XSS básica)
-    function sanitizeHTML(str) {
-      if (typeof str !== 'string') return '';
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    // Función para formatear fecha
     function fmtDate(d) {
-      if (!d) return null;
+      if (!d) return "";
       try {
-        const dt = new Date(d);
-        if (Number.isNaN(dt.getTime())) return d;
-        return dt.toLocaleDateString("es-CL", { 
-          year: "numeric", 
-          month: "2-digit", 
-          day: "2-digit" 
-        });
-      } catch { 
-        return d; 
-      }
+        const [y,m,dd] = d.split("-");
+        return `${dd}-${m}-${y}`;
+      } catch { return d; }
     }
 
-    // Función para mostrar imágenes de forma segura
-    function safeImage(url) {
-      if (!url) return '';
-      
-      // Validar URL
-      try {
-        new URL(url);
-        return `<img src="${url}" alt="" loading="lazy" class="item-image">`;
-      } catch {
-        return '';
+    function renderItems(items) {
+      listEl.innerHTML = "";
+      if (!items || items.length === 0) {
+        statusEl.textContent = "No hay platos en este menú.";
+        return;
       }
-    }
-
-    // Agrupar por categoría
-    function groupByCategory(items) {
-      const map = new Map();
+      statusEl.textContent = `Mostrando ${items.length} plato(s).`;
       for (const it of items) {
-        const cat = (it.category || "Sin categoría").trim() || "Sin categoría";
-        if (!map.has(cat)) map.set(cat, []);
-        map.get(cat).push(it);
-      }
-      return map;
-    }
-
-    // Cache
-    async function getCachedMenu() {
-      try {
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_DURATION) {
-            return data;
-          }
-        }
-      } catch (e) {
-        console.warn('Error al leer cache:', e);
-      }
-      return null;
-    }
-
-    function setMenuCache(data) {
-      try {
-        const cache = {
-          data,
-          timestamp: Date.now()
-        };
-        localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-      } catch (e) {
-        console.warn('Error al guardar cache:', e);
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.borderRadius = "14px";
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <p class="itemTitle">${it.name || "Sin nombre"}</p>
+              <div class="muted" style="margin-top:4px;">
+                ${it.category ? `<span class="pill">${it.category}</span>` : ""}
+                ${it.date ? `<span class="pill">${fmtDate(it.date)}</span>` : ""}
+              </div>
+              <div style="margin-top:8px;">${it.description || ""}</div>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(div);
       }
     }
 
-    // Funciones Supabase
-    async function getActiveOrLatestMenu() {
-      // 1) intenta con is_active (si existe)
-      let { data, error } = await supabaseClient
+    async function loadMenus() {
+      // Trae menús (historial)
+      const { data: menus, error } = await supabaseClient
         .from("menus")
-        .select("*")
-        .eq("is_active", true)
-        .order("date", { ascending: false, nullsFirst: false })
-        .order("created_at", { ascending: false })
-        .limit(1);
+        .select("id,name,menu_date,created_at")
+        .order("menu_date", { ascending: false })
+        .order("created_at", { ascending: false });
 
-      if (!error && data?.length) return data[0];
+      if (error) {
+        statusEl.textContent = "Error cargando menús.";
+        console.error(error);
+        menuSelect.innerHTML = `<option value="">(Error)</option>`;
+        return;
+      }
 
-      // 2) fallback: último por fecha/created_at
-      ({ data, error } = await supabaseClient
-        .from("menus")
-        .select("*")
-        .order("date", { ascending: false, nullsFirst: false })
-        .order("created_at", { ascending: false })
-        .limit(1));
+      if (!menus || menus.length === 0) {
+        menuSelect.innerHTML = `<option value="">No hay menús creados</option>`;
+        statusEl.textContent = "Aún no hay menús. Entra a Admin para crear uno.";
+        return;
+      }
 
-      if (error) throw error;
-      return data?.[0] || null;
+      menuSelect.innerHTML = menus.map(m => {
+        const label = `${m.name || "Menú"}${m.menu_date ? " — " + fmtDate(m.menu_date) : ""}`;
+        return `<option value="${m.id}">${label}</option>`;
+      }).join("");
+
+      // Selecciona el primero por defecto
+      await loadMenuItems(menuSelect.value);
     }
 
-    async function getMenuLinks(menuId) {
+    async function loadMenuItems(menuId) {
+      listEl.innerHTML = "";
+      if (!menuId) {
+        statusEl.textContent = "Selecciona un menú.";
+        return;
+      }
+      statusEl.textContent = "Cargando menú...";
+
+      // Relación: menu_menu_items -> menu_items
       const { data, error } = await supabaseClient
         .from("menu_menu_items")
-        .select("*")
-        .eq("menu_id", menuId);
+        .select("menu_item_id, menu_items:menu_item_id (id,name,category,description,date)")
+        .eq("menu_id", menuId)
+        .order("menu_item_id", { ascending: true });
 
-      if (error) throw error;
-      return data || [];
-    }
-
-    async function getMenuItemsByIds(ids) {
-      if (!ids.length) return [];
-      const { data, error } = await supabaseClient
-        .from("menu_items")
-        .select("*")
-        .in("id", ids);
-
-      if (error) throw error;
-      return data || [];
-    }
-
-    // Renderizado
-    function render(menu, items) {
-      // Mostrar meta información
-      const pills = [];
-      const title = menu?.name || menu?.title || "Menú";
-      const date = fmtDate(menu?.date);
-      pills.push(`<span class="pill"><b>${sanitizeHTML(title)}</b></span>`);
-      if (date) pills.push(`<span class="pill">${date}</span>`);
-      menuMetaEl.innerHTML = pills.join("");
-
-      // Mostrar contenido
-      if (!items.length) {
-        contentEl.innerHTML = `<p class="empty">No hay productos disponibles.</p>`;
-        contentEl.style.display = 'block';
+      if (error) {
+        statusEl.textContent = "Error cargando platos del menú.";
+        console.error(error);
         return;
       }
 
-      const grouped = groupByCategory(items);
-      let html = "";
-
-      for (const [cat, list] of grouped.entries()) {
-        html += `<div class="cat">${sanitizeHTML(cat)}</div>`;
-        html += `<div class="card">`;
-        
-        for (const it of list) {
-          html += `
-            <div class="item">
-              <p class="name">${sanitizeHTML(it.name || "Sin nombre")}</p>
-              ${it.date ? `<p class="meta">${fmtDate(it.date)}</p>` : ''}
-              <p class="desc">${sanitizeHTML(it.description || "")}</p>
-              ${it.price ? `<div class="price">${it.price.toLocaleString('es-CL')}</div>` : ''}
-              ${it.image_url ? safeImage(it.image_url) : ''}
-            </div>
-          `;
-        }
-        
-        html += `</div>`;
-      }
-
-      contentEl.innerHTML = `<div class="grid">${html}</div>`;
-      contentEl.style.display = 'block';
+      const items = (data || []).map(r => r.menu_items).filter(Boolean);
+      renderItems(items);
     }
 
-    // Manejo de estados de UI
-    function showLoading() {
-      loadingEl.style.display = 'block';
-      contentEl.style.display = 'none';
-      errorContainerEl.style.display = 'none';
-    }
+    menuSelect.addEventListener("change", () => loadMenuItems(menuSelect.value));
 
-    function showError(message) {
-      loadingEl.style.display = 'none';
-      contentEl.style.display = 'none';
-      errorContainerEl.style.display = 'block';
-      errorContainerEl.innerHTML = `
-        <div class="error-message">
-          <p><strong>Error:</strong> ${sanitizeHTML(message)}</p>
-          <button class="link" id="retryBtn" style="margin-top: 10px;">Reintentar</button>
-        </div>
-      `;
-      
-      // Agregar evento al botón de reintentar
-      document.getElementById('retryBtn')?.addEventListener('click', loadMenu);
-    }
-
-    function showSuccess() {
-      loadingEl.style.display = 'none';
-      contentEl.style.display = 'block';
-      errorContainerEl.style.display = 'none';
-    }
-
-    function showUpdateNotification() {
-      updateIndicator.classList.add('show');
-      setTimeout(() => {
-        updateIndicator.classList.remove('show');
-      }, 3000);
-    }
-
-    // Carga principal del menú
-    async function loadMenu() {
-      try {
-        showLoading();
-        
-        // Timeout para la carga
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("Tiempo de espera agotado")), LOAD_TIMEOUT);
-        });
-
-        // Intentar cache primero
-        const cached = await getCachedMenu();
-        if (cached) {
-          render(cached.menu, cached.items);
-          showSuccess();
-          
-          // Cargar fresco en segundo plano
-          setTimeout(() => fetchFreshData(), 1000);
-          return;
-        }
-
-        // Cargar datos frescos
-        await Promise.race([fetchFreshData(), timeoutPromise]);
-        
-      } catch (e) {
-        console.error('Error cargando menú:', e);
-        showError(e.message || 'Error desconocido al cargar el menú');
-      }
-    }
-
-    async function fetchFreshData() {
-      const menu = await getActiveOrLatestMenu();
-      
-      if (!menu) {
-        menuMetaEl.innerHTML = `<span class="pill">No hay menús creados aún.</span>`;
-        contentEl.innerHTML = `<p class="empty">Crea un menú desde Admin.</p>`;
-        showSuccess();
-        return;
-      }
-
-      const links = await getMenuLinks(menu.id);
-      const ids = links
-        .map(r => r.item_id ?? r.menu_item_id)
-        .filter(Boolean);
-
-      const items = await getMenuItemsByIds(ids);
-
-      // Mantener orden del puente
-      const orderMap = new Map(ids.map((id, idx) => [id, idx]));
-      items.sort((a,b) => (orderMap.get(a.id) ?? 9999) - (orderMap.get(b.id) ?? 9999));
-
-      // Cachear datos
-      setMenuCache({ menu, items });
-
-      // Renderizar
-      render(menu, items);
-      showSuccess();
-      
-      // Actualizar ID actual para comparaciones futuras
-      if (currentMenuId !== menu.id) {
-        currentMenuId = menu.id;
-        // Solo mostrar notificación si no es la carga inicial
-        if (currentMenuId) {
-          showUpdateNotification();
-        }
-      }
-    }
-
-    // Verificar actualizaciones
-    async function checkForUpdates() {
-      try {
-        const menu = await getActiveOrLatestMenu();
-        if (menu && menu.id !== currentMenuId) {
-          currentMenuId = menu.id;
-          loadMenu();
-        }
-      } catch (e) {
-        console.warn('Error verificando actualizaciones:', e);
-      }
-    }
-
-    // Inicialización
-    async function init() {
-      // Cargar menú inicial
-      await loadMenu();
-      
-      // Configurar intervalo de actualización
-      updateCheckInterval = setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL);
-      
-      // Evento para botón de actualización manual
-      refreshBtn.addEventListener('click', () => {
-        loadMenu();
-        // Mostrar feedback visual
-        refreshBtn.innerHTML = '<span class="loading-spinner"></span>Actualizando...';
-        setTimeout(() => {
-          refreshBtn.innerHTML = 'Actualizar';
-        }, 1000);
-      });
-      
-      // Configurar botón de reintentar (si existe)
-      document.addEventListener('click', (e) => {
-        if (e.target.id === 'retryBtn') {
-          loadMenu();
-        }
-      });
-    }
-
-    // Limpiar intervalo al salir de la página
-    window.addEventListener('beforeunload', () => {
-      if (updateCheckInterval) {
-        clearInterval(updateCheckInterval);
-      }
-    });
-
-    // Iniciar aplicación
-    init();
+    loadMenus();
   </script>
 </body>
 </html>
