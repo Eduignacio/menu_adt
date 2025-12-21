@@ -2,30 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Menú ADT</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial; margin:0; background:#f6f6f6;}
-    header{padding:22px 18px; text-align:center; background:white; box-shadow:0 2px 14px rgba(0,0,0,.06);}
-    h1{margin:0; font-size:42px;}
-    .wrap{max-width:900px; margin:24px auto; padding:0 16px;}
-    .topbar{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px;}
-    .btn{background:#111; color:white; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600;}
-    .card{background:white; border-radius:14px; padding:18px; margin:12px 0; box-shadow:0 10px 30px rgba(0,0,0,.07);}
-    .name{font-size:22px; font-weight:800; margin:0 0 6px;}
-    .cat{opacity:.75; margin:0 0 6px;}
-    .desc{margin:0; opacity:.9;}
-    .muted{opacity:.7;}
+    body { font-family: system-ui, Arial; margin: 0; background:#f6f6f6; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px; }
+    h1 { text-align:center; margin: 10px 0 20px; }
+    .card { background:#fff; border-radius: 14px; padding: 18px; box-shadow: 0 6px 18px rgba(0,0,0,.08); margin: 14px 0; }
+    .meta { text-align:center; color:#444; margin-bottom: 20px; }
+    .pill { display:inline-block; padding: 6px 10px; border-radius:999px; background:#eee; margin: 0 6px; font-size: 13px;}
+    .row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin: 16px 0; }
+    select { padding:10px; border-radius: 10px; border:1px solid #ddd; min-width: 280px; }
+    a.btn { display:inline-block; padding: 10px 14px; border-radius: 12px; background:#111; color:#fff; text-decoration:none; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Menú</h1>
-  </header>
-
   <div class="wrap">
-    <div class="topbar">
-      <div class="muted" id="status">Cargando menú...</div>
+    <h1>Menú</h1>
+    <div class="meta" id="meta">Cargando…</div>
+
+    <div class="row">
+      <select id="menuSelect">
+        <option value="">Cargando menús…</option>
+      </select>
       <a class="btn" href="/admin.html">Admin</a>
     </div>
 
@@ -36,60 +35,108 @@
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const statusEl = document.getElementById("status");
-    const listEl = document.getElementById("list");
+    const elMeta = document.getElementById("meta");
+    const elList = document.getElementById("list");
+    const elMenuSelect = document.getElementById("menuSelect");
 
-    function card(item){
-      const name = item.name ?? "Sin nombre";
-      const category = item.category ?? "";
-      const desc = item.description ?? "";
-      return `
-        <div class="card">
-          <p class="name">${escapeHtml(name)}</p>
-          ${category ? `<p class="cat">${escapeHtml(category)}</p>` : ""}
-          ${desc ? `<p class="desc">${escapeHtml(desc)}</p>` : ""}
-        </div>
-      `;
+    function renderItems(items) {
+      elList.innerHTML = "";
+      if (!items.length) {
+        elList.innerHTML = `<div class="card">No hay platos en este menú.</div>`;
+        return;
+      }
+      for (const it of items) {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3 style="margin:0 0 6px">${escapeHtml(it.name || "Sin nombre")}</h3>
+          <div class="pill">${escapeHtml(it.category || "Sin categoría")}</div>
+          <p style="margin:10px 0 0;color:#333">${escapeHtml(it.description || "")}</p>
+        `;
+        elList.appendChild(div);
+      }
     }
 
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, (m) => ({
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
+      }[c]));
     }
 
-    async function cargarMenu(){
-      statusEl.textContent = "Cargando menú...";
+    async function loadMenus() {
+      // Lista de menús (más nuevos primero)
+      const { data: menus, error } = await supabase
+        .from("menus")
+        .select("id,title,menu_date,created_at")
+        .order("menu_date", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        elMenuSelect.innerHTML = `<option value="">Error cargando menús</option>`;
+        elMeta.textContent = "Error cargando menús.";
+        console.error(error);
+        return [];
+      }
+
+      if (!menus?.length) {
+        elMenuSelect.innerHTML = `<option value="">No hay menús creados</option>`;
+        elMeta.textContent = "No hay menús creados.";
+        return [];
+      }
+
+      elMenuSelect.innerHTML = `<option value="">(Elegir menú)</option>` + menus.map(m => {
+        const label = `${m.menu_date ? m.menu_date + " - " : ""}${m.title}`;
+        return `<option value="${m.id}">${label}</option>`;
+      }).join("");
+
+      return menus;
+    }
+
+    async function loadMenuItems(menuId) {
+      // Traemos relación y “expandimos” el item
       const { data, error } = await supabase
-        .from("menu_items")
-        .select("id,name,category,description,date")
-        .order("id", { ascending: true });
+        .from("menu_menu_items")
+        .select("sort_order, menu_id, menu_items:menu_items(id,name,category,description)")
+        .eq("menu_id", menuId)
+        .order("sort_order", { ascending: true });
 
-      if (error){
-        statusEl.textContent = "Error cargando menú.";
-        listEl.innerHTML = `<div class="card">Error: ${escapeHtml(error.message)}</div>`;
+      if (error) {
+        elMeta.textContent = "Error cargando platos.";
+        console.error(error);
+        renderItems([]);
         return;
       }
 
-      if (!data || data.length === 0){
-        statusEl.textContent = "Menú vacío.";
-        listEl.innerHTML = `<div class="card">No hay productos disponibles.</div>`;
-        return;
-      }
-
-      statusEl.textContent = `${data.length} producto(s)`;
-      listEl.innerHTML = data.map(card).join("");
+      const items = (data || []).map(r => r.menu_items).filter(Boolean);
+      renderItems(items);
     }
 
-    // Carga inicial
-    await cargarMenu();
+    async function init() {
+      const menus = await loadMenus();
+      if (!menus.length) return;
 
-    // "Auto-actualización": refresca cada 10s (simple y efectivo)
-    setInterval(cargarMenu, 10000);
+      // Por defecto: último menú
+      const defaultMenuId = menus[0].id;
+      elMenuSelect.value = String(defaultMenuId);
+
+      const def = menus[0];
+      elMeta.textContent = `${def.menu_date ? def.menu_date + " — " : ""}${def.title}`;
+      await loadMenuItems(defaultMenuId);
+
+      elMenuSelect.addEventListener("change", async () => {
+        const id = elMenuSelect.value;
+        if (!id) return;
+        const selected = menus.find(m => String(m.id) === String(id));
+        elMeta.textContent = `${selected?.menu_date ? selected.menu_date + " — " : ""}${selected?.title || "Menú"}`;
+        await loadMenuItems(id);
+      });
+    }
+
+    init();
   </script>
 </body>
 </html>
