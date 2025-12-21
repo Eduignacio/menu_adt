@@ -15,74 +15,161 @@
       --muted: #64748b;
       --border: #e2e8f0;
       --radius: 16px;
+      --sidebar-width: 320px;
     }
 
-    /* Forzado de mayúsculas visual */
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
     
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
-
-    /* BARRA LATERAL (BRANDING) */
-    .sidebar { 
-      width: 300px; background: var(--sidebar-bg); color: white; 
-      display: flex; flex-direction: column; flex-shrink: 0; 
+    body { 
+      margin: 0; 
+      display: flex; 
+      height: 100vh; 
+      background: var(--bg); 
+      color: var(--text); 
+      overflow: hidden;
+      transition: all 0.3s ease;
     }
-    .sidebar-header { padding: 40px 30px; border-bottom: 1px solid #1e293b; text-align: center; }
-    .sidebar-header h1 { margin: 0; font-size: 24px; color: white; font-weight: 800; letter-spacing: 2px; }
-    .sidebar-content { padding: 30px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    
-    .date-box { 
-      background: #1e293b; padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent);
+
+    /* BARRA LATERAL */
+    .sidebar { 
+      width: var(--sidebar-width); 
+      background: var(--sidebar-bg); 
+      color: white; 
+      display: flex; 
+      flex-direction: column; 
+      flex-shrink: 0;
+      transition: transform 0.3s ease, margin-left 0.3s ease;
+      z-index: 100;
+    }
+
+    /* Clase para ocultar sidebar */
+    body.sidebar-hidden .sidebar {
+      margin-left: calc(var(--sidebar-width) * -1);
+    }
+
+    .sidebar-header { 
+      padding: 40px 20px 20px; 
       text-align: center; 
     }
-    .date-box span { display: block; font-size: 10px; color: #94a3b8; margin-bottom: 5px; font-weight: 800; }
-    .date-box b { font-size: 18px; color: white; }
+
+    .logo-container img {
+      width: 120px; /* Ajusta según el tamaño de tu imagen */
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .date-box { 
+      background: rgba(255,255,255,0.05); 
+      padding: 20px; 
+      border-radius: 12px; 
+      border-top: 4px solid var(--accent);
+      text-align: center;
+      margin: 0 20px;
+    }
+    .date-box span { display: block; font-size: 10px; color: #94a3b8; margin-bottom: 8px; font-weight: 800; }
+    .date-box b { font-size: 20px; color: white; letter-spacing: 1px; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 30px;
+      text-align: center;
+      opacity: 0.5;
+    }
 
     /* ÁREA PRINCIPAL */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; scroll-behavior: smooth; }
-    .top-nav { padding: 20px 40px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-    .container { max-width: 900px; margin: 0 auto; width: 100%; padding: 40px; }
+    .main-area { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      overflow-y: auto; 
+      scroll-behavior: smooth;
+    }
 
-    /* MENÚ CARDS (CASCADA) */
+    .top-nav { 
+      padding: 15px 30px; 
+      background: white; 
+      border-bottom: 1px solid var(--border); 
+      display: flex; 
+      align-items: center; 
+      gap: 20px;
+      position: sticky; 
+      top: 0; 
+      z-index: 10; 
+    }
+
+    /* BOTÓN TOGGLE */
+    .btn-toggle {
+      background: var(--sidebar-bg);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .btn-toggle:hover { background: var(--accent); }
+    .btn-toggle svg { width: 24px; height: 24px; fill: currentColor; }
+
+    .container { max-width: 900px; margin: 0 auto; width: 100%; padding: 40px 20px; }
+
+    /* MENÚ CARDS */
     .menu-card { 
-      background: var(--card); border-radius: var(--radius); padding: 35px; 
-      border: 1px solid var(--border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); 
-      margin-bottom: 40px; animation: slideUp 0.5s ease-out forwards;
+      background: var(--card); 
+      border-radius: var(--radius); 
+      padding: 35px; 
+      border: 1px solid var(--border); 
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); 
+      margin-bottom: 40px; 
+      animation: slideUp 0.5s ease-out forwards;
     }
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     .menu-badge { 
-      display: inline-block; background: var(--accent); color: white; 
-      padding: 6px 15px; border-radius: 8px; font-size: 14px; font-weight: 900;
-      margin-bottom: 25px; letter-spacing: 1px;
+      display: inline-block; 
+      background: var(--accent); 
+      color: white; 
+      padding: 6px 15px; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      font-weight: 900;
+      margin-bottom: 25px; 
+      letter-spacing: 1px;
     }
 
-    /* CATEGORÍAS Y ITEMS */
     .category-group { margin-bottom: 30px; }
     .category-title { 
-      font-size: 11px; font-weight: 900; color: var(--accent); 
-      margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--bg);
-      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; 
+      font-weight: 900; 
+      color: var(--accent); 
+      margin-bottom: 15px; 
+      padding-bottom: 8px; 
+      border-bottom: 2px solid var(--bg);
     }
 
     .item-row { 
-      padding: 12px 0; border-bottom: 1px solid #f8fafc; display: flex; 
-      flex-direction: column; gap: 4px;
+      padding: 12px 0; 
+      border-bottom: 1px solid #f8fafc; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px;
     }
     .item-row:last-child { border-bottom: none; }
     .item-name { font-size: 16px; font-weight: 800; color: var(--text); }
     .item-desc { font-size: 12px; color: var(--muted); text-transform: none; font-weight: 500; }
 
-    /* ESTADOS */
     .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; letter-spacing: 2px; }
     .empty-state { text-align: center; padding: 60px; color: var(--muted); background: white; border-radius: var(--radius); border: 2px dashed var(--border); }
 
+    /* RESPONSIVO */
     @media (max-width: 800px) {
+      :root { --sidebar-width: 100%; }
       body { flex-direction: column; overflow-y: auto; }
-      .sidebar { width: 100%; height: auto; }
-      .main-area { height: auto; overflow: visible; }
-      .sidebar-header { padding: 20px; }
-      .sidebar-content { display: none; }
+      body.sidebar-hidden .sidebar { margin-top: -100vh; margin-left: 0; }
+      .sidebar { height: 100vh; }
+      .main-area { height: auto; }
     }
   </style>
 </head>
@@ -91,22 +178,28 @@
   <!-- SIDEBAR IZQUIERDO -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h1>ADT</h1>
-    </div>
-    <div class="sidebar-content">
+      <div class="logo-container">
+        <!-- Reemplaza 'logo_adt.png' por la ruta real de tu imagen -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/ADT_logo.svg" alt="Logo ADT">
+      </div>
       <div class="date-box">
         <span>MENÚ DEL DÍA</span>
         <b id="dateDisplay">...</b>
       </div>
-      <p style="font-size: 9px; color: #475569; text-align: center; margin-top: 20px; font-weight: 800;">PLATOS ELABORADOS DIARIAMENTE</p>
+    </div>
+    <div class="sidebar-footer">
+      <p style="font-size: 9px; font-weight: 800; color: #475569;">PLATOS ELABORADOS DIARIAMENTE</p>
     </div>
   </aside>
 
   <!-- CONTENIDO PRINCIPAL -->
   <main class="main-area">
     <div class="top-nav">
-      <div style="font-size: 12px; font-weight: 800; color: var(--muted);">BIENVENIDO AL MENÚ DIGITAL</div>
-      <a href="admin.html" style="font-size: 10px; color: var(--accent); text-decoration: none; font-weight: 900; opacity: 0.5;">ADMIN</a>
+      <button class="btn-toggle" onclick="toggleSidebar()" title="OCULTAR/MOSTRAR PANEL">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div style="font-size: 12px; font-weight: 800; color: var(--muted);">BIENVENIDO AL MENÚ DIGITAL ADT</div>
+      <a href="admin.html" style="margin-left: auto; font-size: 10px; color: var(--accent); text-decoration: none; font-weight: 900; opacity: 0.4;">ADMIN</a>
     </div>
 
     <div class="container" id="menusContainer">
@@ -120,6 +213,10 @@
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-hidden');
+    }
+
     function fmtDate(d) {
       if (!d) return "";
       const [y, m, dd] = d.split("-");
@@ -128,7 +225,6 @@
 
     async function init() {
       const container = document.getElementById('menusContainer');
-      const status = document.getElementById('status');
       const dateBox = document.getElementById('dateDisplay');
 
       // 1. Obtener última fecha publicada
@@ -154,13 +250,12 @@
         return;
       }
 
-      container.innerHTML = ""; // Limpiar loader
+      container.innerHTML = ""; 
 
       // 3. Renderizar cada menú en cascada
       menus.forEach(m => {
         const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
         
-        // Agrupar por categoría
         const grouped = items.reduce((acc, it) => {
           const cat = it.category || "VARIOS";
           if (!acc[cat]) acc[cat] = [];
@@ -168,7 +263,6 @@
           return acc;
         }, {});
 
-        // Construir el HTML de categorías e items
         let bodyHtml = "";
         Object.keys(grouped).sort().forEach(cat => {
             bodyHtml += `<div class="category-group"><div class="category-title">${cat}</div>`;
