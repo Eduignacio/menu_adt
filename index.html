@@ -18,191 +18,77 @@
       --sidebar-width: 300px;
     }
 
-    /* Forzado de mayúsculas visual */
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
     
-    body { 
-      margin: 0; 
-      display: flex; 
-      height: 100vh; 
-      background: var(--bg); 
-      color: var(--text); 
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
 
-    /* BARRA LATERAL */
+    /* SIDEBAR RESPONSIVO */
     .sidebar { 
-      width: var(--sidebar-width); 
-      background: var(--sidebar-bg); 
-      color: white; 
-      display: flex; 
-      flex-direction: column; 
-      flex-shrink: 0;
-      transition: transform 0.3s ease, margin-left 0.3s ease;
-      z-index: 100;
-      border-right: 1px solid #1e293b;
+      width: var(--sidebar-width); background: var(--sidebar-bg); color: white; 
+      display: flex; flex-direction: column; flex-shrink: 0; 
+      transition: transform 0.3s ease; z-index: 1000; border-right: 1px solid #1e293b;
     }
 
-    body.sidebar-hidden .sidebar {
-      margin-left: calc(var(--sidebar-width) * -1);
+    /* OVERLAY PARA MÓVIL */
+    .sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 999;
     }
 
-    .sidebar-header { 
-      padding: 40px 20px 20px; 
-      text-align: center; 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .sidebar-header { padding: 40px 20px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
 
-    /* TIPOGRAFÍA ADT PERSONALIZADA */
-    .brand-adt {
-      font-size: 72px; /* Tamaño grande para impacto */
-      font-weight: 900; /* Extra bold */
-      color: white;
-      letter-spacing: -4px; /* Espaciado apretado tipo logo */
-      line-height: 0.8;
-      margin-bottom: 30px;
-      user-select: none;
-      display: block;
-    }
+    .brand-adt { font-size: 72px; font-weight: 900; color: white; letter-spacing: -4px; line-height: 0.8; margin-bottom: 30px; }
 
-    .date-box { 
-      background: rgba(255,255,255,0.07); 
-      padding: 15px; 
-      border-radius: 12px; 
-      border-top: 4px solid var(--accent);
-      text-align: center;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    .date-box { background: rgba(255,255,255,0.07); padding: 15px; border-radius: 12px; border-top: 4px solid var(--accent); text-align: center; width: 100%; }
     .date-box span { display: block; font-size: 9px; color: #94a3b8; margin-bottom: 5px; font-weight: 800; }
-    .date-box b { font-size: 18px; color: white; letter-spacing: 1px; }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 25px;
-      text-align: center;
-      border-top: 1px solid #1e293b;
-    }
+    .date-box b { font-size: 18px; color: white; }
 
     /* ÁREA PRINCIPAL */
-    .main-area { 
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      overflow-y: auto; 
-    }
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    .top-nav { padding: 12px 20px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 10; }
 
-    .top-nav { 
-      padding: 12px 25px; 
-      background: white; 
-      border-bottom: 1px solid var(--border); 
-      display: flex; 
-      align-items: center; 
-      gap: 15px;
-      position: sticky; 
-      top: 0; 
-      z-index: 10; 
-    }
+    .btn-toggle { background: var(--sidebar-bg); color: white; border: none; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 20px; }
 
-    .btn-toggle {
-      background: var(--sidebar-bg);
-      color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .btn-toggle:hover { background: var(--accent); }
-    .btn-toggle svg { width: 20px; height: 20px; fill: currentColor; }
-
-    .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 30px 20px; }
-
-    /* MENÚ CARDS */
-    .menu-card { 
-      background: var(--card); 
-      border-radius: var(--radius); 
-      padding: 30px; 
-      border: 1px solid var(--border); 
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
-      margin-bottom: 30px; 
-      animation: slideUp 0.4s ease-out forwards;
-    }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-    .menu-badge { 
-      display: inline-block; 
-      background: var(--accent); 
-      color: white; 
-      padding: 5px 12px; 
-      border-radius: 6px; 
-      font-size: 12px; 
-      font-weight: 900;
-      margin-bottom: 20px; 
-    }
-
-    .category-title { 
-      font-size: 10px; 
-      font-weight: 900; 
-      color: var(--accent); 
-      margin-bottom: 12px; 
-      padding-bottom: 6px; 
-      border-bottom: 2px solid var(--bg);
-    }
-
-    .item-row { 
-      padding: 10px 0; 
-      border-bottom: 1px solid #f8fafc; 
-    }
-    .item-row:last-child { border-bottom: none; }
+    /* CARDS */
+    .menu-card { background: var(--card); border-radius: var(--radius); padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
+    .menu-badge { display: inline-block; background: var(--accent); color: white; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 900; margin-bottom: 20px; }
+    .category-title { font-size: 10px; font-weight: 900; color: var(--accent); margin-bottom: 10px; border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
     .item-name { font-size: 15px; font-weight: 800; color: var(--text); }
     .item-desc { font-size: 11px; color: var(--muted); text-transform: none; margin-top: 4px; }
 
-    .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; font-size: 12px; }
-
-    @media (max-width: 800px) {
-      .sidebar { position: fixed; height: 100vh; }
-      body.sidebar-hidden .sidebar { transform: translateX(-100%); margin-left: 0; }
+    /* MEDIA QUERIES */
+    @media (max-width: 850px) {
+      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
+      body.sidebar-open .sidebar { transform: translateX(0); }
+      body.sidebar-open .sidebar-overlay { display: block; }
+      .brand-adt { font-size: 50px; }
     }
   </style>
 </head>
-<body>
+<body id="bodyTag">
 
-  <!-- BARRA LATERAL -->
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <aside class="sidebar">
     <div class="sidebar-header">
-      <!-- PALABRA ADT CON TIPOGRAFÍA DE IMPACTO -->
       <span class="brand-adt">ADT</span>
-
       <div class="date-box">
         <span>MENÚ DEL DÍA</span>
         <b id="dateDisplay">...</b>
       </div>
     </div>
-    <div class="sidebar-footer">
-      <p style="font-size: 8px; font-weight: 800; color: #475569; letter-spacing: 1px;">PLATOS ELABORADOS DIARIAMENTE</p>
-    </div>
   </aside>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="main-area">
     <div class="top-nav">
       <button class="btn-toggle" onclick="toggleSidebar()">
-        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
-      <div style="font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.5px;">MENÚ DIGITAL ADT</div>
-      <a href="admin.html" style="margin-left: auto; font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 900; opacity: 0.4;">ACCESO</a>
+      <div style="font-size: 11px; font-weight: 800; color: var(--muted);">MENÚ ADT</div>
     </div>
 
     <div class="container" id="menusContainer">
-      <div class="loader" id="status">CARGANDO MENÚ...</div>
+      <div style="text-align:center; padding:50px; color:var(--muted);">CARGANDO...</div>
     </div>
   </main>
 
@@ -212,66 +98,33 @@
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    function toggleSidebar() {
-      document.body.classList.toggle('sidebar-hidden');
-    }
-
-    function fmtDate(d) {
-      if (!d) return "";
-      const [y, m, dd] = d.split("-");
-      return `${dd}-${m}-${y}`;
-    }
+    function toggleSidebar() { document.getElementById('bodyTag').classList.toggle('sidebar-open'); }
 
     async function init() {
       const container = document.getElementById('menusContainer');
-      const dateBox = document.getElementById('dateDisplay');
-
       const { data: latest } = await sb.from('menus').select('menu_date').order('menu_date', {ascending: false}).limit(1).maybeSingle();
+      if (!latest) { container.innerHTML = "SIN MENÚS"; return; }
+      
+      const [y, m, dd] = latest.menu_date.split("-");
+      document.getElementById('dateDisplay').innerText = `${dd}-${m}-${y}`;
 
-      if (!latest) {
-        container.innerHTML = '<div class="loader">NO HAY MENÚS PUBLICADOS.</div>';
-        return;
-      }
-
-      dateBox.innerText = fmtDate(latest.menu_date);
-
-      const { data: menus } = await sb
-        .from('menus')
-        .select(`id, name, menu_menu_items ( menu_items (*) )`)
-        .eq('menu_date', latest.menu_date)
-        .order('created_at', { ascending: true });
-
+      const { data: menus } = await sb.from('menus').select(`id, name, menu_menu_items ( menu_items (*) )`).eq('menu_date', latest.menu_date).order('created_at', { ascending: true });
       container.innerHTML = ""; 
 
       menus.forEach(m => {
         const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
-        const grouped = items.reduce((acc, it) => {
-          (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it);
-          return acc;
-        }, {});
-
+        const grouped = items.reduce((acc, it) => { (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it); return acc; }, {});
         let bodyHtml = "";
         Object.keys(grouped).sort().forEach(cat => {
             bodyHtml += `<div class="category-title">${cat}</div>`;
-            grouped[cat].forEach(it => {
-                bodyHtml += `
-                    <div class="item-row">
-                        <div class="item-name">${it.name}</div>
-                        ${it.description ? `<div class="item-desc">${it.description}</div>` : ""}
-                    </div>`;
-            });
+            grouped[cat].forEach(it => { bodyHtml += `<div class="item-row" style="margin-bottom:15px;"><div class="item-name">${it.name}</div>${it.description ? `<div class="item-desc">${it.description}</div>` : ""}</div>`; });
         });
-
         const card = document.createElement('div');
         card.className = 'menu-card';
-        card.innerHTML = `
-          <div class="menu-badge">${m.name}</div>
-          <div>${bodyHtml || '<p>SIN PLATOS.</p>'}</div>
-        `;
+        card.innerHTML = `<div class="menu-badge">${m.name}</div><div>${bodyHtml}</div>`;
         container.appendChild(card);
       });
     }
-
     init();
   </script>
 </body>
