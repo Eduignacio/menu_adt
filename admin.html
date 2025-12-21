@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SISTEMA ADT - ADMINISTRACIÓN INTEGRAL</title>
+  <title>SISTEMA ADT - ADMINISTRACIÓN TOTAL</title>
   <style>
     :root {
       --sidebar-bg: #0f172a;
@@ -25,7 +25,7 @@
     .login-card { background: white; padding: 40px; border-radius: 20px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
     .login-card input { text-transform: none !important; }
 
-    /* BARRA LATERAL */
+    /* SIDEBAR */
     .sidebar { width: 320px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; border-right: 1px solid var(--border); flex-shrink: 0; }
     .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; background: #020617; }
     .sidebar-brand h2 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 1px; }
@@ -75,6 +75,8 @@
     .btn-ghost { background: transparent; color: #64748b; border: 1px solid var(--border); }
 
     .hidden { display: none !important; }
+    #autoNameDisplay { font-size: 18px; font-weight: 900; color: var(--accent); margin-top: 8px; display: block; }
+    
     .perm-badge { padding: 4px 8px; border-radius: 4px; font-size: 9px; margin-right: 4px; border: 1px solid var(--border); }
     .perm-on { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
     .perm-off { background: #f1f5f9; color: #94a3b8; }
@@ -131,19 +133,12 @@
               </div>
               <div>
                 <label>NOMBRE ASIGNADO AUTOMÁTICAMENTE</label>
-                <div id="autoNameDisplay" style="font-size: 18px; font-weight: 900; color: var(--accent); margin-top: 8px;">CARGANDO...</div>
+                <div id="autoNameDisplay">CARGANDO...</div>
               </div>
             </div>
             <button class="btn btn-primary" id="btnSaveFull" style="width: 100%; font-size: 14px; padding: 18px; margin-top: 20px;">PUBLICAR ESTE MENÚ AHORA</button>
-
-            <div style="margin-top: 25px; border-top: 2px dashed var(--bg); padding-top: 20px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="font-size: 11px; color: #64748b; margin:0;">PLATOS EN EL BORRADOR</h3>
-                <button class="btn btn-ghost" style="padding: 5px 10px;" onclick="clearDraft()">LIMPIAR</button>
-              </div>
-              <div id="platesDraft"></div>
-              <div id="emptyMsg" style="text-align: center; color: #94a3b8; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 12px; font-size: 12px;">USA EL CATÁLOGO PARA AÑADIR PLATOS.</div>
-            </div>
+            <div id="platesDraft" style="margin-top: 25px;"></div>
+            <div id="emptyMsg" style="text-align: center; color: #94a3b8; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 12px; font-size: 12px;">USA EL CATÁLOGO PARA AÑADIR PLATOS.</div>
           </div>
         </div>
 
@@ -172,20 +167,24 @@
           <div class="card"><div class="table-wrap"><table><thead><tr><th>FECHA</th><th>NOMBRE</th><th>ACCIONES</th></tr></thead><tbody id="historyTable"></tbody></table></div></div>
         </div>
 
-        <!-- VISTA 4: GESTIÓN DE USUARIOS -->
+        <!-- VISTA 4: GESTIÓN DE USUARIOS (CREAR CUENTAS) -->
         <div id="viewUsers" class="hidden">
           <div class="card">
-            <h3 style="margin-top: 0; font-size: 14px;">DAR ACCESO A USUARIO</h3>
+            <h3 style="margin-top: 0; font-size: 14px;">CREAR NUEVO USUARIO Y ASIGNAR PERMISOS</h3>
             <div class="grid-form">
-              <div><label>EMAIL (MINÚSCULAS)</label><input id="newUserEmail" type="email" style="text-transform: none !important;"></div>
+              <div><label>EMAIL (MINÚSCULAS)</label><input id="newUserEmail" type="email" placeholder="usuario@gmail.com" style="text-transform: none !important;"></div>
+              <div><label>CONTRASEÑA</label><input id="newUserPass" type="password" placeholder="MIN. 6 CARACTERES" style="text-transform: none !important;"></div>
               <div style="display: flex; align-items: center; gap: 20px; padding-top: 15px;">
                 <label style="margin:0;"><input type="checkbox" id="checkPermCatalog" style="width: auto; margin-right:8px;"> CATÁLOGO</label>
                 <label style="margin:0;"><input type="checkbox" id="checkPermUsers" style="width: auto; margin-right:8px;"> USUARIOS</label>
               </div>
-              <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="addUserPermission()" style="width:100%">OTORGAR</button></div>
+              <div style="display: flex; align-items: flex-end;"><button class="btn btn-primary" onclick="createUserAndPermission()" style="width:100%">CREAR USUARIO</button></div>
             </div>
           </div>
-          <div class="card"><div class="table-wrap"><table><thead><tr><th>EMAIL</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
+          <div class="card">
+            <h3 style="margin: 0 0 15px 0; font-size: 14px;">LISTA DE ACCESOS</h3>
+            <div class="table-wrap"><table><thead><tr><th>EMAIL</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usersTableBody"></tbody></table></div>
+          </div>
         </div>
 
       </div>
@@ -209,7 +208,6 @@
         const email = session.user.email.toLowerCase();
         document.getElementById('userBadge').innerText = email;
 
-        // LLAVE MAESTRA EDUARDO
         if (email === "eduardoignacio.g.h@gmail.com") {
             userPerms.catalog = true; userPerms.users = true;
         }
@@ -238,7 +236,6 @@
 
     function logout() { sb.auth.signOut(); location.reload(); }
 
-    // --- NAVEGACIÓN ---
     function switchMode(mode) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('viewBuilder').classList.add('hidden');
@@ -258,7 +255,45 @@
       else if (mode === 'history') loadHistory();
     }
 
-    // --- CONSTRUCTOR & NOMBRES ---
+    // --- USUARIOS: CREAR CUENTA Y PERMISOS ---
+    async function createUserAndPermission() {
+        const email = newUserEmail.value.trim().toLowerCase();
+        const password = newUserPass.value;
+        const cat = checkPermCatalog.checked;
+        const usr = checkPermUsers.checked;
+
+        if (!email || !password || password.length < 6) return alert("COMPLETA EMAIL Y PASSWORD (MIN 6)");
+
+        // 1. Crear el usuario en la Autenticación de Supabase
+        const { error: authError } = await sb.auth.signUp({ email, password });
+        
+        if (authError) {
+            return alert("ERROR AL CREAR CUENTA: " + authError.message);
+        }
+
+        // 2. Crear el registro de permisos en nuestra tabla
+        const { error: permError } = await sb.from('user_permissions').upsert({ 
+            email, 
+            can_manage_catalog: cat, 
+            can_manage_users: usr 
+        });
+
+        if (permError) alert("CUENTA CREADA PERO ERROR EN PERMISOS: " + permError.message);
+        else {
+            alert("USUARIO CREADO CON ÉXITO ✅\nYA PUEDE INICIAR SESIÓN.");
+            newUserEmail.value = ""; newUserPass.value = "";
+            loadUsersManager();
+        }
+    }
+
+    async function loadUsersManager() {
+      const { data } = await sb.from('user_permissions').select('*').order('email');
+      usersTableBody.innerHTML = (data || []).map(u => `<tr><td style="text-transform:none">${u.email}</td><td><span class="perm-badge ${u.can_manage_catalog?'perm-on':'perm-off'}">CATALOGO</span><span class="perm-badge ${u.can_manage_users?'perm-on':'perm-off'}">USUARIOS</span></td><td><button class="btn btn-danger" onclick="delUser(${u.id})">X</button></td></tr>`).join('');
+    }
+
+    async function delUser(id) { if(confirm("¿QUITAR ACCESO? (NOTA: La cuenta sigue existiendo en Auth, pero no verá módulos)")) { await sb.from('user_permissions').delete().eq('id', id); loadUsersManager(); } }
+
+    // --- RESTO DE FUNCIONES (CATALOGO, MENÚ, ETC) ---
     async function calculateNextMenuName() {
       const date = document.getElementById('menuDate').value;
       if (!date) return;
@@ -280,98 +315,3 @@
           <button class="cat-trigger" onclick="toggleAcc('acc-${cat.replace(/\s/g, '').replace(/\//g, '')}')">${cat} <span>▼</span></button>
           <div class="cat-content">
             ${grouped[cat].map(i => `
-              <div class="food-card">
-                <b>${i.acompanamiento}</b>
-                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.pollo}', '${cat}')">${i.pollo}</button>
-                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.cerdo}', '${cat}')">${i.cerdo}</button>
-                <button class="btn-quick" onclick="addDraft('${i.acompanamiento}', '${i.carne_roja}', '${cat}')">${i.carne_roja}</button>
-              </div>`).join('')}
-          </div>
-        </div>`).join('');
-    }
-
-    function toggleAcc(id) {
-      const el = document.getElementById(id);
-      const was = el.classList.contains('active');
-      document.querySelectorAll('.cat-accordion').forEach(a => a.classList.remove('active'));
-      if(!was) el.classList.add('active');
-    }
-
-    function addDraft(a, p, c) {
-      draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` });
-      renderDraft();
-    }
-
-    function renderDraft() {
-      platesDraft.innerHTML = draft.map((p, i) => `<div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div><button class="btn btn-danger" style="padding:5px 10px" onclick="draft.splice(${i},1);renderDraft()">X</button></div>`).join('');
-      emptyMsg.classList.toggle('hidden', draft.length > 0);
-    }
-
-    function clearDraft() { draft = []; renderDraft(); }
-
-    btnSaveFull.onclick = async () => {
-      const date = menuDate.value;
-      if (!date || draft.length === 0) return alert("FALTA INFO");
-      await calculateNextMenuName();
-      const { data: menu, error } = await sb.from('menus').insert([{ name: nextMenuName, menu_date: date }]).select().single();
-      if (error) return alert("REINTENTA");
-      for (const p of draft) {
-        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
-        await sb.from('menu_menu_items').insert([{ menu_id: menu.id, menu_item_id: item.id }]);
-      }
-      alert("PUBLICADO: " + nextMenuName); clearDraft(); calculateNextMenuName();
-    };
-
-    // --- CATALOGO CRUD ---
-    async function loadCatalogManager() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || [];
-      catalogTable.innerHTML = catalogCache.map(i => `<tr><td>${i.categoria}</td><td>${i.acompanamiento}</td><td>${i.pollo}</td><td>${i.cerdo}</td><td>${i.carne_roja}</td><td><button class="btn btn-warning" style="padding:5px" onclick="editCatalog(${i.id})">E</button><button class="btn btn-danger" style="padding:5px" onclick="delCatalog(${i.id})">X</button></td></tr>`).join('');
-    }
-
-    function editCatalog(id) {
-      const i = catalogCache.find(x => x.id === id);
-      editCatalogId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cPollo.value = i.pollo; cCerdo.value = i.cerdo; cCarne.value = i.carne_roja;
-      catalogFormTitle.innerText = "EDITAR ALIMENTO"; btnCatalogAction.innerText = "ACTUALIZAR"; btnCancelEdit.classList.remove('hidden');
-    }
-
-    function cancelEditCatalog() { editCatalogId.value = ""; cCat.value = ""; cAcomp.value = ""; cPollo.value = ""; cCerdo.value = ""; cCarne.value = ""; catalogFormTitle.innerText = "AÑADIR NUEVO"; btnCatalogAction.innerText = "GUARDAR"; btnCancelEdit.classList.add('hidden'); }
-
-    async function saveCatalogItem() {
-      const id = editCatalogId.value;
-      const p = { categoria: cCat.value.toUpperCase(), acompanamiento: cAcomp.value.toUpperCase(), pollo: cPollo.value.toUpperCase(), cerdo: cCerdo.value.toUpperCase(), carne_roja: cCarne.value.toUpperCase() };
-      if (id) await sb.from('food_catalog').update(p).eq('id', id); else await sb.from('food_catalog').insert([p]);
-      cancelEditCatalog(); loadData(); loadCatalogManager();
-    }
-
-    async function delCatalog(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadData(); loadCatalogManager(); } }
-
-    // --- HISTORIAL ---
-    async function loadHistory() {
-      const { data } = await sb.from('menus').select('*').order('menu_date', { ascending: false });
-      historyTable.innerHTML = (data || []).map(m => `<tr><td>${m.menu_date}</td><td>${m.name}</td><td><button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`).join('');
-    }
-
-    async function delMenu(id) { if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); calculateNextMenuName(); } }
-
-    // --- USUARIOS ---
-    async function loadUsersManager() {
-      const { data } = await sb.from('user_permissions').select('*').order('email');
-      usersTableBody.innerHTML = data.map(u => `<tr><td style="text-transform:none">${u.email}</td><td><span class="perm-badge ${u.can_manage_catalog?'perm-on':'perm-off'}">CATALOGO</span><span class="perm-badge ${u.can_manage_users?'perm-on':'perm-off'}">USUARIOS</span></td><td><button class="btn btn-danger" onclick="delUser(${u.id})">X</button></td></tr>`).join('');
-    }
-
-    async function addUserPermission() {
-      const email = newUserEmail.value.trim().toLowerCase();
-      if(!email) return;
-      await sb.from('user_permissions').upsert({ email, can_manage_catalog: checkPermCatalog.checked, can_manage_users: checkPermUsers.checked });
-      newUserEmail.value = ""; loadUsersManager(); alert("ACCESO OTORGADO");
-    }
-
-    async function delUser(id) { if(confirm("¿QUITAR ACCESO?")) { await sb.from('user_permissions').delete().eq('id', id); loadUsersManager(); } }
-
-    document.addEventListener('input', (e) => { if (e.target.tagName === 'INPUT' && !['email', 'password', 'date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
-    menuDate.value = new Date().toISOString().split('T')[0];
-    checkAuth();
-  </script>
-</body>
-</html>
