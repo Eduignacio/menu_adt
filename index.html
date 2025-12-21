@@ -1,72 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Menú ADT</title>
-
-  <!-- Cargar Supabase UNA sola vez -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:40px}
-    h1{text-align:center}
-    .menu{max-width:700px;margin:0 auto}
-    .item{background:#fff;border-radius:10px;padding:16px;margin:12px 0;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-    .item h3{margin:0 0 6px}
-    .category{font-size:.9em;color:#666;margin-bottom:6px}
-    .desc{margin:0;color:#222}
-    .error{color:#b00020;background:#fff;padding:12px;border-radius:8px}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial; margin:0; background:#f6f6f6;}
+    header{padding:22px 18px; text-align:center; background:white; box-shadow:0 2px 14px rgba(0,0,0,.06);}
+    h1{margin:0; font-size:42px;}
+    .wrap{max-width:900px; margin:24px auto; padding:0 16px;}
+    .topbar{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px;}
+    .btn{background:#111; color:white; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600;}
+    .card{background:white; border-radius:14px; padding:18px; margin:12px 0; box-shadow:0 10px 30px rgba(0,0,0,.07);}
+    .name{font-size:22px; font-weight:800; margin:0 0 6px;}
+    .cat{opacity:.75; margin:0 0 6px;}
+    .desc{margin:0; opacity:.9;}
+    .muted{opacity:.7;}
   </style>
 </head>
-
 <body>
-  <h1>Menú</h1>
+  <header>
+    <h1>Menú</h1>
+  </header>
 
-  <div id="menu" class="menu">Cargando menú…</div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="muted" id="status">Cargando menú...</div>
+      <a class="btn" href="/admin.html">Admin</a>
+    </div>
 
-  <script>
-    // 🔑 Datos Supabase (tuyos)
+    <div id="list"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
 
-    // ✅ Creamos el cliente y lo llamamos "db" (no "supabase")
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function cargarMenu() {
-      const contenedor = document.getElementById("menu");
-      contenedor.textContent = "Cargando menú…";
+    const statusEl = document.getElementById("status");
+    const listEl = document.getElementById("list");
 
-      const { data, error } = await db
-        .from("menu_items")
-        .select("id, name, category, description")
-        .order("id", { ascending: true });
-
-      if (error) {
-        console.error("Supabase error:", error);
-        contenedor.innerHTML = `<div class="error">Error al cargar el menú: ${error.message}</div>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        contenedor.textContent = "No hay productos disponibles.";
-        return;
-      }
-
-      contenedor.innerHTML = "";
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <h3>${item.name ?? "Sin nombre"}</h3>
-          <div class="category">${item.category ?? ""}</div>
-          <p class="desc">${item.description ?? ""}</p>
-        `;
-        contenedor.appendChild(div);
-      });
+    function card(item){
+      const name = item.name ?? "Sin nombre";
+      const category = item.category ?? "";
+      const desc = item.description ?? "";
+      return `
+        <div class="card">
+          <p class="name">${escapeHtml(name)}</p>
+          ${category ? `<p class="cat">${escapeHtml(category)}</p>` : ""}
+          ${desc ? `<p class="desc">${escapeHtml(desc)}</p>` : ""}
+        </div>
+      `;
     }
 
-    cargarMenu();
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    async function cargarMenu(){
+      statusEl.textContent = "Cargando menú...";
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id,name,category,description,date")
+        .order("id", { ascending: true });
+
+      if (error){
+        statusEl.textContent = "Error cargando menú.";
+        listEl.innerHTML = `<div class="card">Error: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data || data.length === 0){
+        statusEl.textContent = "Menú vacío.";
+        listEl.innerHTML = `<div class="card">No hay productos disponibles.</div>`;
+        return;
+      }
+
+      statusEl.textContent = `${data.length} producto(s)`;
+      listEl.innerHTML = data.map(card).join("");
+    }
+
+    // Carga inicial
+    await cargarMenu();
+
+    // "Auto-actualización": refresca cada 10s (simple y efectivo)
+    setInterval(cargarMenu, 10000);
   </script>
 </body>
 </html>
