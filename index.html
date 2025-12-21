@@ -2,73 +2,49 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Menú ADT</title>
 
-  <!-- Supabase JS v2 -->
+  <!-- Cargar Supabase UNA sola vez -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 40px;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    .menu {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .item {
-      background: #fff;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    .item h3 {
-      margin: 0 0 6px;
-    }
-
-    .category {
-      font-size: 0.85em;
-      color: #666;
-      margin-bottom: 6px;
-    }
+    body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:40px}
+    h1{text-align:center}
+    .menu{max-width:700px;margin:0 auto}
+    .item{background:#fff;border-radius:10px;padding:16px;margin:12px 0;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .item h3{margin:0 0 6px}
+    .category{font-size:.9em;color:#666;margin-bottom:6px}
+    .desc{margin:0;color:#222}
+    .error{color:#b00020;background:#fff;padding:12px;border-radius:8px}
   </style>
 </head>
-<body>
 
+<body>
   <h1>Menú</h1>
 
-  <div id="menu" class="menu">
-    Cargando menú…
-  </div>
+  <div id="menu" class="menu">Cargando menú…</div>
 
   <script>
-    // 🔑 Configuración Supabase
-    const supabaseUrl = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    // 🔑 Datos Supabase (tuyos)
+    const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
 
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    // ✅ Creamos el cliente y lo llamamos "db" (no "supabase")
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function cargarMenu() {
-      const { data, error } = await supabase
-        .from("menu_items")
-        .select("name, category, description");
-
       const contenedor = document.getElementById("menu");
-      contenedor.innerHTML = "";
+      contenedor.textContent = "Cargando menú…";
+
+      const { data, error } = await db
+        .from("menu_items")
+        .select("id, name, category, description")
+        .order("id", { ascending: true });
 
       if (error) {
-        console.error(error);
-        contenedor.textContent = "Error al cargar el menú";
+        console.error("Supabase error:", error);
+        contenedor.innerHTML = `<div class="error">Error al cargar el menú: ${error.message}</div>`;
         return;
       }
 
@@ -77,22 +53,20 @@
         return;
       }
 
+      contenedor.innerHTML = "";
       data.forEach(item => {
         const div = document.createElement("div");
         div.className = "item";
-
         div.innerHTML = `
-          <h3>${item.name}</h3>
-          <div class="category">${item.category}</div>
-          <p>${item.description}</p>
+          <h3>${item.name ?? "Sin nombre"}</h3>
+          <div class="category">${item.category ?? ""}</div>
+          <p class="desc">${item.description ?? ""}</p>
         `;
-
         contenedor.appendChild(div);
       });
     }
 
     cargarMenu();
   </script>
-
 </body>
 </html>
