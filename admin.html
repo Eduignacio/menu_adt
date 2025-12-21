@@ -5,709 +5,276 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Menú</title>
   <style>
-    :root{
-      --bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9;
-      --btn:#111; --danger:#b3261e; --ok:#0f7b2d;
-    }
+    :root{ --bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9; --btn:#111; --danger:#b3261e; --ok:#0f7b2d; }
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--text);}
     .wrap{max-width:1150px; margin:0 auto; padding:26px 18px 60px;}
     header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-    h1{font-size:54px; margin:8px 0;}
-    .actions{display:flex; gap:10px; flex-wrap:wrap;}
-    button, .btn{
-      border:1px solid var(--line); background:#fff; padding:10px 14px;
-      border-radius:999px; cursor:pointer; font-weight:800;
-    }
+    h1{font-size:40px; margin:8px 0;}
+    .actions{display:flex; gap:10px;}
+    button, .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:800; text-decoration:none; color:inherit; }
     .btnPrimary{background:var(--btn); color:#fff; border-color:var(--btn);}
     .btnDanger{background:var(--danger); color:#fff; border-color:var(--danger);}
-    .btnGhost{background:#fff;}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03);}
-    .title{font-size:22px; font-weight:950; margin:0 0 12px;}
-    .muted{color:var(--muted);}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03); margin-bottom:15px;}
+    .title{font-size:20px; font-weight:950; margin:0 0 12px;}
+    .muted{color:var(--muted); font-size:14px;}
     .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
     .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;}
-    @media (max-width: 900px){.grid2,.grid3{grid-template-columns:1fr;}}
-    label{display:block; font-weight:900; margin:10px 0 6px;}
-    input, textarea, select{
-      width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:12px;
-      padding:12px 12px; font-size:15px; background:#fff;
-    }
-    textarea{min-height:96px; resize:vertical;}
-    .row{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-    .pill{display:inline-block; padding:4px 10px; border:1px solid var(--line); border-radius:999px; font-weight:900; font-size:12px; background:#fff;}
-    table{width:100%; border-collapse:collapse; background:#fff;}
-    th,td{padding:10px 10px; border-top:1px solid var(--line); text-align:left; vertical-align:top;}
-    th{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:#444;}
-    .small{font-size:12px;}
-    .ok{color:var(--ok); font-weight:900;}
+    @media (max-width: 800px){.grid2,.grid3{grid-template-columns:1fr;}}
+    label{display:block; font-weight:900; margin:10px 0 6px; font-size:13px;}
+    input, textarea, select{ width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:12px; padding:12px; font-size:15px; background:#fff; }
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:10px; border-top:1px solid var(--line); text-align:left;}
+    th{font-size:11px; text-transform:uppercase; color:var(--muted);}
     .hidden{display:none!important;}
+    .row{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <header>
-      <h1>Admin Menú</h1>
+      <h1>Panel Admin</h1>
       <div class="actions">
-        <a class="btn" href="./index.html">← Volver al menú</a>
+        <a class="btn" href="./index.html">Ver Menú Público</a>
         <button class="btn" id="btnLogout" style="display:none;">Cerrar sesión</button>
       </div>
     </header>
 
     <!-- LOGIN -->
     <div class="card" id="loginCard">
-      <p class="title">Iniciar sesión</p>
-      <p class="muted">Solo usuarios autenticados pueden crear/editar/borrar menús y platos.</p>
-
+      <p class="title">Acceso</p>
       <div class="grid2">
-        <div>
-          <label>Email</label>
-          <input id="loginEmail" type="email" placeholder="tu@email.com" />
-        </div>
-        <div>
-          <label>Contraseña</label>
-          <input id="loginPass" type="password" placeholder="••••••••" />
-        </div>
+        <input id="loginEmail" type="email" placeholder="Email" />
+        <input id="loginPass" type="password" placeholder="Contraseña" />
       </div>
-
-      <div class="row" style="margin-top:12px; justify-content:flex-end;">
-        <button class="btn btnPrimary" id="btnLogin" type="button">Entrar</button>
-      </div>
-
-      <div class="muted small" style="margin-top:10px;">
-        Si no tienes usuario, créalo en Supabase: <b>Authentication → Users → Add user</b> (email + password).
-      </div>
+      <button class="btn btnPrimary" id="btnLogin" style="margin-top:15px; width:100%;">Entrar</button>
     </div>
 
     <!-- APP -->
     <div id="app" class="hidden">
-      <div class="card" style="margin-top:14px;">
-        <div class="row">
-          <div>
-            <p class="title" style="margin:0;">Gestión de Menús</p>
-            <p class="muted" style="margin:6px 0 0;">Crea, edita, borra y reutiliza platos del historial.</p>
-          </div>
-          <div class="pill">Sesión iniciada ✅</div>
-        </div>
-
-        <!-- Menú seleccionado + acciones -->
-        <div class="grid3" style="margin-top:14px;">
+      <!-- GESTIÓN DE MENÚS -->
+      <div class="card">
+        <p class="title">Seleccionar o Crear Menú</p>
+        <div class="grid3">
           <div>
             <label>Historial de menús</label>
             <select id="menuSelect"></select>
-            <div class="muted small" style="margin-top:6px;">Selecciona un menú existente para editarlo o reutilizarlo.</div>
           </div>
-
           <div>
             <label>Nombre del menú</label>
-            <input id="menuName" placeholder="Ej: Menú del día" />
+            <input id="menuName" placeholder="Ej: Almuerzo Miércoles" />
           </div>
-
           <div>
             <label>Fecha del menú</label>
             <input id="menuDate" type="date" />
           </div>
         </div>
-
-        <div class="row" style="margin-top:12px;">
-          <div class="muted small" id="menuStatus">—</div>
-          <div class="row">
-            <button class="btn btnPrimary" id="btnCreateMenu" type="button">Agregar menú</button>
-            <button class="btn" id="btnUpdateMenu" type="button">Editar menú</button>
-            <button class="btn btnDanger" id="btnDeleteMenu" type="button">Borrar menú</button>
+        <div class="row" style="margin-top:15px;">
+          <span id="menuStatus" class="muted">Seleccione un menú</span>
+          <div class="actions">
+            <button class="btn btnPrimary" id="btnCreateMenu">Nuevo</button>
+            <button class="btn" id="btnUpdateMenu">Guardar Cambios</button>
+            <button class="btn btnDanger" id="btnDeleteMenu">Borrar Menú</button>
           </div>
         </div>
       </div>
 
-      <!-- Platos del menú actual -->
-      <div class="card" style="margin-top:14px;">
-        <div class="row">
-          <p class="title" style="margin:0;">Platos del menú seleccionado</p>
-          <span class="muted small" id="menuItemsCount">0 plato(s).</span>
-        </div>
-
-        <div class="grid2" style="margin-top:10px;">
-          <!-- Agregar plato (nuevo) -->
-          <div class="card" style="border-radius:14px;">
-            <p class="title" style="margin:0 0 10px;">Agregar plato (texto)</p>
-
-            <!-- ID oculto -->
-            <input id="itemId" type="hidden" />
-
-            <label>Nombre</label>
-            <input id="itemName" placeholder="Ej: Hamburguesa clásica" />
-
-            <div class="grid2">
-              <div>
-                <label>Categoría</label>
-                <input id="itemCategory" placeholder="Ej: Principal / Entrada / Bebida" />
-              </div>
-              <div>
-                <label>Fecha (opcional)</label>
-                <input id="itemDate" type="date" />
-              </div>
+      <!-- PLATOS -->
+      <div class="grid2">
+        <!-- FORMULARIO PLATO -->
+        <div class="card">
+          <p class="title">Plato (Nuevo/Editar)</p>
+          <input type="hidden" id="itemId" />
+          <label>Nombre</label>
+          <input id="itemName" />
+          <div class="grid2">
+            <div>
+              <label>Categoría</label>
+              <input id="itemCategory" placeholder="Ej: Postre" />
             </div>
-
-            <label>Descripción</label>
-            <textarea id="itemDesc" placeholder="Ej: Carne, queso, tomate y papas"></textarea>
-
-            <div class="row" style="margin-top:10px; justify-content:flex-end;">
-              <button class="btn" id="btnClearItem" type="button">Limpiar</button>
-              <button class="btn btnPrimary" id="btnSaveItem" type="button">Guardar plato</button>
-            </div>
-
-            <div class="muted small" style="margin-top:8px;">
-              Al guardar, el plato queda en el historial y además lo agregamos al menú actual.
+            <div>
+              <label>Fecha Plato (opcional)</label>
+              <input id="itemDate" type="date" />
             </div>
           </div>
-
-          <!-- Reutilizar desde historial -->
-          <div class="card" style="border-radius:14px;">
-            <p class="title" style="margin:0 0 10px;">Reutilizar plato del historial</p>
-
-            <label>Buscar</label>
-            <input id="searchItems" placeholder="Escribe para filtrar (nombre / categoría / descripción)" />
-
-            <div style="margin-top:10px; max-height:330px; overflow:auto; border:1px solid var(--line); border-radius:12px;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Plato</th>
-                    <th>Categoría</th>
-                    <th>Descripción</th>
-                    <th style="width:120px;">Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="historyItemsTbody">
-                  <tr><td colspan="4" class="muted">Cargando...</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="muted small" style="margin-top:8px;">
-              Puedes volver a usar el mismo plato en otro menú/día (queda guardado para siempre).
+          <label>Descripción</label>
+          <textarea id="itemDesc"></textarea>
+          <div class="row" style="margin-top:10px;">
+            <button class="btn btnDanger" id="btnDeleteHistoryItem">Borrar del Historial</button>
+            <div class="actions">
+              <button class="btn" id="btnClearItem">Limpiar</button>
+              <button class="btn btnPrimary" id="btnSaveItem">Guardar y Añadir</button>
             </div>
           </div>
         </div>
 
-        <!-- Tabla platos del menú -->
-        <div style="margin-top:14px;">
-          <div style="overflow:auto; border:1px solid var(--line); border-radius:12px;">
+        <!-- HISTORIAL -->
+        <div class="card">
+          <p class="title">Historial de Platos</p>
+          <input id="searchItems" placeholder="Buscar en historial..." style="margin-bottom:10px;"/>
+          <div style="max-height:300px; overflow:auto; border:1px solid var(--line); border-radius:10px;">
             <table>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Categoría</th>
-                  <th>Descripción</th>
-                  <th style="width:190px;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="menuItemsTbody">
-                <tr><td colspan="4" class="muted">Selecciona un menú…</td></tr>
-              </tbody>
+              <thead><tr><th>Plato</th><th>Acción</th></tr></thead>
+              <tbody id="historyItemsTbody"></tbody>
             </table>
           </div>
-          <div class="muted small" style="margin-top:8px;">
-            Nota: el ID está oculto. Si editas, internamente usamos el ID, pero no se muestra.
-          </div>
         </div>
+      </div>
+
+      <!-- TABLA MENÚ ACTUAL -->
+      <div class="card">
+        <p class="title">Contenido del Menú Seleccionado</p>
+        <table style="width:100%">
+          <thead>
+            <tr><th>Nombre</th><th>Categoría</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="menuItemsTbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ✅ CONFIG
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI refs
-    const loginCard = document.getElementById("loginCard");
-    const app = document.getElementById("app");
-    const btnLogin = document.getElementById("btnLogin");
-    const btnLogout = document.getElementById("btnLogout");
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPass = document.getElementById("loginPass");
+    // Dom Elements
+    const loginCard = document.getElementById("loginCard"), app = document.getElementById("app");
+    const menuSelect = document.getElementById("menuSelect"), menuName = document.getElementById("menuName"), menuDate = document.getElementById("menuDate");
+    const itemId = document.getElementById("itemId"), itemName = document.getElementById("itemName"), itemCategory = document.getElementById("itemCategory"), itemDate = document.getElementById("itemDate"), itemDesc = document.getElementById("itemDesc");
 
-    const menuSelect = document.getElementById("menuSelect");
-    const menuName = document.getElementById("menuName");
-    const menuDate = document.getElementById("menuDate");
-    const menuStatus = document.getElementById("menuStatus");
-    const btnCreateMenu = document.getElementById("btnCreateMenu");
-    const btnUpdateMenu = document.getElementById("btnUpdateMenu");
-    const btnDeleteMenu = document.getElementById("btnDeleteMenu");
-
-    const itemId = document.getElementById("itemId"); // hidden
-    const itemName = document.getElementById("itemName");
-    const itemCategory = document.getElementById("itemCategory");
-    const itemDate = document.getElementById("itemDate");
-    const itemDesc = document.getElementById("itemDesc");
-    const btnSaveItem = document.getElementById("btnSaveItem");
-    const btnClearItem = document.getElementById("btnClearItem");
-
-    const searchItems = document.getElementById("searchItems");
-    const historyItemsTbody = document.getElementById("historyItemsTbody");
-
-    const menuItemsTbody = document.getElementById("menuItemsTbody");
-    const menuItemsCount = document.getElementById("menuItemsCount");
-
-    let menusCache = [];
-    let historyItemsCache = [];
     let currentMenuId = null;
+    let historyItemsCache = [];
 
-    function fmtDate(d) {
-      if (!d) return "";
-      try { const [y,m,dd] = d.split("-"); return `${dd}-${m}-${y}`; } catch { return d; }
-    }
-
-    function cleanItemForm() {
-      itemId.value = "";
-      itemName.value = "";
-      itemCategory.value = "";
-      itemDate.value = "";
-      itemDesc.value = "";
-    }
-
-    async function refreshAuthUI() {
+    // Auth
+    async function checkAuth() {
       const { data } = await supabaseClient.auth.getSession();
-      const loggedIn = !!data.session;
-
-      loginCard.classList.toggle("hidden", loggedIn);
-      app.classList.toggle("hidden", !loggedIn);
-      btnLogout.style.display = loggedIn ? "inline-block" : "none";
-
-      if (loggedIn) {
-        await loadMenus();
-        await loadHistoryItems();
-        await setCurrentMenuFromSelect();
-      }
+      const session = data.session;
+      loginCard.classList.toggle("hidden", !!session);
+      app.classList.toggle("hidden", !session);
+      document.getElementById("btnLogout").style.display = session ? "block" : "none";
+      if(session) { loadMenus(); loadHistoryItems(); }
     }
 
-    btnLogin.addEventListener("click", async () => {
-      const email = loginEmail.value.trim();
-      const password = loginPass.value;
-      if (!email || !password) return alert("Completa email y contraseña.");
+    document.getElementById("btnLogin").onclick = async () => {
+      const { error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail.value, password: loginPass.value });
+      if (error) alert(error.message); else checkAuth();
+    };
 
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) {
-        console.error(error);
-        return alert("Login falló: " + error.message);
-      }
-      await refreshAuthUI();
-    });
+    document.getElementById("btnLogout").onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); };
 
-    btnLogout.addEventListener("click", async () => {
-      await supabaseClient.auth.signOut();
-      await refreshAuthUI();
-    });
-
+    // Menus
     async function loadMenus() {
-      const { data, error } = await supabaseClient
-        .from("menus")
-        .select("id,name,menu_date,created_at")
-        .order("menu_date", { ascending: false })
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        menuStatus.textContent = "Error cargando menús.";
-        menusCache = [];
-        menuSelect.innerHTML = `<option value="">(Error)</option>`;
-        return;
-      }
-
-      menusCache = data || [];
-      if (menusCache.length === 0) {
-        menuSelect.innerHTML = `<option value="">No hay menús (crea uno)</option>`;
-        currentMenuId = null;
-        menuName.value = "";
-        menuDate.value = "";
-        menuStatus.textContent = "Crea tu primer menú.";
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Crea un menú para comenzar…</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s).";
-        return;
-      }
-
-      menuSelect.innerHTML = menusCache.map(m => {
-        const label = `${m.name || "Menú"}${m.menu_date ? " — " + fmtDate(m.menu_date) : ""}`;
-        return `<option value="${m.id}">${label}</option>`;
-      }).join("");
+      const { data } = await supabaseClient.from("menus").select("*").order("menu_date", {ascending:false});
+      menuSelect.innerHTML = data.map(m => `<option value="${m.id}">${m.name} (${m.menu_date || 'Sin fecha'})</option>`).join("");
+      if (data.length > 0) selectMenu(data[0].id);
     }
 
-    async function setCurrentMenuFromSelect() {
-      const val = menuSelect.value || (menusCache[0] ? menusCache[0].id : null);
-      if (!val) return;
-
-      menuSelect.value = val;
-      currentMenuId = val;
-
-      const m = menusCache.find(x => String(x.id) === String(val));
-      menuName.value = (m && m.name) ? m.name : "";
-      menuDate.value = (m && m.menu_date) ? m.menu_date : "";
-
-      menuStatus.textContent = `Menú seleccionado: ${menuName.value || "Menú"}${menuDate.value ? " (" + fmtDate(menuDate.value) + ")" : ""}`;
-      await loadMenuItems();
+    async function selectMenu(id) {
+      currentMenuId = id;
+      menuSelect.value = id;
+      const { data } = await supabaseClient.from("menus").select("*").eq("id", id).single();
+      menuName.value = data.name; menuDate.value = data.menu_date;
+      loadMenuItems();
     }
 
-    menuSelect.addEventListener("change", setCurrentMenuFromSelect);
+    menuSelect.onchange = (e) => selectMenu(e.target.value);
 
-    btnCreateMenu.addEventListener("click", async () => {
-      const name = menuName.value.trim() || "Menú";
-      const date = menuDate.value || null;
+    document.getElementById("btnCreateMenu").onclick = async () => {
+      const { data, error } = await supabaseClient.from("menus").insert([{ name: menuName.value, menu_date: menuDate.value }]).select().single();
+      if(!error) loadMenus();
+    };
 
-      const { data, error } = await supabaseClient
-        .from("menus")
-        .insert([{ name, menu_date: date }])
-        .select("id,name,menu_date,created_at")
-        .single();
+    document.getElementById("btnUpdateMenu").onclick = async () => {
+      await supabaseClient.from("menus").update({ name: menuName.value, menu_date: menuDate.value }).eq("id", currentMenuId);
+      loadMenus();
+      alert("Actualizado");
+    };
 
-      if (error) {
-        console.error(error);
-        return alert("No se pudo crear el menú: " + error.message);
+    document.getElementById("btnDeleteMenu").onclick = async () => {
+      if(confirm("¿Borrar menú?")) {
+        await supabaseClient.from("menus").delete().eq("id", currentMenuId);
+        loadMenus();
       }
+    };
 
-      await loadMenus();
-      menuSelect.value = data.id;
-      await setCurrentMenuFromSelect();
-      alert("Menú creado ✅");
-    });
-
-    btnUpdateMenu.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("No hay menú seleccionado.");
-      const name = menuName.value.trim() || "Menú";
-      const date = menuDate.value || null;
-
-      const { error } = await supabaseClient
-        .from("menus")
-        .update({ name, menu_date: date })
-        .eq("id", currentMenuId);
-
-      if (error) {
-        console.error(error);
-        return alert("No se pudo actualizar: " + error.message);
-      }
-
-      await loadMenus();
-      menuSelect.value = currentMenuId;
-      await setCurrentMenuFromSelect();
-      alert("Menú actualizado ✅");
-    });
-
-    btnDeleteMenu.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("No hay menú seleccionado.");
-      const ok = confirm("¿Seguro que quieres borrar este menú? (No borra los platos del historial)");
-      if (!ok) return;
-
-      // borrar relaciones primero
-      const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_id", currentMenuId);
-      if (rel.error) {
-        console.error(rel.error);
-        return alert("No se pudo borrar relación: " + rel.error.message);
-      }
-
-      const { error } = await supabaseClient.from("menus").delete().eq("id", currentMenuId);
-      if (error) {
-        console.error(error);
-        return alert("No se pudo borrar el menú: " + error.message);
-      }
-
-      currentMenuId = null;
-      await loadMenus();
-      await setCurrentMenuFromSelect();
-      alert("Menú borrado ✅");
-    });
-
+    // Platos
     async function loadHistoryItems() {
-      const { data, error } = await supabaseClient
-        .from("menu_items")
-        .select("id,name,category,description,date,created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        historyItemsCache = [];
-        historyItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Error cargando historial.</td></tr>`;
-        return;
-      }
-
+      const { data } = await supabaseClient.from("menu_items").select("*").order("created_at", {ascending:false});
       historyItemsCache = data || [];
       renderHistory();
     }
 
     function renderHistory() {
-      const q = (searchItems.value || "").toLowerCase().trim();
-      const filtered = !q ? historyItemsCache : historyItemsCache.filter(it => {
-        return (
-          (it.name || "").toLowerCase().includes(q) ||
-          (it.category || "").toLowerCase().includes(q) ||
-          (it.description || "").toLowerCase().includes(q)
-        );
-      });
-
-      if (filtered.length === 0) {
-        historyItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Sin resultados.</td></tr>`;
-        return;
-      }
-
-      historyItemsTbody.innerHTML = filtered.map(it => `
+      const q = document.getElementById("searchItems").value.toLowerCase();
+      const filtered = historyItemsCache.filter(i => i.name.toLowerCase().includes(q));
+      document.getElementById("historyItemsTbody").innerHTML = filtered.map(i => `
         <tr>
-          <td>
-            <div style="font-weight:900;">${it.name || "Sin nombre"}</div>
-            <div class="muted small">${it.date ? fmtDate(it.date) : ""}</div>
-          </td>
-          <td>${it.category || ""}</td>
-          <td>${it.description || ""}</td>
-          <td>
-            <button class="btn btnPrimary" data-add="${it.id}">Agregar</button>
-          </td>
+          <td><b>${i.name}</b><br><small class="muted">${i.category || ''}</small></td>
+          <td><button class="btn btnPrimary" onclick="addItemToMenu(${i.id})">Añadir</button></td>
         </tr>
       `).join("");
-
-      // bind add buttons
-      historyItemsTbody.querySelectorAll("button[data-add]").forEach(btn => {
-        btn.addEventListener("click", () => addExistingItemToMenu(btn.getAttribute("data-add")));
-      });
     }
 
-    searchItems.addEventListener("input", renderHistory);
+    document.getElementById("searchItems").oninput = renderHistory;
 
     async function loadMenuItems() {
-      if (!currentMenuId) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Selecciona un menú…</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s).";
-        return;
-      }
-
-      const { data, error } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id, menu_item_id, menu_items:menu_item_id (id,name,category,description,date)")
-        .eq("menu_id", currentMenuId)
-        .order("id", { ascending: true });
-
-      if (error) {
-        console.error(error);
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Error cargando platos del menú.</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s).";
-        return;
-      }
-
-      const rows = (data || []).map(r => ({
-        linkId: r.id,
-        itemId: r.menu_item_id,
-        item: r.menu_items
-      })).filter(x => x.item);
-
-      menuItemsCount.textContent = `${rows.length} plato(s).`;
-
-      if (rows.length === 0) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Este menú aún no tiene platos.</td></tr>`;
-        return;
-      }
-
-      menuItemsTbody.innerHTML = rows.map(r => `
+      const { data } = await supabaseClient.from("menu_menu_items").select("id, menu_items(*)").eq("menu_id", currentMenuId);
+      document.getElementById("menuItemsTbody").innerHTML = data.map(r => `
         <tr>
-          <td><b>${r.item.name || "Sin nombre"}</b></td>
-          <td>${r.item.category || ""}</td>
-          <td>${r.item.description || ""}</td>
+          <td>${r.menu_items.name}</td>
+          <td>${r.menu_items.category || ''}</td>
           <td>
-            <button class="btn" data-edit="${r.item.id}">Editar</button>
-            <button class="btn btnDanger" data-remove="${r.linkId}">Quitar del menú</button>
+            <button class="btn" onclick="editItem(${r.menu_items.id})">Editar</button>
+            <button class="btn btnDanger" onclick="removeFromMenu(${r.id})">Quitar</button>
           </td>
         </tr>
       `).join("");
-
-      menuItemsTbody.querySelectorAll("button[data-edit]").forEach(btn => {
-        btn.addEventListener("click", () => fillEditItem(btn.getAttribute("data-edit")));
-      });
-      menuItemsTbody.querySelectorAll("button[data-remove]").forEach(btn => {
-        btn.addEventListener("click", () => removeItemFromMenu(btn.getAttribute("data-remove")));
-      });
     }
 
-    async function addExistingItemToMenu(menuItemId) {
-      if (!currentMenuId) return alert("Primero crea/selecciona un menú.");
+    window.addItemToMenu = async (id) => {
+      await supabaseClient.from("menu_menu_items").insert([{ menu_id: currentMenuId, menu_item_id: id }]);
+      loadMenuItems();
+    };
 
-      // evita duplicar en el mismo menú
-      const { data: existing, error: exErr } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id")
-        .eq("menu_id", currentMenuId)
-        .eq("menu_item_id", menuItemId)
-        .maybeSingle();
+    window.removeFromMenu = async (relId) => {
+      await supabaseClient.from("menu_menu_items").delete().eq("id", relId);
+      loadMenuItems();
+    };
 
-      if (exErr) {
-        console.error(exErr);
-        return alert("Error verificando duplicado: " + exErr.message);
-      }
-      if (existing) {
-        return alert("Ese plato ya está en este menú.");
-      }
+    window.editItem = (id) => {
+      const it = historyItemsCache.find(x => x.id == id);
+      itemId.value = it.id; itemName.value = it.name; itemCategory.value = it.category; itemDate.value = it.date; itemDesc.value = it.description;
+    };
 
-      const { error } = await supabaseClient
-        .from("menu_menu_items")
-        .insert([{ menu_id: currentMenuId, menu_item_id: menuItemId }]);
-
-      if (error) {
-        console.error(error);
-        return alert("No se pudo agregar al menú: " + error.message);
-      }
-
-      await loadMenuItems();
-    }
-
-    async function removeItemFromMenu(linkId) {
-      const ok = confirm("¿Quitar este plato del menú? (No se borra del historial)");
-      if (!ok) return;
-
-      const { error } = await supabaseClient
-        .from("menu_menu_items")
-        .delete()
-        .eq("id", linkId);
-
-      if (error) {
-        console.error(error);
-        return alert("No se pudo quitar: " + error.message);
-      }
-
-      await loadMenuItems();
-    }
-
-    function fillEditItem(id) {
-      const it = historyItemsCache.find(x => String(x.id) === String(id));
-      if (!it) return;
-
-      itemId.value = it.id; // hidden
-      itemName.value = it.name || "";
-      itemCategory.value = it.category || "";
-      itemDate.value = it.date || "";
-      itemDesc.value = it.description || "";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    btnClearItem.addEventListener("click", cleanItemForm);
-
-    btnSaveItem.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("Primero crea/selecciona un menú.");
-
-      const name = itemName.value.trim();
-      if (!name) return alert("El nombre del plato es obligatorio.");
-
-      const payload = {
-        name,
-        category: itemCategory.value.trim() || null,
-        description: itemDesc.value.trim() || null,
-        date: itemDate.value || null
-      };
-
-      let savedId = itemId.value ? Number(itemId.value) : null;
-
-      if (savedId) {
-        // update plato
-        const { error } = await supabaseClient
-          .from("menu_items")
-          .update(payload)
-          .eq("id", savedId);
-
-        if (error) {
-          console.error(error);
-          return alert("No se pudo actualizar el plato: " + error.message);
-        }
+    document.getElementById("btnSaveItem").onclick = async () => {
+      const payload = { name: itemName.value, category: itemCategory.value, description: itemDesc.value, date: itemDate.value };
+      let id = itemId.value;
+      if (id) {
+        await supabaseClient.from("menu_items").update(payload).eq("id", id);
       } else {
-        // insert plato nuevo
-        const { data, error } = await supabaseClient
-          .from("menu_items")
-          .insert([payload])
-          .select("id")
-          .single();
-
-        if (error) {
-          console.error(error);
-          return alert("No se pudo crear el plato: " + error.message);
-        }
-        savedId = data.id;
+        const { data } = await supabaseClient.from("menu_items").insert([payload]).select().single();
+        id = data.id;
       }
+      await addItemToMenu(id);
+      loadHistoryItems();
+      document.getElementById("btnClearItem").click();
+    };
 
-      // agregar al menú (si no está)
-      const { data: existing } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id")
-        .eq("menu_id", currentMenuId)
-        .eq("menu_item_id", savedId)
-        .maybeSingle();
-
-      if (!existing) {
-        const { error } = await supabaseClient
-          .from("menu_menu_items")
-          .insert([{ menu_id: currentMenuId, menu_item_id: savedId }]);
-
-        if (error) {
-          console.error(error);
-          return alert("Plato guardado, pero no se pudo agregar al menú: " + error.message);
-        }
+    document.getElementById("btnDeleteHistoryItem").onclick = async () => {
+      if (itemId.value && confirm("Esto borrará el plato de TODO el historial")) {
+        await supabaseClient.from("menu_items").delete().eq("id", itemId.value);
+        loadHistoryItems(); loadMenuItems();
+        document.getElementById("btnClearItem").click();
       }
+    };
 
-      await loadHistoryItems();
-      await loadMenuItems();
-      cleanItemForm();
-      alert("Plato guardado ✅");
-    });
+    document.getElementById("btnClearItem").onclick = () => {
+      itemId.value = ""; itemName.value = ""; itemCategory.value = ""; itemDate.value = ""; itemDesc.value = "";
+    };
 
-    // Botón borrar plato (del historial) desde el menú: lo hacemos como acción adicional al editar
-    // Para simplificar: si quieres borrar un plato completo del historial, lo borramos desde historial
-    historyItemsTbody.addEventListener("click", async (e) => {
-      // Nada aquí por ahora
-    });
-
-    // Acción: doble click en un plato del historial => cargarlo para editar
-    historyItemsTbody.addEventListener("dblclick", (e) => {
-      const tr = e.target.closest("tr");
-      if (!tr) return;
-      const btn = tr.querySelector("button[data-add]");
-      if (!btn) return;
-      const id = btn.getAttribute("data-add");
-      fillEditItem(id);
-    });
-
-    // Agregar botón "Borrar plato del historial" cuando estás editando
-    // (lo agregamos dinámico debajo del guardar)
-    (function addDeleteHistoryButton(){
-      const container = btnSaveItem.parentElement;
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.className = "btn btnDanger";
-      delBtn.textContent = "Borrar plato (historial)";
-      delBtn.addEventListener("click", async () => {
-        if (!itemId.value) return alert("Selecciona un plato para borrar (usa Editar o doble click en historial).");
-        const ok = confirm("¿Seguro? Esto borra el plato del historial (y lo quitará de todos los menús donde esté).");
-        if (!ok) return;
-
-        const id = Number(itemId.value);
-
-        // borrar relaciones donde aparezca
-        const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
-        if (rel.error) {
-          console.error(rel.error);
-          return alert("No se pudo borrar relaciones: " + rel.error.message);
-        }
-
-        // borrar plato
-        const { error } = await supabaseClient.from("menu_items").delete().eq("id", id);
-        if (error) {
-          console.error(error);
-          return alert("No se pudo borrar el plato: " + error.message);
-        }
-
-        await loadHistoryItems();
-        await loadMenuItems();
-        cleanItemForm();
-        alert("Plato borrado ✅");
-      });
-      container.insertBefore(delBtn, btnSaveItem);
-    })();
-
-    // Init
-    refreshAuthUI();
+    checkAuth();
   </script>
 </body>
 </html>
