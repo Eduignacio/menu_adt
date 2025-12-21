@@ -75,7 +75,7 @@
       </div>
 
       <div class="muted small" style="margin-top:10px;">
-        Si no tienes usuario, créalo comunicandote con el administrador.
+        Si no tienes usuario, créalo en Supabase: <b>Authentication → Users → Add user</b> (email + password).
       </div>
     </div>
 
@@ -90,7 +90,6 @@
           <div class="pill">Sesión iniciada ✅</div>
         </div>
 
-        <!-- Menú seleccionado + acciones -->
         <div class="grid3" style="margin-top:14px;">
           <div>
             <label>Historial de menús</label>
@@ -131,7 +130,6 @@
           <div class="card" style="border-radius:14px;">
             <p class="title" style="margin:0 0 10px;">Agregar plato (texto)</p>
 
-            <!-- ID oculto -->
             <input id="itemId" type="hidden" />
 
             <label>Nombre</label>
@@ -140,7 +138,14 @@
             <div class="grid2">
               <div>
                 <label>Categoría</label>
-                <input id="itemCategory" placeholder="Ej: Principal / Entrada / Bebida" />
+                <select id="itemCategory">
+                  <option value="">(Sin categoría)</option>
+                  <option value="Entrada">Entrada</option>
+                  <option value="Principal">Principal</option>
+                  <option value="Postre">Postre</option>
+                  <option value="Bebida">Bebida</option>
+                  <option value="Acompañamiento">Acompañamiento</option>
+                </select>
               </div>
               <div>
                 <label>Fecha del plato (opcional)</label>
@@ -167,7 +172,15 @@
             <p class="title" style="margin:0 0 10px;">Reutilizar plato del historial</p>
 
             <label>Buscar</label>
-            <input id="searchItems" placeholder="Escribe para filtrar (nombre / categoría / descripción)" />
+            <div style="position:relative;">
+              <input id="searchItems" placeholder="Escribe para filtrar (nombre / categoría / descripción)" style="padding-right:44px;" />
+              <button id="btnClearSearch" type="button"
+                style="position:absolute; right:8px; top:50%; transform:translateY(-50%);
+                       border:1px solid var(--line); background:#fff; border-radius:999px;
+                       width:34px; height:34px; font-weight:900; cursor:pointer;">
+                ×
+              </button>
+            </div>
 
             <div style="margin-top:10px; max-height:330px; overflow:auto; border:1px solid var(--line); border-radius:12px;">
               <table>
@@ -197,6 +210,7 @@
             <table>
               <thead>
                 <tr>
+                  <th style="width:60px;">Nº</th>
                   <th>Nombre</th>
                   <th>Categoría</th>
                   <th>Descripción</th>
@@ -204,7 +218,7 @@
                 </tr>
               </thead>
               <tbody id="menuItemsTbody">
-                <tr><td colspan="4" class="muted">Selecciona un menú…</td></tr>
+                <tr><td colspan="5" class="muted">Selecciona un menú…</td></tr>
               </tbody>
             </table>
           </div>
@@ -218,12 +232,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ✅ CONFIG
     const SUPABASE_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI refs
     const loginCard = document.getElementById("loginCard");
     const app = document.getElementById("app");
     const btnLogin = document.getElementById("btnLogin");
@@ -239,7 +251,7 @@
     const btnUpdateMenu = document.getElementById("btnUpdateMenu");
     const btnDeleteMenu = document.getElementById("btnDeleteMenu");
 
-    const itemId = document.getElementById("itemId"); // hidden
+    const itemId = document.getElementById("itemId");
     const itemName = document.getElementById("itemName");
     const itemCategory = document.getElementById("itemCategory");
     const itemDate = document.getElementById("itemDate");
@@ -249,6 +261,7 @@
     const btnDeleteItem = document.getElementById("btnDeleteItem");
 
     const searchItems = document.getElementById("searchItems");
+    const btnClearSearch = document.getElementById("btnClearSearch");
     const historyItemsTbody = document.getElementById("historyItemsTbody");
 
     const menuItemsTbody = document.getElementById("menuItemsTbody");
@@ -261,6 +274,16 @@
     function fmtDate(d) {
       if (!d) return "";
       try { const [y,m,dd] = d.split("-"); return `${dd}-${m}-${y}`; } catch { return d; }
+    }
+
+    function setDefaultMenuDateIfEmpty() {
+      if (!menuDate.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const dd = String(today.getDate()).padStart(2, "0");
+        menuDate.value = `${yyyy}-${mm}-${dd}`;
+      }
     }
 
     function cleanItemForm() {
@@ -280,6 +303,7 @@
       btnLogout.style.display = loggedIn ? "inline-block" : "none";
 
       if (loggedIn) {
+        setDefaultMenuDateIfEmpty();
         await loadMenus();
         await loadHistoryItems();
         await setCurrentMenuFromSelect();
@@ -324,9 +348,9 @@
         menuSelect.innerHTML = `<option value="">No hay menús (crea uno)</option>`;
         currentMenuId = null;
         menuName.value = "";
-        menuDate.value = "";
+        setDefaultMenuDateIfEmpty();
         menuStatus.textContent = "Crea tu primer menú.";
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Crea un menú para comenzar…</td></tr>`;
+        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Crea un menú para comenzar…</td></tr>`;
         menuItemsCount.textContent = "0 plato(s).";
         return;
       }
@@ -346,7 +370,7 @@
 
       const m = menusCache.find(x => String(x.id) === String(val));
       menuName.value = (m && m.name) ? m.name : "";
-      menuDate.value = (m && m.menu_date) ? m.menu_date : "";
+      menuDate.value = (m && m.menu_date) ? m.menu_date : menuDate.value;
 
       menuStatus.textContent = `Menú seleccionado: ${menuName.value || "Menú"}${menuDate.value ? " (" + fmtDate(menuDate.value) + ")" : ""}`;
       await loadMenuItems();
@@ -355,6 +379,7 @@
     menuSelect.addEventListener("change", setCurrentMenuFromSelect);
 
     btnCreateMenu.addEventListener("click", async () => {
+      setDefaultMenuDateIfEmpty();
       const name = menuName.value.trim() || "Menú";
       const date = menuDate.value || null;
 
@@ -377,6 +402,7 @@
 
     btnUpdateMenu.addEventListener("click", async () => {
       if (!currentMenuId) return alert("No hay menú seleccionado.");
+      setDefaultMenuDateIfEmpty();
       const name = menuName.value.trim() || "Menú";
       const date = menuDate.value || null;
 
@@ -401,7 +427,6 @@
       const ok = confirm("¿Seguro que quieres borrar este menú? (No borra los platos del historial)");
       if (!ok) return;
 
-      // borrar relaciones primero
       const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_id", currentMenuId);
       if (rel.error) {
         console.error(rel.error);
@@ -466,17 +491,20 @@
         </tr>
       `).join("");
 
-      // bind add buttons
       historyItemsTbody.querySelectorAll("button[data-add]").forEach(btn => {
         btn.addEventListener("click", () => addExistingItemToMenu(btn.getAttribute("data-add")));
       });
     }
 
     searchItems.addEventListener("input", renderHistory);
+    btnClearSearch.addEventListener("click", () => {
+      searchItems.value = "";
+      renderHistory();
+    });
 
     async function loadMenuItems() {
       if (!currentMenuId) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Selecciona un menú…</td></tr>`;
+        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Selecciona un menú…</td></tr>`;
         menuItemsCount.textContent = "0 plato(s).";
         return;
       }
@@ -489,7 +517,7 @@
 
       if (error) {
         console.error(error);
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Error cargando platos del menú.</td></tr>`;
+        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Error cargando platos del menú.</td></tr>`;
         menuItemsCount.textContent = "0 plato(s).";
         return;
       }
@@ -503,12 +531,13 @@
       menuItemsCount.textContent = `${rows.length} plato(s).`;
 
       if (rows.length === 0) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Este menú aún no tiene platos.</td></tr>`;
+        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Este menú aún no tiene platos.</td></tr>`;
         return;
       }
 
-      menuItemsTbody.innerHTML = rows.map(r => `
+      menuItemsTbody.innerHTML = rows.map((r, idx) => `
         <tr>
+          <td><b>${idx + 1}</b></td>
           <td><b>${r.item.name || "Sin nombre"}</b></td>
           <td>${r.item.category || ""}</td>
           <td>${r.item.description || ""}</td>
@@ -530,7 +559,6 @@
     async function addExistingItemToMenu(menuItemId) {
       if (!currentMenuId) return alert("Primero crea/selecciona un menú.");
 
-      // evita duplicar en el mismo menú
       const { data: existing, error: exErr } = await supabaseClient
         .from("menu_menu_items")
         .select("id")
@@ -542,9 +570,7 @@
         console.error(exErr);
         return alert("Error verificando duplicado: " + exErr.message);
       }
-      if (existing) {
-        return alert("Ese plato ya está en este menú.");
-      }
+      if (existing) return alert("Ese plato ya está en este menú.");
 
       const { error } = await supabaseClient
         .from("menu_menu_items")
@@ -579,7 +605,7 @@
       const it = historyItemsCache.find(x => String(x.id) === String(id));
       if (!it) return;
 
-      itemId.value = it.id; // hidden
+      itemId.value = it.id;
       itemName.value = it.name || "";
       itemCategory.value = it.category || "";
       itemDate.value = it.item_date || "";
@@ -597,7 +623,7 @@
 
       const payload = {
         name,
-        category: itemCategory.value.trim() || null,
+        category: itemCategory.value || null,
         description: itemDesc.value.trim() || null,
         item_date: itemDate.value || null
       };
@@ -605,18 +631,12 @@
       let savedId = itemId.value ? Number(itemId.value) : null;
 
       if (savedId) {
-        // update plato
-        const { error } = await supabaseClient
-          .from("menu_items")
-          .update(payload)
-          .eq("id", savedId);
-
+        const { error } = await supabaseClient.from("menu_items").update(payload).eq("id", savedId);
         if (error) {
           console.error(error);
           return alert("No se pudo actualizar el plato: " + error.message);
         }
       } else {
-        // insert plato nuevo
         const { data, error } = await supabaseClient
           .from("menu_items")
           .insert([payload])
@@ -630,7 +650,6 @@
         savedId = data.id;
       }
 
-      // agregar al menú (si no está)
       const { data: existing } = await supabaseClient
         .from("menu_menu_items")
         .select("id")
@@ -662,14 +681,12 @@
 
       const id = Number(itemId.value);
 
-      // borrar relaciones donde aparezca
       const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
       if (rel.error) {
         console.error(rel.error);
         return alert("No se pudo borrar relaciones: " + rel.error.message);
       }
 
-      // borrar plato
       const { error } = await supabaseClient.from("menu_items").delete().eq("id", id);
       if (error) {
         console.error(error);
@@ -682,7 +699,6 @@
       alert("Plato borrado ✅");
     });
 
-    // Acción: doble click en un plato del historial => cargarlo para editar
     historyItemsTbody.addEventListener("dblclick", (e) => {
       const tr = e.target.closest("tr");
       if (!tr) return;
@@ -692,7 +708,6 @@
       fillEditItem(id);
     });
 
-    // Init
     refreshAuthUI();
   </script>
 </body>
