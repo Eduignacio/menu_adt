@@ -7,19 +7,42 @@
   <style>
     :root{--bg:#f6f6f6;--card:#fff;--text:#111;--muted:#666;--line:#e9e9e9;}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:var(--text);}
-    .wrap{max-width:800px; margin:0 auto; padding:20px;}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,.03); margin-bottom:12px;}
-    .title{font-size:24px; font-weight:900; margin:0;}
-    .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:#eee; font-size:12px; font-weight:700; margin-right:5px;}
-    select{padding:10px; border-radius:10px; width:100%; margin:10px 0;}
-    .muted{color:var(--muted); font-size:14px;}
+    .wrap{max-width:980px; margin:0 auto; padding:30px 18px 60px;}
+    header{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+    h1{font-size:44px; margin:10px 0;}
+    .btn{display:inline-block; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; font-weight:800; text-decoration:none; color:#111;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.03);}
+    .menuBar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0;}
+    select{padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff; font-weight:700;}
+    .grid{display:grid; grid-template-columns:1fr; gap:12px;}
+    .itemTitle{font-size:18px; font-weight:900; margin:0;}
+    .muted{color:var(--muted);}
+    .pill{display:inline-block; padding:4px 10px; border:1px solid var(--line); border-radius:999px; font-weight:800; font-size:12px; background:#fff;}
+    .row{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .categoryTitle{font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:.05em; color:#888; margin:20px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line);}
+    .categoryTitle:first-child{margin-top:0;}
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <h1>Nuestro Menú</h1>
-    <select id="menuSelect"><option>Cargando...</option></select>
-    <div id="list"></div>
+    <header>
+      <h1>Menú</h1>
+      <a class="btn" href="./admin.html">Admin</a>
+    </header>
+
+    <div class="card">
+      <div class="menuBar">
+        <span class="muted" style="font-weight:800;">Menú:</span>
+        <select id="menuSelect">
+          <option value="">Cargando menús...</option>
+        </select>
+      </div>
+
+      <div id="status" class="muted" style="margin:8px 0 12px;">Cargando menú...</div>
+
+      <div id="list" class="grid"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -28,29 +51,121 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function load() {
-      const { data: menus } = await supabaseClient.from("menus").select("*").order("menu_date", {ascending:false});
-      const select = document.getElementById("menuSelect");
-      select.innerHTML = menus.map(m => `<option value="${m.id}">${m.name} (${m.menu_date || ''})</option>`).join("");
-      select.onchange = () => showMenu(select.value);
-      if(menus.length > 0) showMenu(menus[0].id);
+    const menuSelect = document.getElementById("menuSelect");
+    const statusEl = document.getElementById("status");
+    const listEl = document.getElementById("list");
+
+    function fmtDate(d) {
+      if (!d) return "";
+      try {
+        const [y,m,dd] = d.split("-");
+        return `${dd}-${m}-${y}`;
+      } catch { return d; }
     }
 
-    async function showMenu(id) {
-      const { data } = await supabaseClient.from("menu_menu_items").select("menu_items(*)").eq("menu_id", id);
-      const list = document.getElementById("list");
-      list.innerHTML = data.map(r => `
-        <div class="card">
-          <p class="title">${r.menu_items.name}</p>
-          <div style="margin:8px 0;">
-            ${r.menu_items.category ? `<span class="pill">${r.menu_items.category}</span>` : ''}
-          </div>
-          <div class="muted">${r.menu_items.description || ''}</div>
-        </div>
-      `).join("");
+    function renderItems(items) {
+      listEl.innerHTML = "";
+      if (!items || items.length === 0) {
+        statusEl.textContent = "No hay platos en este menú.";
+        return;
+      }
+
+      // Agrupar por categoría
+      const grouped = {};
+      items.forEach(it => {
+        const cat = it.category || "Sin categoría";
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(it);
+      });
+
+      // Ordenar categorías
+      const categories = Object.keys(grouped).sort();
+      
+      statusEl.textContent = `Mostrando ${items.length} plato(s) en ${categories.length} categoría(s).`;
+
+      // Renderizar por categoría
+      categories.forEach(cat => {
+        const catDiv = document.createElement("div");
+        catDiv.innerHTML = `<div class="categoryTitle">${cat}</div>`;
+        listEl.appendChild(catDiv);
+
+        grouped[cat].forEach(it => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.style.borderRadius = "14px";
+          div.style.marginBottom = "8px";
+          div.innerHTML = `
+            <div class="row">
+              <div style="flex:1;">
+                <p class="itemTitle">${it.name || "Sin nombre"}</p>
+                ${it.description ? `<div style="margin-top:8px; color:#333;">${it.description}</div>` : ""}
+              </div>
+              ${it.item_date ? `<div style="white-space:nowrap;"><span class="pill">${fmtDate(it.item_date)}</span></div>` : ""}
+            </div>
+          `;
+          listEl.appendChild(div);
+        });
+      });
     }
 
-    load();
+    async function loadMenus() {
+      // Trae menús (historial)
+      const { data: menus, error } = await supabaseClient
+        .from("menus")
+        .select("id,name,menu_date,created_at")
+        .order("menu_date", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        statusEl.textContent = "Error cargando menús.";
+        console.error(error);
+        menuSelect.innerHTML = `<option value="">(Error)</option>`;
+        return;
+      }
+
+      if (!menus || menus.length === 0) {
+        menuSelect.innerHTML = `<option value="">No hay menús creados</option>`;
+        statusEl.textContent = "Aún no hay menús. Entra a Admin para crear uno.";
+        return;
+      }
+
+      menuSelect.innerHTML = menus.map(m => {
+        const label = `${m.name || "Menú"}${m.menu_date ? " — " + fmtDate(m.menu_date) : ""}`;
+        return `<option value="${m.id}">${label}</option>`;
+      }).join("");
+
+      // Selecciona el primero por defecto
+      await loadMenuItems(menuSelect.value);
+    }
+
+    async function loadMenuItems(menuId) {
+      listEl.innerHTML = "";
+      if (!menuId) {
+        statusEl.textContent = "Selecciona un menú.";
+        return;
+      }
+      statusEl.textContent = "Cargando menú...";
+
+      // Relación: menu_menu_items -> menu_items
+      const { data, error } = await supabaseClient
+        .from("menu_menu_items")
+        .select("menu_item_id, menu_items:menu_item_id (id,name,category,description,item_date)")
+        .eq("menu_id", menuId)
+        .order("menu_item_id", { ascending: true });
+
+      if (error) {
+        statusEl.textContent = "Error cargando platos del menú.";
+        console.error(error);
+        return;
+      }
+
+      const items = (data || []).map(r => r.menu_items).filter(Boolean);
+      renderItems(items);
+    }
+
+    menuSelect.addEventListener("change", () => loadMenuItems(menuSelect.value));
+
+    loadMenus();
   </script>
 </body>
 </html>
