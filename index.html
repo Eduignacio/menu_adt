@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MENÚ ADT - VISTA PÚBLICA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --sidebar-bg: #0f172a;
@@ -18,6 +18,7 @@
       --sidebar-width: 300px;
     }
 
+    /* Forzado de mayúsculas visual */
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; }
     
     body { 
@@ -43,25 +44,28 @@
       border-right: 1px solid #1e293b;
     }
 
-    /* Clase para ocultar sidebar */
     body.sidebar-hidden .sidebar {
       margin-left: calc(var(--sidebar-width) * -1);
     }
 
     .sidebar-header { 
-      padding: 30px 20px; 
+      padding: 40px 20px 20px; 
       text-align: center; 
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
     }
 
-    /* LOGO SVG INTEGRADO */
-    .logo-svg {
-      width: 110px;
-      height: auto;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    /* TIPOGRAFÍA ADT PERSONALIZADA */
+    .brand-adt {
+      font-size: 72px; /* Tamaño grande para impacto */
+      font-weight: 900; /* Extra bold */
+      color: white;
+      letter-spacing: -4px; /* Espaciado apretado tipo logo */
+      line-height: 0.8;
+      margin-bottom: 30px;
+      user-select: none;
+      display: block;
     }
 
     .date-box { 
@@ -103,7 +107,6 @@
       z-index: 10; 
     }
 
-    /* BOTÓN TOGGLE */
     .btn-toggle {
       background: var(--sidebar-bg);
       color: white;
@@ -175,11 +178,8 @@
   <!-- BARRA LATERAL -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <!-- LOGO ADT SVG -->
-      <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50 5 L85 20 L95 50 L85 80 L50 95 L15 80 L5 50 L15 20 Z" fill="#2058A8"/>
-        <text x="50" y="62" font-family="Arial Black, sans-serif" font-size="32" fill="white" text-anchor="middle">ADT</text>
-      </svg>
+      <!-- PALABRA ADT CON TIPOGRAFÍA DE IMPACTO -->
+      <span class="brand-adt">ADT</span>
 
       <div class="date-box">
         <span>MENÚ DEL DÍA</span>
@@ -226,7 +226,6 @@
       const container = document.getElementById('menusContainer');
       const dateBox = document.getElementById('dateDisplay');
 
-      // 1. Obtener última fecha
       const { data: latest } = await sb.from('menus').select('menu_date').order('menu_date', {ascending: false}).limit(1).maybeSingle();
 
       if (!latest) {
@@ -236,7 +235,6 @@
 
       dateBox.innerText = fmtDate(latest.menu_date);
 
-      // 2. Traer menús
       const { data: menus } = await sb
         .from('menus')
         .select(`id, name, menu_menu_items ( menu_items (*) )`)
