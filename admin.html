@@ -3,459 +3,341 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin Menú</title>
+  <title>Admin Menú Pro</title>
   <style>
-    :root{
-      --bg:#f5f6f8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --line:#e5e7eb;
-
-      --primary:#111827;
-      --primaryText:#ffffff;
-
-      --danger:#dc2626;
-      --dangerText:#ffffff;
-
-      --ring: rgba(17, 24, 39, .14);
-
-      --radius:16px;
+    :root {
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #f8fafc;
+      --accent: #6366f1;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+      --radius: 12px;
     }
 
-    *{box-sizing:border-box;}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:var(--bg);
-      color:var(--text);
+    * { box-sizing: border-box; text-transform: uppercase; } /* Forzado visual global */
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    .wrap{
-      max-width:1120px;
-      margin:0 auto;
-      padding:20px 16px 56px;
+    /* BARRA LATERAL */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
     }
 
-    /* Topbar */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 16px;
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid #1e293b;
     }
 
-    .brand{
-      display:flex; flex-direction:column; gap:2px;
-    }
-    .brand h1{
-      font-size:22px;
-      line-height:1.1;
-      margin:0;
-      letter-spacing:-.02em;
-      font-weight:900;
-    }
-    .brand p{
-      margin:0;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:700;
+    .sidebar-header h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--accent);
     }
 
-    .topActions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
+    .menu-list-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
     }
 
-    /* Buttons */
-    .btn{
-      border:1px solid var(--line);
-      background:var(--card);
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:900;
-      color:var(--text);
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      transition: transform .06s ease, box-shadow .12s ease, background .12s ease;
-      user-select:none;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn:hover{ box-shadow: 0 10px 18px rgba(15,23,42,.06); }
-
-    .btnPrimary{
-      background:var(--primary);
-      border-color:var(--primary);
-      color:var(--primaryText);
-    }
-    .btnDanger{
-      background:var(--danger);
-      border-color:var(--danger);
-      color:var(--dangerText);
-    }
-    .btnGhost{
-      background:transparent;
-    }
-    .btnSmall{ padding:8px 10px; font-size:13px; }
-
-    /* Layout */
-    .grid{
-      display:grid;
-      gap:14px;
-      margin-top:14px;
-    }
-    .grid2{ grid-template-columns: 1.1fr .9fr; }
-    @media (max-width: 980px){ .grid2{ grid-template-columns: 1fr; } }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    .menu-item-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #1e293b;
+      color: #94a3b8;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: left;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .sectionTitle{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin:0 0 10px;
+    .menu-item-btn:hover { background: #1e293b; color: white; }
+    .menu-item-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
-    .sectionTitle h2{
-      margin:0;
-      font-size:16px;
-      font-weight:950;
-      letter-spacing:-.01em;
+
+    .menu-item-btn span { font-weight: 800; font-size: 13px; }
+    .menu-item-btn small { opacity: 0.7; margin-top: 4px; }
+
+    /* CONTENIDO PRINCIPAL */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: var(--bg);
     }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
+
+    .top-nav {
+      background: var(--card);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .view-container { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    /* CARDS & GRIDS */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .grid-editor {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 24px;
+    }
+
+    /* FORMS */
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
       color: var(--muted);
-      font-size:12px;
-      font-weight:900;
-      background:#fafafa;
+      margin-bottom: 6px;
     }
 
-    .muted{ color:var(--muted); }
-    .small{ font-size:12px; }
-    .divider{ height:1px; background:var(--line); margin:12px 0; }
-
-    /* Forms */
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-      margin:10px 0 6px;
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      background: #f8fafc;
+      font-weight: 600;
     }
 
-    input, textarea, select{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:11px 12px;
-      background:#fff;
-      font-size:14px;
-      color:var(--text);
-      outline:none;
-      transition: box-shadow .12s ease, border-color .12s ease;
+    input:focus { border-color: var(--accent); outline: none; background: white; }
+
+    /* BUTTONS */
+    .btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
     }
 
-    input:focus, textarea:focus, select:focus{
-      border-color: #cbd5e1;
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-    textarea{ min-height:92px; resize:vertical; }
+    .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-danger { background: white; color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-ghost { border: none; background: transparent; color: var(--muted); }
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
+    /* TABLES */
+    .table-container { overflow: hidden; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th { background: #f8fafc; padding: 14px; text-align: left; font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--border); }
+    td { padding: 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
 
-    .grid3{
-      display:grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 980px){ .grid3{ grid-template-columns:1fr; } }
+    /* UTILS */
+    .hidden { display: none !important; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; background: #e2e8f0; }
 
-    /* Tables */
-    .tableWrap{
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:hidden;
-      background:#fff;
+    /* LOGIN OVERLAY */
+    #loginCard {
+      position: fixed;
+      inset: 0;
+      background: var(--sidebar-bg);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    table{ width:100%; border-collapse:collapse; }
-    th, td{
-      border-top:1px solid var(--line);
-      padding:10px 10px;
-      text-align:left;
-      vertical-align:top;
-      font-size:14px;
-    }
-    th{
-      background:#fafafa;
-      border-top:none;
-      color:var(--muted);
-      font-size:11px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      font-weight:950;
-    }
+    .login-box { width: 400px; background: white; padding: 40px; border-radius: 20px; }
 
-    /* Mini Search with clear */
-    .searchWrap{ position:relative; }
-    .searchWrap input{ padding-right:44px; }
-    .clearX{
-      position:absolute;
-      right:10px;
-      top:50%;
-      transform:translateY(-50%);
-      width:34px; height:34px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fff;
-      cursor:pointer;
-      font-weight:950;
+    @media (max-width: 1024px) {
+      .grid-editor { grid-template-columns: 1fr; }
+      .sidebar { width: 80px; }
+      .sidebar span, .sidebar small, .sidebar-header h1 { display: none; }
     }
-
-    .hidden{ display:none!important; }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
 
-    <div class="topbar">
-      <div class="brand">
-        <h1>Admin Menú</h1>
-        <p>Panel simple para crear menús y gestionar platos</p>
+  <!-- LOGIN -->
+  <div id="loginCard">
+    <div class="login-box">
+      <h2 style="margin-top:0; text-align:center; color: var(--sidebar-bg)">ADMIN ACCESO</h2>
+      <label>Email</label>
+      <input id="loginEmail" type="email" placeholder="ADMIN@CORREO.COM" />
+      <label>Contraseña</label>
+      <input id="loginPass" type="password" placeholder="••••••••" />
+      <button class="btn btn-primary" id="btnLogin" style="width:100%; justify-content:center; margin-top:10px;">INICIAR SESIÓN</button>
+    </div>
+  </div>
+
+  <!-- APP STRUCTURE -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>MENU MANAGER</h1>
+    </div>
+    <div class="menu-list-container">
+      <label style="color: #475569; margin-left: 12px;">HISTORIAL DE MENÚS</label>
+      <div id="menuButtonsList">
+        <!-- Botones de menú dinámicos aquí -->
       </div>
+    </div>
+    <div style="padding: 16px; border-top: 1px solid #1e293b;">
+      <button class="btn btn-primary" id="btnSidebarNewMenu" style="width:100%">+ NUEVO MENÚ</button>
+    </div>
+  </aside>
 
-      <div class="topActions">
-        <a class="btn" href="./index.html">← Volver al menú</a>
-        <button class="btn btnGhost" id="btnLogout" style="display:none;">Cerrar sesión</button>
+  <main class="main-content hidden" id="app">
+    <div class="top-nav">
+      <div>
+        <span class="status-badge" id="menuStatus">SELECCIONA UN MENÚ</span>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-ghost" id="btnLogout">CERRAR SESIÓN</button>
       </div>
     </div>
 
-    <!-- LOGIN -->
-    <div class="card" id="loginCard" style="margin-top:14px;">
-      <div class="sectionTitle">
-        <h2>Iniciar sesión</h2>
-        <span class="badge">Solo autenticados</span>
-      </div>
-      <p class="muted small" style="margin:0 0 12px;">
-        Solo usuarios autenticados pueden crear/editar/borrar menús y platos.
-      </p>
-
-      <div class="grid3">
-        <div style="grid-column: span 1;">
-          <label>Email</label>
-          <input id="loginEmail" type="email" placeholder="tu@email.com" />
-        </div>
-        <div style="grid-column: span 1;">
-          <label>Contraseña</label>
-          <input id="loginPass" type="password" placeholder="••••••••" />
-        </div>
-        <div style="display:flex; align-items:end;">
-          <button class="btn btnPrimary" id="btnLogin" type="button" style="width:100%; justify-content:center;">
-            Entrar
-          </button>
-        </div>
-      </div>
-
-      <div class="muted small" style="margin-top:10px;">
-        Si no tienes usuario, créalo en Supabase: <b>Authentication → Users → Add user</b> (email + password).
-      </div>
-    </div>
-
-    <!-- APP -->
-    <div id="app" class="hidden">
-
-      <div class="grid grid2">
-        <!-- MENUS -->
-        <div class="card">
-          <div class="sectionTitle">
-            <h2>Gestión de Menús</h2>
-            <span class="badge">Sesión iniciada ✅</span>
+    <div class="view-container">
+      
+      <!-- GESTIÓN DEL MENÚ SELECCIONADO -->
+      <div class="card">
+        <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+          <div style="flex:1; max-width: 400px; margin-right: 20px;">
+            <label>NOMBRE DEL MENÚ ACTUAL</label>
+            <input id="menuName" placeholder="EJ: ALMUERZO EJECUTIVO" />
           </div>
-          <p class="muted small" style="margin:0 0 8px;">
-            Crea, edita o borra menús. Después agrega platos desde el historial.
-          </p>
-
-          <div class="grid3">
-            <div>
-              <label>Historial de menús</label>
-              <select id="menuSelect"></select>
-              <div class="muted small" style="margin-top:6px;">Selecciona un menú para editar o reutilizar.</div>
-            </div>
-
-            <div>
-              <label>Nombre del menú</label>
-              <input id="menuName" placeholder="Ej: Menú del día" />
-            </div>
-
-            <div>
-              <label>Fecha del menú</label>
-              <input id="menuDate" type="date" />
-            </div>
+          <div style="flex:1; max-width: 200px; margin-right: 20px;">
+            <label>FECHA</label>
+            <input id="menuDate" type="date" />
           </div>
-
-          <div class="row" style="margin-top:12px;">
-            <div class="muted small" id="menuStatus">—</div>
-            <div class="row" style="justify-content:flex-end;">
-              <button class="btn btnPrimary" id="btnCreateMenu" type="button">Agregar menú</button>
-              <button class="btn" id="btnUpdateMenu" type="button">Editar menú</button>
-              <button class="btn btnDanger" id="btnDeleteMenu" type="button">Borrar menú</button>
-            </div>
+          <div style="display:flex; gap:10px; padding-bottom: 16px;">
+            <button class="btn btn-primary" id="btnUpdateMenu">GUARDAR CAMBIOS</button>
+            <button class="btn btn-danger" id="btnDeleteMenu">ELIMINAR MENÚ</button>
           </div>
         </div>
 
-        <!-- QUICK STATS / HELP -->
-        <div class="card">
-          <div class="sectionTitle">
-            <h2>Platos del menú</h2>
-            <span class="badge" id="menuItemsCount">0 plato(s)</span>
-          </div>
-          <p class="muted small" style="margin:0;">
-            Usa el panel de abajo para crear platos, reutilizarlos y ordenar tu menú del día.
-          </p>
-          <div class="divider"></div>
-          <p class="muted small" style="margin:0;">
-            Tip: doble click en un plato del historial para cargarlo y editarlo.
-          </p>
-        </div>
-      </div>
-
-      <!-- PLATOS -->
-      <div class="card" style="margin-top:14px;">
-        <div class="sectionTitle">
-          <h2>Platos del menú seleccionado</h2>
-        </div>
-
-        <div class="grid grid2" style="margin-top:6px;">
-          <!-- Agregar / Editar plato -->
-          <div class="card" style="box-shadow:none;">
-            <div class="sectionTitle">
-              <h2>Agregar / editar plato</h2>
-              <span class="badge">Historial + Menú</span>
-            </div>
-
-            <input id="itemId" type="hidden" />
-
-            <label>Nombre</label>
-            <input id="itemName" placeholder="Ej: Hamburguesa clásica" />
-
-            <div class="grid3" style="grid-template-columns:1fr 1fr; gap:12px;">
-              <div>
-                <label>Categoría</label>
-                <select id="itemCategory">
-                  <option value="">(Sin categoría)</option>
-                  <option value="Entrada">Entrada</option>
-                  <option value="Principal">Principal</option>
-                  <option value="Postre">Postre</option>
-                  <option value="Bebida">Bebida</option>
-                  <option value="Acompañamiento">Acompañamiento</option>
-                </select>
-              </div>
-              <div>
-                <label>Fecha del plato (opcional)</label>
-                <input id="itemDate" type="date" />
-              </div>
-            </div>
-
-            <label>Descripción</label>
-            <textarea id="itemDesc" placeholder="Ej: Carne, queso, tomate y papas"></textarea>
-
-            <div class="row" style="margin-top:12px; justify-content:flex-end;">
-              <button class="btn" id="btnClearItem" type="button">Limpiar</button>
-              <button class="btn btnPrimary" id="btnSaveItem" type="button">Guardar</button>
-              <button class="btn btnDanger" id="btnDeleteItem" type="button">Borrar (historial)</button>
-            </div>
-
-            <div class="muted small" style="margin-top:8px;">
-              Guardar = queda en historial y se agrega al menú actual.
-            </div>
-          </div>
-
-          <!-- Historial -->
-          <div class="card" style="box-shadow:none;">
-            <div class="sectionTitle">
-              <h2>Reutilizar del historial</h2>
-              <span class="badge">Buscar + Agregar</span>
-            </div>
-
-            <label>Buscar</label>
-            <div class="searchWrap">
-              <input id="searchItems" placeholder="Filtra por nombre / categoría / descripción" />
-              <button id="btnClearSearch" class="clearX" type="button">×</button>
-            </div>
-
-            <div style="margin-top:12px; max-height:320px; overflow:auto;" class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Plato</th>
-                    <th>Categoría</th>
-                    <th>Descripción</th>
-                    <th style="width:120px;">Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="historyItemsTbody">
-                  <tr><td colspan="4" class="muted">Cargando...</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="muted small" style="margin-top:10px;">
-              Reutiliza platos en otros menús sin duplicarlos.
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabla menú -->
-        <div class="divider"></div>
-
-        <div class="tableWrap">
+        <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th style="width:60px;">Nº</th>
-                <th>Nombre</th>
-                <th>Categoría</th>
-                <th>Descripción</th>
-                <th style="width:220px;">Acciones</th>
+                <th style="width:50px">#</th>
+                <th>PLATO</th>
+                <th>CATEGORÍA</th>
+                <th>DESCRIPCIÓN</th>
+                <th style="width:180px">ACCIONES</th>
               </tr>
             </thead>
             <tbody id="menuItemsTbody">
-              <tr><td colspan="5" class="muted">Selecciona un menú…</td></tr>
+              <!-- Platos del menú actual -->
             </tbody>
           </table>
         </div>
+      </div>
 
-        <div class="muted small" style="margin-top:10px;">
-          Nota: el ID está oculto. Si editas, usamos el ID internamente.
+      <div class="grid-editor">
+        <!-- EDITOR DE PLATO -->
+        <div class="card">
+          <h3 style="margin-top:0">EDITOR DE PLATO</h3>
+          <input id="itemId" type="hidden" />
+          
+          <label>NOMBRE DEL PLATO</label>
+          <input id="itemName" class="auto-caps" placeholder="EJ: MILANESA CON PAPAS" />
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label>CATEGORÍA</label>
+              <select id="itemCategory">
+                <option value="">(SIN CATEGORÍA)</option>
+                <option value="ENTRADA">ENTRADA</option>
+                <option value="PRINCIPAL">PRINCIPAL</option>
+                <option value="POSTRE">POSTRE</option>
+                <option value="BEBIDA">BEBIDA</option>
+              </select>
+            </div>
+            <div>
+              <label>FECHA PLATO (OPC.)</label>
+              <input id="itemDate" type="date" />
+            </div>
+          </div>
+
+          <label>DESCRIPCIÓN / INGREDIENTES</label>
+          <textarea id="itemDesc" class="auto-caps" style="height: 80px;" placeholder="CARNE RES, QUESO, TOMATE..."></textarea>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn btn-primary" id="btnSaveItem" style="flex:1">GUARDAR Y AGREGAR</button>
+            <button class="btn" id="btnClearItem">LIMPIAR</button>
+          </div>
+        </div>
+
+        <!-- HISTORIAL / BUSCADOR -->
+        <div class="card">
+          <h3 style="margin-top:0">BUSCAR EN HISTORIAL</h3>
+          <div style="position: relative;">
+            <input id="searchItems" placeholder="BUSCAR POR NOMBRE O CATEGORÍA..." style="padding-left: 40px;" />
+            <span style="position: absolute; left: 14px; top: 12px; opacity: 0.5;">🔍</span>
+          </div>
+
+          <div class="table-container" style="max-height: 350px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>PLATO</th>
+                  <th>CAT.</th>
+                  <th style="width:100px">ACCIÓN</th>
+                </tr>
+              </thead>
+              <tbody id="historyItemsTbody">
+                <!-- Items del historial -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-    </div><!-- /app -->
-  </div><!-- /wrap -->
+    </div>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -463,426 +345,200 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Dom Elements
     const loginCard = document.getElementById("loginCard");
     const app = document.getElementById("app");
-    const btnLogin = document.getElementById("btnLogin");
-    const btnLogout = document.getElementById("btnLogout");
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPass = document.getElementById("loginPass");
-
-    const menuSelect = document.getElementById("menuSelect");
-    const menuName = document.getElementById("menuName");
-    const menuDate = document.getElementById("menuDate");
-    const menuStatus = document.getElementById("menuStatus");
-    const btnCreateMenu = document.getElementById("btnCreateMenu");
-    const btnUpdateMenu = document.getElementById("btnUpdateMenu");
-    const btnDeleteMenu = document.getElementById("btnDeleteMenu");
-
-    const itemId = document.getElementById("itemId");
-    const itemName = document.getElementById("itemName");
-    const itemCategory = document.getElementById("itemCategory");
-    const itemDate = document.getElementById("itemDate");
-    const itemDesc = document.getElementById("itemDesc");
-    const btnSaveItem = document.getElementById("btnSaveItem");
-    const btnClearItem = document.getElementById("btnClearItem");
-    const btnDeleteItem = document.getElementById("btnDeleteItem");
-
-    const searchItems = document.getElementById("searchItems");
-    const btnClearSearch = document.getElementById("btnClearSearch");
+    const menuButtonsList = document.getElementById("menuButtonsList");
+    const menuItemsTbody = document.getElementById("menuItemsTbody");
     const historyItemsTbody = document.getElementById("historyItemsTbody");
 
-    const menuItemsTbody = document.getElementById("menuItemsTbody");
-    const menuItemsCount = document.getElementById("menuItemsCount");
-
-    let menusCache = [];
-    let historyItemsCache = [];
     let currentMenuId = null;
+    let menusCache = [];
+    let historyCache = [];
+
+    // --- LOGICA DE MAYÚSCULAS AUTOMÁTICAS ---
+    document.querySelectorAll('input, textarea').forEach(el => {
+      if(el.type !== 'password' && el.type !== 'date' && el.type !== 'email') {
+        el.addEventListener('input', function() {
+          this.value = this.value.toUpperCase();
+        });
+      }
+    });
 
     function fmtDate(d) {
       if (!d) return "";
-      try { const [y,m,dd] = d.split("-"); return `${dd}-${m}-${y}`; } catch { return d; }
-    }
-
-    function setDefaultMenuDateIfEmpty() {
-      if (!menuDate.value) {
-        const t = new Date();
-        const yyyy = t.getFullYear();
-        const mm = String(t.getMonth() + 1).padStart(2, "0");
-        const dd = String(t.getDate()).padStart(2, "0");
-        menuDate.value = `${yyyy}-${mm}-${dd}`;
-      }
-    }
-
-    function cleanItemForm() {
-      itemId.value = "";
-      itemName.value = "";
-      itemCategory.value = "";
-      itemDate.value = "";
-      itemDesc.value = "";
+      const [y, m, dd] = d.split("-");
+      return `${dd}/${m}/${y}`;
     }
 
     async function refreshAuthUI() {
       const { data } = await supabaseClient.auth.getSession();
       const loggedIn = !!data.session;
-
       loginCard.classList.toggle("hidden", loggedIn);
       app.classList.toggle("hidden", !loggedIn);
-      btnLogout.style.display = loggedIn ? "inline-flex" : "none";
 
       if (loggedIn) {
-        setDefaultMenuDateIfEmpty();
         await loadMenus();
         await loadHistoryItems();
-        await setCurrentMenuFromSelect();
       }
     }
 
-    btnLogin.addEventListener("click", async () => {
-      const email = loginEmail.value.trim();
-      const password = loginPass.value;
-      if (!email || !password) return alert("Completa email y contraseña.");
-
+    // AUTH
+    document.getElementById("btnLogin").onclick = async () => {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPass").value;
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) return alert("Login falló: " + error.message);
-      await refreshAuthUI();
-    });
+      if (error) alert("ERROR: " + error.message);
+      else refreshAuthUI();
+    };
 
-    btnLogout.addEventListener("click", async () => {
+    document.getElementById("btnLogout").onclick = async () => {
       await supabaseClient.auth.signOut();
-      await refreshAuthUI();
-    });
+      refreshAuthUI();
+    };
 
+    // MENUS
     async function loadMenus() {
-      const { data, error } = await supabaseClient
-        .from("menus")
-        .select("id,name,menu_date,created_at")
-        .order("menu_date", { ascending: false })
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        menuStatus.textContent = "Error cargando menús.";
-        menusCache = [];
-        menuSelect.innerHTML = `<option value="">(Error)</option>`;
-        return;
-      }
-
+      const { data } = await supabaseClient.from("menus").select("*").order("menu_date", { ascending: false });
       menusCache = data || [];
-      if (menusCache.length === 0) {
-        menuSelect.innerHTML = `<option value="">No hay menús (crea uno)</option>`;
-        currentMenuId = null;
-        menuName.value = "";
-        setDefaultMenuDateIfEmpty();
-        menuStatus.textContent = "Crea tu primer menú.";
-        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Crea un menú para comenzar…</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s)";
-        return;
-      }
-
-      menuSelect.innerHTML = menusCache.map(m => {
-        const label = `${m.name || "Menú"}${m.menu_date ? " — " + fmtDate(m.menu_date) : ""}`;
-        return `<option value="${m.id}">${label}</option>`;
-      }).join("");
+      renderMenuButtons();
     }
 
-    async function setCurrentMenuFromSelect() {
-      const val = menuSelect.value || (menusCache[0] ? menusCache[0].id : null);
-      if (!val) return;
+    function renderMenuButtons() {
+      menuButtonsList.innerHTML = menusCache.map(m => `
+        <button class="menu-item-btn ${currentMenuId == m.id ? 'active' : ''}" onclick="selectMenu(${m.id})">
+          <span>${m.name || 'SIN NOMBRE'}</span>
+          <small>${m.menu_date ? fmtDate(m.menu_date) : 'SIN FECHA'}</small>
+        </button>
+      `).join("");
+    }
 
-      menuSelect.value = val;
-      currentMenuId = val;
-
-      const m = menusCache.find(x => String(x.id) === String(val));
-      menuName.value = (m && m.name) ? m.name : "";
-      menuDate.value = (m && m.menu_date) ? m.menu_date : menuDate.value;
-
-      menuStatus.textContent = `Menú seleccionado: ${menuName.value || "Menú"}${menuDate.value ? " (" + fmtDate(menuDate.value) + ")" : ""}`;
+    window.selectMenu = async (id) => {
+      currentMenuId = id;
+      const m = menusCache.find(x => x.id === id);
+      document.getElementById("menuName").value = m.name || "";
+      document.getElementById("menuDate").value = m.menu_date || "";
+      document.getElementById("menuStatus").textContent = `EDITANDO: ${m.name}`;
+      renderMenuButtons();
       await loadMenuItems();
-    }
+    };
 
-    menuSelect.addEventListener("change", setCurrentMenuFromSelect);
+    document.getElementById("btnSidebarNewMenu").onclick = async () => {
+      const { data, error } = await supabaseClient.from("menus").insert([{ name: "NUEVO MENÚ", menu_date: new Date().toISOString().split('T')[0] }]).select().single();
+      if (!error) {
+        await loadMenus();
+        selectMenu(data.id);
+      }
+    };
 
-    btnCreateMenu.addEventListener("click", async () => {
-      setDefaultMenuDateIfEmpty();
-      const name = menuName.value.trim() || "Menú";
-      const date = menuDate.value || null;
-
-      const { data, error } = await supabaseClient
-        .from("menus")
-        .insert([{ name, menu_date: date }])
-        .select("id,name,menu_date,created_at")
-        .single();
-
-      if (error) return alert("No se pudo crear el menú: " + error.message);
-
+    document.getElementById("btnUpdateMenu").onclick = async () => {
+      if(!currentMenuId) return;
+      const name = document.getElementById("menuName").value;
+      const date = document.getElementById("menuDate").value;
+      await supabaseClient.from("menus").update({ name, menu_date: date }).eq("id", currentMenuId);
       await loadMenus();
-      menuSelect.value = data.id;
-      await setCurrentMenuFromSelect();
-      alert("Menú creado ✅");
-    });
+      alert("MENÚ ACTUALIZADO");
+    };
 
-    btnUpdateMenu.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("No hay menú seleccionado.");
-      setDefaultMenuDateIfEmpty();
-      const name = menuName.value.trim() || "Menú";
-      const date = menuDate.value || null;
-
-      const { error } = await supabaseClient
-        .from("menus")
-        .update({ name, menu_date: date })
-        .eq("id", currentMenuId);
-
-      if (error) return alert("No se pudo actualizar: " + error.message);
-
-      await loadMenus();
-      menuSelect.value = currentMenuId;
-      await setCurrentMenuFromSelect();
-      alert("Menú actualizado ✅");
-    });
-
-    btnDeleteMenu.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("No hay menú seleccionado.");
-      if (!confirm("¿Seguro que quieres borrar este menú? (No borra los platos del historial)")) return;
-
-      const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_id", currentMenuId);
-      if (rel.error) return alert("No se pudo borrar relación: " + rel.error.message);
-
-      const { error } = await supabaseClient.from("menus").delete().eq("id", currentMenuId);
-      if (error) return alert("No se pudo borrar el menú: " + error.message);
-
+    document.getElementById("btnDeleteMenu").onclick = async () => {
+      if(!currentMenuId || !confirm("¿ELIMINAR ESTE MENÚ COMPLETAMENTE?")) return;
+      await supabaseClient.from("menu_menu_items").delete().eq("menu_id", currentMenuId);
+      await supabaseClient.from("menus").delete().eq("id", currentMenuId);
       currentMenuId = null;
       await loadMenus();
-      await setCurrentMenuFromSelect();
-      alert("Menú borrado ✅");
-    });
+      location.reload();
+    };
 
+    // ITEMS
     async function loadHistoryItems() {
-      const { data, error } = await supabaseClient
-        .from("menu_items")
-        .select("id,name,category,description,item_date,created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(error);
-        historyItemsCache = [];
-        historyItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Error cargando historial.</td></tr>`;
-        return;
-      }
-
-      historyItemsCache = data || [];
+      const { data } = await supabaseClient.from("menu_items").select("*").order("created_at", { ascending: false });
+      historyCache = data || [];
       renderHistory();
     }
 
     function renderHistory() {
-      const q = (searchItems.value || "").toLowerCase().trim();
-      const filtered = !q ? historyItemsCache : historyItemsCache.filter(it =>
-        (it.name || "").toLowerCase().includes(q) ||
-        (it.category || "").toLowerCase().includes(q) ||
-        (it.description || "").toLowerCase().includes(q)
-      );
+      const q = document.getElementById("searchItems").value.toUpperCase();
+      const filtered = historyCache.filter(i => (i.name||"").includes(q) || (i.category||"").includes(q));
 
-      if (filtered.length === 0) {
-        historyItemsTbody.innerHTML = `<tr><td colspan="4" class="muted">Sin resultados.</td></tr>`;
-        return;
-      }
-
-      historyItemsTbody.innerHTML = filtered.map(it => `
+      historyItemsTbody.innerHTML = filtered.map(i => `
         <tr>
-          <td><b>${it.name || "Sin nombre"}</b></td>
-          <td>${it.category || ""}</td>
-          <td>${it.description || ""}</td>
-          <td><button class="btn btnPrimary btnSmall" data-add="${it.id}">Agregar</button></td>
-        </tr>
-      `).join("");
-
-      historyItemsTbody.querySelectorAll("button[data-add]").forEach(btn => {
-        btn.addEventListener("click", () => addExistingItemToMenu(btn.getAttribute("data-add")));
-      });
-    }
-
-    searchItems.addEventListener("input", renderHistory);
-    btnClearSearch.addEventListener("click", () => {
-      searchItems.value = "";
-      renderHistory();
-    });
-
-    async function loadMenuItems() {
-      if (!currentMenuId) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Selecciona un menú…</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s)";
-        return;
-      }
-
-      const { data, error } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id, menu_item_id, menu_items:menu_item_id (id,name,category,description,item_date)")
-        .eq("menu_id", currentMenuId)
-        .order("id", { ascending: true });
-
-      if (error) {
-        console.error(error);
-        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Error cargando platos del menú.</td></tr>`;
-        menuItemsCount.textContent = "0 plato(s)";
-        return;
-      }
-
-      const rows = (data || []).map(r => ({
-        linkId: r.id,
-        item: r.menu_items
-      })).filter(x => x.item);
-
-      menuItemsCount.textContent = `${rows.length} plato(s)`;
-
-      if (rows.length === 0) {
-        menuItemsTbody.innerHTML = `<tr><td colspan="5" class="muted">Este menú aún no tiene platos.</td></tr>`;
-        return;
-      }
-
-      menuItemsTbody.innerHTML = rows.map((r, idx) => `
-        <tr>
-          <td><b>${idx + 1}</b></td>
-          <td><b>${r.item.name || "Sin nombre"}</b></td>
-          <td>${r.item.category || ""}</td>
-          <td>${r.item.description || ""}</td>
+          <td><b>${i.name}</b><br><small style="color:var(--muted)">${i.description || ''}</small></td>
+          <td><span class="status-badge">${i.category || '-'}</span></td>
           <td>
-            <button class="btn btnSmall" data-edit="${r.item.id}">Editar</button>
-            <button class="btn btnDanger btnSmall" data-remove="${r.linkId}">Quitar</button>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-primary" style="padding:5px 10px" onclick="addItemToMenu(${i.id})">+</button>
+              <button class="btn btn-danger" style="padding:5px 10px" onclick="deleteFromHistory(${i.id})">×</button>
+            </div>
           </td>
         </tr>
       `).join("");
-
-      menuItemsTbody.querySelectorAll("button[data-edit]").forEach(btn => {
-        btn.addEventListener("click", () => fillEditItem(btn.getAttribute("data-edit")));
-      });
-      menuItemsTbody.querySelectorAll("button[data-remove]").forEach(btn => {
-        btn.addEventListener("click", () => removeItemFromMenu(btn.getAttribute("data-remove")));
-      });
     }
 
-    async function addExistingItemToMenu(menuItemId) {
-      if (!currentMenuId) return alert("Primero crea/selecciona un menú.");
+    document.getElementById("searchItems").oninput = renderHistory;
 
-      const { data: existing, error: exErr } = await supabaseClient
+    async function loadMenuItems() {
+      if (!currentMenuId) return;
+      const { data } = await supabaseClient
         .from("menu_menu_items")
-        .select("id")
-        .eq("menu_id", currentMenuId)
-        .eq("menu_item_id", menuItemId)
-        .maybeSingle();
+        .select("id, menu_items(id, name, category, description)")
+        .eq("menu_id", currentMenuId);
+      
+      menuItemsTbody.innerHTML = (data || []).map((row, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><b>${row.menu_items.name}</b></td>
+          <td>${row.menu_items.category || ''}</td>
+          <td>${row.menu_items.description || ''}</td>
+          <td>
+            <button class="btn btn-danger" onclick="removeItemFromMenu(${row.id})">QUITAR</button>
+          </td>
+        </tr>
+      `).join("");
+    }
 
-      if (exErr) return alert("Error verificando duplicado: " + exErr.message);
-      if (existing) return alert("Ese plato ya está en este menú.");
+    window.addItemToMenu = async (itemId) => {
+      if(!currentMenuId) return alert("SELECCIONA UN MENÚ PRIMERO");
+      await supabaseClient.from("menu_menu_items").insert([{ menu_id: currentMenuId, menu_item_id: itemId }]);
+      loadMenuItems();
+    };
 
-      const { error } = await supabaseClient
-        .from("menu_menu_items")
-        .insert([{ menu_id: currentMenuId, menu_item_id: menuItemId }]);
+    window.removeItemFromMenu = async (linkId) => {
+      await supabaseClient.from("menu_menu_items").delete().eq("id", linkId);
+      loadMenuItems();
+    };
 
-      if (error) return alert("No se pudo agregar al menú: " + error.message);
-
+    window.deleteFromHistory = async (id) => {
+      if(!confirm("¿BORRAR PLATO DEL HISTORIAL? SE QUITARÁ DE TODOS LOS MENÚS.")) return;
+      await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
+      await supabaseClient.from("menu_items").delete().eq("id", id);
+      await loadHistoryItems();
       await loadMenuItems();
-    }
+    };
 
-    async function removeItemFromMenu(linkId) {
-      if (!confirm("¿Quitar este plato del menú? (No se borra del historial)")) return;
-
-      const { error } = await supabaseClient
-        .from("menu_menu_items")
-        .delete()
-        .eq("id", linkId);
-
-      if (error) return alert("No se pudo quitar: " + error.message);
-
-      await loadMenuItems();
-    }
-
-    function fillEditItem(id) {
-      const it = historyItemsCache.find(x => String(x.id) === String(id));
-      if (!it) return;
-
-      itemId.value = it.id;
-      itemName.value = it.name || "";
-      itemCategory.value = it.category || "";
-      itemDate.value = it.item_date || "";
-      itemDesc.value = it.description || "";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    btnClearItem.addEventListener("click", cleanItemForm);
-
-    btnSaveItem.addEventListener("click", async () => {
-      if (!currentMenuId) return alert("Primero crea/selecciona un menú.");
-
-      const name = itemName.value.trim();
-      if (!name) return alert("El nombre del plato es obligatorio.");
-
+    document.getElementById("btnSaveItem").onclick = async () => {
+      const name = document.getElementById("itemName").value;
+      if(!name) return;
       const payload = {
         name,
-        category: itemCategory.value || null,
-        description: itemDesc.value.trim() || null,
-        item_date: itemDate.value || null
+        category: document.getElementById("itemCategory").value,
+        description: document.getElementById("itemDesc").value,
+        item_date: document.getElementById("itemDate").value || null
       };
 
-      let savedId = itemId.value ? Number(itemId.value) : null;
-
-      if (savedId) {
-        const { error } = await supabaseClient.from("menu_items").update(payload).eq("id", savedId);
-        if (error) return alert("No se pudo actualizar el plato: " + error.message);
-      } else {
-        const { data, error } = await supabaseClient
-          .from("menu_items")
-          .insert([payload])
-          .select("id")
-          .single();
-
-        if (error) return alert("No se pudo crear el plato: " + error.message);
-        savedId = data.id;
+      const { data, error } = await supabaseClient.from("menu_items").insert([payload]).select().single();
+      if(!error) {
+        if(currentMenuId) await addItemToMenu(data.id);
+        await loadHistoryItems();
+        document.getElementById("itemName").value = "";
+        document.getElementById("itemDesc").value = "";
       }
+    };
 
-      const { data: existing } = await supabaseClient
-        .from("menu_menu_items")
-        .select("id")
-        .eq("menu_id", currentMenuId)
-        .eq("menu_item_id", savedId)
-        .maybeSingle();
-
-      if (!existing) {
-        const { error } = await supabaseClient
-          .from("menu_menu_items")
-          .insert([{ menu_id: currentMenuId, menu_item_id: savedId }]);
-
-        if (error) return alert("Plato guardado, pero no se pudo agregar al menú: " + error.message);
-      }
-
-      await loadHistoryItems();
-      await loadMenuItems();
-      cleanItemForm();
-      alert("Plato guardado ✅");
-    });
-
-    btnDeleteItem.addEventListener("click", async () => {
-      if (!itemId.value) return alert("Selecciona un plato para borrar (doble click en historial o Editar).");
-      if (!confirm("¿Seguro? Esto borra el plato del historial (y lo quitará de todos los menús).")) return;
-
-      const id = Number(itemId.value);
-
-      const rel = await supabaseClient.from("menu_menu_items").delete().eq("menu_item_id", id);
-      if (rel.error) return alert("No se pudo borrar relaciones: " + rel.error.message);
-
-      const { error } = await supabaseClient.from("menu_items").delete().eq("id", id);
-      if (error) return alert("No se pudo borrar el plato: " + error.message);
-
-      await loadHistoryItems();
-      await loadMenuItems();
-      cleanItemForm();
-      alert("Plato borrado ✅");
-    });
-
-    historyItemsTbody.addEventListener("dblclick", (e) => {
-      const tr = e.target.closest("tr");
-      if (!tr) return;
-      const btn = tr.querySelector("button[data-add]");
-      if (!btn) return;
-      fillEditItem(btn.getAttribute("data-add"));
-    });
+    document.getElementById("btnClearItem").onclick = () => {
+      document.getElementById("itemId").value = "";
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemDesc").value = "";
+    };
 
     refreshAuthUI();
   </script>
