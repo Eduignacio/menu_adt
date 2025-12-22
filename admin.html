@@ -5,8 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>ADT - ADMIN PANEL</title>
-  <!-- Inter font -->
-  https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
+  <!-- Tipografía Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     :root{
       --bg:#f1f5f9; --surface:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
@@ -30,9 +30,10 @@
     .nav-btn:hover{background:#0b1326}
     .nav-btn.active{background:#16213a;color:#fff;border-left:4px solid var(--accent)}
 
-    /* Buscador + catálogo en Sidebar: SOLO en Constructor->Menú */
+    /* Buscador + catálogo en Sidebar: SOLO en Constructor->Menú (CATÁLOGO) */
     .search-cat{position:sticky;top:60px;background:#0b1326;padding:12px;z-index:1}
-    .search-cat input{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#13203f;color:#fff;font-size:11px;text-transform:none}
+    .search-cat input{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#13203f;color:#fff;
+      font-size:11px;text-transform:none}
     .catalog-scroll{flex:1;padding:12px;background:#0f172a;overflow-y:auto;max-height:calc(100vh - 160px)}
     .catalog-scroll::-webkit-scrollbar{width:8px}
     .catalog-scroll::-webkit-scrollbar-thumb{background:#334155;border-radius:8px}
@@ -58,7 +59,7 @@
     label{font-size:10px;font-weight:900;color:var(--muted);margin-bottom:6px;display:block}
     input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-weight:800}
 
-    /* Tabs dentro de CONSTRUCTOR (solo Menú/Historal) */
+    /* Tabs dentro de CONSTRUCTOR (Menú: catálogo/manual) */
     .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
     .tab-btn{padding:12px;border-radius:12px;border:1px solid var(--border);background:#eef2ff;color:var(--text);font-weight:900;cursor:pointer;text-align:center}
     .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -83,21 +84,23 @@
     .type-item .hint{font-size:10px;color:var(--muted)}
     .type-item:hover,.type-item.active{background:#eef2ff;color:var(--accent)}
 
-    /* Table wrap */
+    /* Tablas */
     .table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:12px}
     table{width:100%;border-collapse:collapse}
     th{background:#f8fafc;text-align:left;font-size:10px;color:var(--muted);padding:12px;border-bottom:1px solid var(--border)}
     td{padding:12px;border-bottom:1px solid var(--bg);font-size:12px;font-weight:700}
+
+    .hidden{display:none !important}
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- LOGIN (si usas auth) -->
   <div id="loginOverlay" class="hidden">
     <div class="card" style="max-width:380px;margin:auto;">
       <h2 style="margin:0 0 10px;text-align:center;">ADT ADMIN</h2>
-      <label>EMAIL</label><input id="lEmail" type="email">
-      <label>PASSWORD</label><input id="lPass" type="password">
+      <label>EMAIL</label><input id="lEmail" type="email" />
+      <label>PASSWORD</label><input id="lPass" type="password" />
       <button class="btn primary" style="width:100%;" onclick="handleLogin()">ENTRAR</button>
       <p id="loginMsg" style="color:var(--danger);font-size:10px;text-align:center;margin-top:10px;text-transform:none;display:none;"></p>
     </div>
@@ -125,7 +128,7 @@
         </div>
       </nav>
 
-      <!-- SOLO aparece en CONSTRUCTOR → MENÚ -->
+      <!-- SOLO en CONSTRUCTOR → MENÚ (CATÁLOGO) -->
       <div id="builderSidebarExtras" class="hidden">
         <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCat()"></div>
         <div id="catalogList" class="catalog-scroll"></div>
@@ -149,8 +152,8 @@
           <div id="viewBuilder">
             <div class="card">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-                <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date"></div>
-                <div><label>NOMBRE DEL MENÚ</label><input id="menuName" placeholder="EJ: MENÚ DEL DÍA"></div>
+                <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" /></div>
+                <div><label>NOMBRE DEL MENÚ</label><input id="menuName" placeholder="EJ: MENÚ DEL DÍA" /></div>
               </div>
 
               <div class="tabs">
@@ -158,14 +161,14 @@
                 <button class="tab-btn" id="tabManual" onclick="setBuilderMode('manual')">✍️ MANUAL</button>
               </div>
 
-              <!-- Manual -->
+              <!-- MANUAL -->
               <div id="manualCard" class="card hidden">
                 <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">MENÚ MANUAL</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
                   <div>
                     <label>ESCRIBIR PLATO</label>
                     <div style="position:relative;display:flex;gap:8px;">
-                      <input id="typedDish" placeholder="EJ: LASAÑA DE CARNE" class="smart-input">
+                      <input id="typedDish" placeholder="EJ: LASAÑA DE CARNE" />
                       <button class="btn primary" id="btnAddDish">AGREGAR</button>
                       <button class="btn" id="btnClearDish">LIMPIAR</button>
                       <div id="typeahead" class="typeahead hidden"></div>
@@ -222,15 +225,15 @@
             <div class="card">
               <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">GESTIÓN DEL CATÁLOGO</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                <input type="hidden" id="editCatId">
-                <div><label>CATEGORÍA</label><input id="cCat" placeholder="EJ: ARROZ"></div>
-                <div><label>ACOMPAÑAMIENTO</label><input id="cAcomp" placeholder="EJ: ARROZ BLANCO"></div>
+                <input type="hidden" id="editCatId" />
+                <div><label>CATEGORÍA</label><input id="cCat" placeholder="EJ: ARROZ" /></div>
+                <div><label>ACOMPAÑAMIENTO</label><input id="cAcomp" placeholder="EJ: ARROZ BLANCO" /></div>
               </div>
               <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;">
-                <div><label>OPCIÓN 1</label><input id="cOpc1"></div>
-                <div><label>OPCIÓN 2</label><input id="cOpc2"></div>
-                <div><label>OPCIÓN 3</label><input id="cOpc3"></div>
-                <div><label>OPCIÓN 4</label><input id="cOpc4"></div>
+                <div><label>OPCIÓN 1</label><input id="cOpc1" /></div>
+                <div><label>OPCIÓN 2</label><input id="cOpc2" /></div>
+                <div><label>OPCIÓN 3</label><input id="cOpc3" /></div>
+                <div><label>OPCIÓN 4</label><input id="cOpc4" /></div>
               </div>
               <div style="display:flex;gap:8px;justify-content:flex-end;">
                 <button class="btn" id="btnCancelCat" onclick="resetCatForm()" style="display:none;">✕ CANCELAR</button>
@@ -250,12 +253,12 @@
             <div class="card">
               <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">USUARIOS</div>
               <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">
-                <input type="hidden" id="uId">
-                <div><label>EMAIL</label><input id="uEmail" type="email" style="text-transform:none !important;"></div>
-                <div><label>PASSWORD</label><input id="uPass" type="password" style="text-transform:none !important;"></div>
+                <input type="hidden" id="uId" />
+                <div><label>EMAIL</label><input id="uEmail" type="email" style="text-transform:none !important;" /></div>
+                <div><label>PASSWORD</label><input id="uPass" type="password" style="text-transform:none !important;" /></div>
                 <div style="display:flex;gap:10px;align-items:center;">
-                  <label style="font-size:10px;"><input type="checkbox" id="pCat"> CAT.</label>
-                  <label style="font-size:10px;"><input type="checkbox" id="pUsr"> USR.</label>
+                  <label style="font-size:10px;"><input type="checkbox" id="pCat" /> CAT.</label>
+                  <label style="font-size:10px;"><input type="checkbox" id="pUsr" /> USR.</label>
                   <button class="btn primary" onclick="saveUsr()">GUARDAR</button>
                 </div>
               </div>
@@ -268,8 +271,8 @@
     </main>
   </div>
 
-  <!-- Supabase JS v2 -->
-  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
+  <!-- Supabase v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* Supabase */
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
@@ -283,31 +286,27 @@
     let savedMenus = [];
     let typeList = []; let taActive = -1;
 
-    /* Util */
+    /* Utils */
     const toUpper = s => (s||'').trim().toUpperCase();
     const esc = s => (s??'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":"&#39;"}[c]));
     function showToast(msg){
-      const id = 'toast';
-      if (!document.getElementById(id)){
-        const t = document.createElement('div'); t.id=id; t.className='card'; t.style.position='fixed'; t.style.left='50%'; t.style.bottom='24px'; t.style.transform='translateX(-50%)'; t.style.padding='10px 14px';
-        document.body.appendChild(t);
-      }
-      const t = document.getElementById(id); t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none',1500);
+      let t = document.getElementById('toast');
+      if (!t){ t = document.createElement('div'); t.id='toast'; t.className='card'; t.style.position='fixed'; t.style.left='50%'; t.style.bottom='24px'; t.style.transform='translateX(-50%)'; t.style.padding='10px 14px'; document.body.appendChild(t); }
+      t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none',1500);
     }
 
-    /* Login/Permisos */
+    /* Auth/Permisos (opcional) */
     async function handleLogin(){
       const { error } = await sb.auth.signInWithPassword({ email:lEmail.value.trim().toLowerCase(), password:lPass.value });
       if (error){ loginMsg.textContent="ERROR: "+error.message; loginMsg.style.display='block'; } else location.reload();
     }
     function handleLogout(){ sb.auth.signOut(); localStorage.clear(); location.reload(); }
-
     async function check(){
       const { data:{ session } } = await sb.auth.getSession();
       if (session){
         const email = session.user.email.toLowerCase();
         userBadge.textContent = email;
-        if (email === "eduardoignacio.g.h@gmail.com"){ perms.cat=true; perms.usr=true; } // UI-only
+        if (email === "eduardoignacio.g.h@gmail.com"){ perms.cat=true; perms.usr=true; } // UI solo
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
         if (db){ perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
         loginOverlay.classList.add('hidden');
@@ -318,36 +317,31 @@
       }
     }
     function applyUiPermissions(){
-      // Admin section visible si hay permisos (puedes ajustarlo a tu gusto)
       adminSection.classList.toggle('hidden', !(perms.cat || perms.usr));
       navCatalog.classList.toggle('hidden', !perms.cat);
       navUsers.classList.toggle('hidden', !perms.usr);
     }
 
-    /* Navegación: NO MEZCLAR secciones */
+    /* Navegación — SEPARACIÓN ESTRICTA */
     function switchView(v){
-      // botones activos
       [navBuilder, navHistory, navCatalog, navUsers].forEach(b=>b?.classList.remove('active'));
       ({builder:navBuilder, history:navHistory, catalog:navCatalog, users:navUsers}[v])?.classList.add('active');
 
-      // vistas
       [viewBuilder, viewHistory, viewCatalog, viewUsers].forEach(el=>el.classList.add('hidden'));
       ({builder:viewBuilder, history:viewHistory, catalog:viewCatalog, users:viewUsers}[v]).classList.remove('hidden');
 
-      // título
       viewTitle.textContent = { builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS' }[v];
 
-      // catálogo en sidebar SOLO en constructor->menú
+      // Catálogo en sidebar SOLO en CONSTRUCTOR → MENÚ → (tab CATÁLOGO)
       const showBuilderCatalog = (v==='builder' && tabCatalog.classList.contains('active'));
       builderSidebarExtras.classList.toggle('hidden', !showBuilderCatalog);
 
-      // cargas específicas
       if (v==='history') loadHistory();
       if (v==='catalog') loadCatTable();
       if (v==='users') loadUsrTable();
     }
 
-    /* Tabs de CONSTRUCTOR (menú/manual) */
+    /* Tabs de CONSTRUCTOR (Menú: catálogo/manual) */
     function setBuilderMode(mode){
       const showCatalog = mode==='catalog';
       tabCatalog.classList.toggle('active', showCatalog);
@@ -474,7 +468,8 @@
       setActive(next); items[next].scrollIntoView({block:'nearest'});
     }
     function chooseActive(){
-      const items=[...typeahead.querySelectorAll('.type-item')]; if(!items.length) return addTypedDish();
+      const items=[...typeahead.querySelectorAll('.type-item')];
+      if(!items.length) return addTypedDish();
       const text=items[taActive]?.querySelector('span')?.textContent||''; const s=typeList.find(t=>t.name===text);
       if(s) chooseSuggestion(s); else addTypedDish();
     }
@@ -540,7 +535,7 @@
       alert("PUBLICADO ✅"); draft=[]; renderDraftChips();
     }
 
-    /* Historial (Constructor) */
+    /* Historial (CONSTRUCTOR) */
     async function loadHistory(){
       const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category))').order('menu_date',{ascending:false});
       historyTable.innerHTML = `<tbody>${
@@ -630,9 +625,10 @@
 
     /* Eventos */
     document.addEventListener('input', e=>{
-      if(e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value=e.target.value.toUpperCase();
+      if(e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type))
+        e.target.value=e.target.value.toUpperCase();
     });
-    // manual
+    // Manual
     btnAddDish.addEventListener('click', addTypedDish);
     btnClearDish.addEventListener('click', ()=>{ typedDish.value=''; hideTypeahead(); typedDish.focus(); });
     btnRefreshCats.addEventListener('click', ()=>{ fillTypedCategory(); showToast('Categorías actualizadas'); });
@@ -646,12 +642,12 @@
     typedCategory.addEventListener('change', updateTypeahead);
     document.addEventListener('click', e=>{ if(!typeahead.contains(e.target) && e.target!==typedDish) hideTypeahead(); });
 
-    // init
+    /* Init */
     menuDate.value=(new Date()).toISOString().slice(0,10);
     loadSavedMenus();
     check();
-    switchView('builder'); // por defecto: Constructor → Menú
-    setBuilderMode('catalog'); // muestra catálogo en sidebar
+    switchView('builder');        // Inicia en CONSTRUCTOR → MENÚ
+    setBuilderMode('catalog');    // Muestra CATÁLOGO y activa el sidebar
   </script>
 </body>
 </html>
