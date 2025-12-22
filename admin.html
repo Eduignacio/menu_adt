@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -22,32 +23,20 @@
     }
 
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    
     body { margin: 0; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; transition: all 0.3s ease; }
 
-    /* --- LOGIN OVERLAY --- */
-    #loginOverlay { 
-      position: fixed; inset: 0; background: var(--sidebar-bg); 
-      z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
-    }
+    /* LOGIN */
+    #loginOverlay { position: fixed; inset: 0; background: var(--sidebar-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .login-card { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
     .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; font-weight: 600; }
 
-    /* --- SIDEBAR --- */
-    .sidebar { 
-      width: var(--sidebar-width); background: var(--sidebar-bg); color: white; 
-      display: flex; flex-direction: column; flex-shrink: 0; 
-      transition: margin-left 0.3s ease, transform 0.3s ease;
-      z-index: 100; border-right: 1px solid #1e293b;
-    }
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: margin-left 0.3s ease, transform 0.3s ease; z-index: 100; border-right: 1px solid #1e293b; }
     .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 99; }
-    
     body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
     body.sidebar-open .sidebar { transform: translateX(0); }
-
     .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; }
     .sidebar-brand h2 { margin: 0; font-size: 16px; color: white; letter-spacing: 2px; }
-
     .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid #1e293b; }
     .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; display: flex; align-items: center; gap: 10px; }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
@@ -55,40 +44,30 @@
     /* BUSCADOR Y CATALOGO */
     .search-cat { padding: 15px; background: #0b1222; }
     .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; text-transform: none !important; }
-
     .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
-    
     .cat-accordion { margin-bottom: 5px; border-radius: 8px; overflow: hidden; }
-    .cat-trigger { 
-        width: 100%; padding: 12px; background: #1e293b; border: none; color: white; 
-        text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; 
-        display: flex; justify-content: space-between; transition: 0.2s;
-    }
+    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; display: flex; justify-content: space-between; transition: 0.2s; }
     .cat-trigger:hover { background: #2d3748; }
     .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; background: #0f172a; }
     .cat-accordion.active .cat-content { max-height: 2000px; padding: 10px 0; }
     .cat-accordion.active .cat-trigger { background: #1e293b; border-bottom: 1px solid #334155; }
-    
     .food-card { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155; margin: 0 5px; }
     .food-card b { display: block; font-size: 11px; margin-bottom: 10px; color: #94a3b8; }
-    
     .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
     .btn-quick { width: 100%; font-size: 9px; padding: 10px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 6px; font-weight: 800; transition: 0.2s; }
     .btn-quick:hover { background: var(--accent); }
 
-    /* --- ÁREA PRINCIPAL --- */
+    /* MAIN */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .btn-toggle { background: var(--sidebar-bg); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; margin-right: 15px; }
-    
     .view-port { flex: 1; overflow-y: auto; padding: 25px; scroll-behavior: smooth; }
     .container { max-width: 1100px; margin: 0 auto; width: 100%; }
 
-    /* CARD ESTÉTICA */
+    /* CARD */
     .card { background: white; padding: 30px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
     input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
     label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 6px; display: block; }
-    
     .btn-publish { background: var(--accent); color: white; padding: 18px; border-radius: 8px; width: 100%; font-weight: 900; border: none; cursor: pointer; font-size: 12px; }
 
     .hidden { display: none !important; }
@@ -97,7 +76,7 @@
     /* TABLAS */
     .table-wrap { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #f8fafc; text-align: left; font-size: 10px; color: #64748b; padding: 15px; border-bottom: 2px solid var(--bg); }
+    th { background: #f8fafc; text-align: left; font-size: 10px; color: #64748b; padding: 15px; border-bottom: 2px solid --var(bg); }
     td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 12px; font-weight: 700; }
 
     @media (max-width: 850px) {
@@ -109,6 +88,7 @@
 </head>
 <body id="mainBody">
 
+  <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
       <h2 style="text-align: center; margin: 0 0 25px;">ADT ADMIN</h2>
@@ -121,7 +101,8 @@
 
   <div id="appMain" class="hidden" style="display: flex; width: 100%;">
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-    
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
       <nav class="sidebar-nav">
@@ -134,6 +115,7 @@
       <div id="catalogList" class="catalog-scroll"></div>
     </aside>
 
+    <!-- MAIN -->
     <main class="main-area">
       <header class="top-bar">
         <div style="display: flex; align-items: center; gap: 15px;">
@@ -150,14 +132,51 @@
 
       <section class="view-port">
         <div class="container">
-          
-          <!-- CONSTRUCTOR -->
+
+          <!-- BUILDER -->
           <div id="viewBuilder">
             <div class="card">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date"></div>
-                <div><label>NOMBRE AUTO</label><div style="font-size:22px; font-weight:900; color:var(--accent); margin-top:5px;">MENÚ DEL DÍA</div></div>
+                <div>
+                  <label>FECHA DEL MENÚ</label>
+                  <input id="menuDate" type="date">
+                </div>
+                <div>
+                  <label>NOMBRE DEL MENÚ</label>
+                  <input id="menuName" placeholder="EJ: MENÚ DEL DÍA">
+                </div>
               </div>
+
+              <!-- NUEVO: MENÚ MANUAL -->
+              <div class="card" style="margin-top:15px; border-top: 4px solid var(--accent);">
+                <h3 style="margin-top:0; font-size:13px; color: var(--accent);">MENÚ MANUAL</h3>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div>
+                    <label>ESCRIBIR PLATO</label>
+                    <div style="display:flex; gap:8px;">
+                      <input id="typedDish" placeholder="EJ: LASAÑA DE CARNE">
+                      <button class="btn-quick" style="padding:12px 16px;" onclick="addTypedDish()">AGREGAR</button>
+                    </div>
+                    <small style="color:#64748b; display:block; margin-top:6px; text-transform:none;">
+                      Se agregará en MAYÚSCULAS al borrador
+                    </small>
+                  </div>
+
+                  <div>
+                    <label>MENÚS GUARDADOS</label>
+                    <div style="display:grid; grid-template-columns: 1fr auto auto auto auto auto; gap: 8px; align-items: end;">
+                      <select id="savedSelect"></select>
+                      <button class="btn-quick" style="padding:12px 16px;" onclick="saveCurrentMenu()">GUARDAR MENÚ</button>
+                      <button class="btn-quick" style="padding:12px 16px;" onclick="loadSelectedMenu()">CARGAR</button>
+                      <button class="btn-quick" style="padding:12px 16px;" onclick="renameSelectedMenu()">RENOMBRAR</button>
+                      <button class="btn-quick" style="padding:12px 16px;" onclick="duplicateSelectedMenu()">DUPLICAR</button>
+                      <button class="btn-quick" style="padding:12px 16px; background:#fee2e2; color:#ef4444;" onclick="deleteSelectedMenu()">BORRAR</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <button class="btn-publish" style="margin-top: 25px;" onclick="publishMenu()">PUBLICAR AHORA</button>
               <div id="draftList" style="margin-top: 30px;"></div>
             </div>
@@ -166,52 +185,52 @@
           <!-- HISTORIAL -->
           <div id="viewHistory" class="hidden">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-                <button onclick="delAllMenus()" style="background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 10px;">🗑️ BORRAR TODO EL HISTORIAL</button>
+              <button onclick="delAllMenus()" style="background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 10px;">🗑️ BORRAR TODO EL HISTORIAL</button>
             </div>
             <div class="card"><table id="historyTable" style="width:100%"></table></div>
           </div>
 
-          <!-- CATALOGO ALIMENTOS -->
+          <!-- CATALOGO -->
           <div id="viewCatalog" class="hidden">
             <div class="card" style="border-top: 4px solid var(--accent);">
-                <h3 id="catFormTitle" style="margin-top:0; font-size:13px; color: var(--accent);">GESTIÓN DEL CATÁLOGO</h3>
-                <div class="grid-form" style="margin-bottom: 15px;">
-                    <input type="hidden" id="editCatId">
-                    <div><label>CATEGORÍA</label><input id="cCat" placeholder="EJ: ARROZ"></div>
-                    <div><label>ACOMPAÑAMIENTO</label><input id="cAcomp" placeholder="EJ: ARROZ BLANCO"></div>
-                </div>
-                <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr 1fr; margin-bottom: 20px;">
-                    <div><label>OPCIÓN 1</label><input id="cOpc1"></div>
-                    <div><label>OPCIÓN 2</label><input id="cOpc2"></div>
-                    <div><label>OPCIÓN 3</label><input id="cOpc3"></div>
-                    <div><label>OPCIÓN 4</label><input id="cOpc4"></div>
-                </div>
-                <div style="display:flex; justify-content: flex-end; gap:5px;">
-                    <button class="hidden" id="btnCancelCat" onclick="resetCatForm()" style="background: #e2e8f0; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer;">✕ CANCELAR</button>
-                    <button onclick="saveFood()" style="background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 900; cursor: pointer;">GUARDAR ALIMENTO</button>
-                </div>
+              <h3 id="catFormTitle" style="margin-top:0; font-size:13px; color: var(--accent);">GESTIÓN DEL CATÁLOGO</h3>
+              <div class="grid-form" style="margin-bottom: 15px;">
+                <input type="hidden" id="editCatId">
+                <div><label>CATEGORÍA</label><input id="cCat" placeholder="EJ: ARROZ"></div>
+                <div><label>ACOMPAÑAMIENTO</label><input id="cAcomp" placeholder="EJ: ARROZ BLANCO"></div>
+              </div>
+              <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr 1fr; margin-bottom: 20px;">
+                <div><label>OPCIÓN 1</label><input id="cOpc1"></div>
+                <div><label>OPCIÓN 2</label><input id="cOpc2"></div>
+                <div><label>OPCIÓN 3</label><input id="cOpc3"></div>
+                <div><label>OPCIÓN 4</label><input id="cOpc4"></div>
+              </div>
+              <div style="display:flex; justify-content: flex-end; gap:5px;">
+                <button class="hidden" id="btnCancelCat" onclick="resetCatForm()" style="background: #e2e8f0; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer;">✕ CANCELAR</button>
+                <button onclick="saveFood()" style="background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 900; cursor: pointer;">GUARDAR ALIMENTO</button>
+              </div>
             </div>
             <div class="table-wrap">
-                <table>
-                    <thead><tr><th>CAT.</th><th>ACOMPAÑAMIENTO</th><th style="text-align:right;">ACCIÓN</th></tr></thead>
-                    <tbody id="catTable"></tbody>
-                </table>
+              <table>
+                <thead><tr><th>CAT.</th><th>ACOMPAÑAMIENTO</th><th style="text-align:right;">ACCIÓN</th></tr></thead>
+                <tbody id="catTable"></tbody>
+              </table>
             </div>
           </div>
 
           <!-- USUARIOS -->
           <div id="viewUsers" class="hidden">
             <div class="card">
-                <div class="grid-form">
-                    <input type="hidden" id="uId">
-                    <div><label>EMAIL</label><input id="uEmail" type="email" style="text-transform: none !important;"></div>
-                    <div><label id="passLabel">PASSWORD</label><input id="uPass" type="password"></div>
-                    <div style="display:flex; align-items:flex-end; gap:10px;">
-                        <label style="margin:0; font-size: 9px;"><input type="checkbox" id="pCat"> CAT.</label>
-                        <label style="margin:0; font-size: 9px;"><input type="checkbox" id="pUsr"> USR.</label>
-                        <button onclick="saveUsr()" style="background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; cursor: pointer;">GUARDAR</button>
-                    </div>
+              <div class="grid-form">
+                <input type="hidden" id="uId">
+                <div><label>EMAIL</label><input id="uEmail" type="email" style="text-transform: none !important;"></div>
+                <div><label id="passLabel">PASSWORD</label><input id="uPass" type="password"></div>
+                <div style="display:flex; align-items:flex-end; gap:10px;">
+                  <label style="margin:0; font-size: 9px;"><input type="checkbox" id="pCat"> CAT.</label>
+                  <label style="margin:0; font-size: 9px;"><input type="checkbox" id="pUsr"> USR.</label>
+                  <button onclick="saveUsr()" style="background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; cursor: pointer;">GUARDAR</button>
                 </div>
+              </div>
             </div>
             <div class="table-wrap"><table id="usrTable" style="width:100%"></table></div>
           </div>
@@ -230,15 +249,16 @@
     let perms = { cat: false, usr: false };
     let draft = [];
     let catalogCache = [];
+    let savedMenus = [];
 
-    function toggleSidebar() { 
+    function toggleSidebar() {
       if(window.innerWidth < 850) mainBody.classList.toggle('sidebar-open');
       else mainBody.classList.toggle('sidebar-hidden');
     }
 
     function getToday() {
-        const d = new Date();
-        return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
     }
 
     async function check() {
@@ -246,15 +266,19 @@
       if (session) {
         const email = session.user.email.toLowerCase();
         userBadge.innerText = email;
+
+        // UI-only superuser hint (seguridad real via RLS en Supabase)
         if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
+
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
         if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
-        
+
         loginOverlay.classList.add('hidden');
         appMain.classList.remove('hidden');
-        
+
         if (perms.cat) navC.classList.remove('hidden');
         if (perms.usr) navU.classList.remove('hidden');
+
         loadCatalogPicker();
       }
     }
@@ -279,9 +303,114 @@
       if(v === 'users') loadUsrTable();
     }
 
+    // ---------- MENÚS GUARDADOS (localStorage) ----------
+    function cryptoRandomId(){
+      return 'm_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    function loadSavedMenus(){
+      try { savedMenus = JSON.parse(localStorage.getItem('savedMenus') || '[]'); }
+      catch { savedMenus = []; }
+      renderSavedSelect();
+    }
+
+    function renderSavedSelect(){
+      if (!savedSelect) return;
+      savedSelect.innerHTML = savedMenus.length
+        ? savedMenus.map(m => `<option value="${m.id}">${m.name} - ${m.menu_date}</option>`).join('')
+        : `<option value="">(sin menús guardados)</option>`;
+    }
+
+    function persistSavedMenus(){
+      localStorage.setItem('savedMenus', JSON.stringify(savedMenus));
+    }
+
+    function addTypedDish(){
+      const t = (typedDish.value || '').trim();
+      if(!t) return alert('Escribe un plato');
+      const name = t.toUpperCase();
+      draft.push({ name, category: 'LIBRE', description: `LIBRE: ${name}` });
+      typedDish.value = '';
+      renderD();
+    }
+
+    function currentMenuName(){
+      return (menuName && menuName.value ? menuName.value : 'MENÚ DEL DÍA').toUpperCase();
+    }
+
+    function saveCurrentMenu(){
+      if(!menuDate.value) return alert('Selecciona una fecha');
+      if(!draft.length) return alert('Agrega platos al borrador');
+
+      const entry = {
+        id: cryptoRandomId(),
+        name: currentMenuName(),
+        menu_date: menuDate.value,
+        items: draft.slice(),
+        createdAt: new Date().toISOString()
+      };
+
+      savedMenus.push(entry);
+      persistSavedMenus();
+      renderSavedSelect();
+      alert('Menú guardado ✔️');
+    }
+
+    function loadSelectedMenu(){
+      const id = savedSelect.value;
+      const m = savedMenus.find(x => x.id === id);
+      if(!m) return alert('Selecciona un menú guardado');
+
+      if (menuName) menuName.value = m.name;
+      menuDate.value = m.menu_date;
+      draft = m.items.slice();
+      renderD();
+      alert('Menú cargado al borrador');
+    }
+
+    function renameSelectedMenu(){
+      const id = savedSelect.value;
+      const m = savedMenus.find(x => x.id === id);
+      if(!m) return alert('Selecciona un menú guardado');
+
+      const n = prompt('Nuevo nombre del menú:', m.name);
+      if(!n) return;
+      m.name = n.toUpperCase();
+      persistSavedMenus();
+      renderSavedSelect();
+    }
+
+    function duplicateSelectedMenu(){
+      const id = savedSelect.value;
+      const m = savedMenus.find(x => x.id === id);
+      if(!m) return alert('Selecciona un menú guardado');
+
+      const copy = {
+        ...m,
+        id: cryptoRandomId(),
+        name: `${m.name} (COPIA)`,
+        createdAt: new Date().toISOString()
+      };
+      savedMenus.push(copy);
+      persistSavedMenus();
+      renderSavedSelect();
+    }
+
+    function deleteSelectedMenu(){
+      const id = savedSelect.value;
+      if(!id) return alert('Selecciona un menú guardado');
+      if(!confirm('¿Borrar este menú guardado?')) return;
+
+      savedMenus = savedMenus.filter(x => x.id !== id);
+      persistSavedMenus();
+      renderSavedSelect();
+    }
+
+    // ---------- CATALOGO ----------
     async function loadCatalogPicker() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || []; renderCatalogList(catalogCache);
+      catalogCache = data || [];
+      renderCatalogList(catalogCache);
     }
 
     function renderCatalogList(items) {
@@ -303,81 +432,202 @@
     }
 
     function filterCat() {
-      const q = catSearch.value.toUpperCase();
-      renderCatalogList(catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q)));
+      const q = (catSearch.value || '').trim().toUpperCase();
+      const norm = s => (s || '').toUpperCase();
+      const filtered = catalogCache.filter(f =>
+        norm(f.acompanamiento).includes(q) || norm(f.categoria).includes(q)
+      );
+      renderCatalogList(filtered);
       if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
     }
 
-    function addD(a, p, c) { if(!p || p === '-') return; draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` }); renderD(); }
-    function renderD() {
-      draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div>
-      <div style="display:flex; gap:8px;"><button class="btn btn-warning" style="padding:8px" onclick="editDraftName(${i})">✏️</button><button class="btn btn-primary" style="padding:8px; background:#eef2ff; color:var(--accent);" onclick="dupDraft(${i})">👯</button><button onclick="draft.splice(${i},1);renderD()" style="background:#fee2e2; color:#ef4444; border:none; padding:8px 12px; border-radius:6px; font-weight:800; cursor:pointer;">X</button></div></div>`).join('');
+    function addD(a, p, c) {
+      if(!p || p === '-') return;
+      draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` });
+      renderD();
     }
-    function dupDraft(i) { draft.push({...draft[i]}); renderD(); }
-    function editDraftName(i) { const n = prompt("EDITAR NOMBRE:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
 
+    function renderD() {
+      draftList.innerHTML = draft.map((p, i) => `
+        <div class="draft-item">
+          <div><b>${p.name}</b><br><small style="color:#64748b">${p.category}</small></div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-warning" style="padding:8px" onclick="editDraftName(${i})">✏️</button>
+            <button class="btn btn-primary" style="padding:8px; background:#eef2ff; color:var(--accent);" onclick="dupDraft(${i})">👯</button>
+            <button onclick="draft.splice(${i},1);renderD()" style="background:#fee2e2; color:#ef4444; border:none; padding:8px 12px; border-radius:6px; font-weight:800; cursor:pointer;">X</button>
+          </div>
+        </div>`).join('');
+      // (Opcional) persistir borrador
+      // localStorage.setItem('draft', JSON.stringify(draft));
+    }
+
+    function dupDraft(i) { draft.push({...draft[i]}); renderD(); }
+
+    function editDraftName(i) {
+      const n = prompt("EDITAR NOMBRE:", draft[i].name);
+      if(n) { draft[i].name = n.toUpperCase(); renderD(); }
+    }
+
+    // ---------- PUBLICAR ----------
     async function publishMenu() {
       if(!menuDate.value || !draft.length) return alert("FALTA INFO");
-      const { data: m } = await sb.from('menus').insert([{ name: "MENÚ DEL DÍA", menu_date: menuDate.value }]).select().single();
+      const menuTitle = currentMenuName();
+
+      const { data: m, error } = await sb
+        .from('menus')
+        .insert([{ name: menuTitle, menu_date: menuDate.value }])
+        .select()
+        .single();
+      if (error || !m) return alert("No se pudo publicar el menú: " + (error?.message || 'Error'));
+
       for(const p of draft) {
-        const { data: item } = await sb.from('menu_items').insert([p]).select().single();
+        const { data: item, error: eItem } = await sb.from('menu_items').insert([p]).select().single();
+        if (eItem || !item) { alert("Error creando item: " + (eItem?.message || 'Error')); continue; }
         await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
       }
-      alert("PUBLICADO ✅"); draft = []; renderD();
+
+      alert("PUBLICADO ✅");
+      draft = [];
+      renderD();
+      // localStorage.removeItem('draft');
     }
 
+    // ---------- CATÁLOGO CRUD ----------
     async function loadCatTable() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
       catalogCache = data || [];
-      catTable.innerHTML = catalogCache.map(i => `<tr><td><b>${i.categoria}</b></td><td>${i.acompanamiento}</td><td style="text-align:right;"><button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button> <button class="btn btn-primary" style="background:#eef2ff; color:var(--accent);" onclick="dupCat(${i.id})">➕</button> <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button></td></tr>`).join('');
+      catTable.innerHTML = catalogCache.map(i => `
+        <tr>
+          <td><b>${i.categoria}</b></td>
+          <td>${i.acompanamiento}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button>
+            <button class="btn btn-primary" style="background:#eef2ff; color:var(--accent);" onclick="dupCat(${i.id})">➕</button>
+            <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button>
+          </td>
+        </tr>`).join('');
     }
-    function editCat(id) {
-        const i = catalogCache.find(x => x.id === id);
-        editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cOpc1.value = i.pollo; cOpc2.value = i.cerdo; cOpc3.value = i.carne_roja; cOpc4.value = i.opcion_4;
-        btnCancelCat.classList.remove('hidden');
-    }
-    function dupCat(id) {
-        const i = catalogCache.find(x => x.id === id);
-        editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = i.acompanamiento + " (COPIA)"; cOpc1.value = i.pollo; cOpc2.value = i.cerdo; cOpc3.value = i.carne_roja; cOpc4.value = i.opcion_4;
-        btnCancelCat.classList.remove('hidden');
-    }
-    function resetCatForm() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cOpc1.value=""; cOpc2.value=""; cOpc3.value=""; cOpc4.value=""; btnCancelCat.classList.add('hidden'); }
-    async function saveFood() {
-        const p = { categoria:cCat.value, acompanamiento:cAcomp.value, pollo:cOpc1.value, cerdo:cOpc2.value, carne_roja:cOpc3.value, opcion_4:cOpc4.value };
-        if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value); else await sb.from('food_catalog').insert([p]);
-        resetCatForm(); loadCatTable(); loadCatalogPicker();
-    }
-    async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalogPicker(); } }
 
+    function editCat(id) {
+      const i = catalogCache.find(x => x.id === id);
+      editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cOpc1.value = i.pollo; cOpc2.value = i.cerdo; cOpc3.value = i.carne_roja; cOpc4.value = i.opcion_4;
+      btnCancelCat.classList.remove('hidden');
+    }
+
+    function dupCat(id) {
+      const i = catalogCache.find(x => x.id === id);
+      editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = i.acompanamiento + " (COPIA)"; cOpc1.value = i.pollo; cOpc2.value = i.cerdo; cOpc3.value = i.carne_roja; cOpc4.value = i.opcion_4;
+      btnCancelCat.classList.remove('hidden');
+    }
+
+    function resetCatForm() {
+      editCatId.value=""; cCat.value=""; cAcomp.value=""; cOpc1.value=""; cOpc2.value=""; cOpc3.value=""; cOpc4.value=""; btnCancelCat.classList.add('hidden');
+    }
+
+    async function saveFood() {
+      const p = { categoria:cCat.value, acompanamiento:cAcomp.value, pollo:cOpc1.value, cerdo:cOpc2.value, carne_roja:cOpc3.value, opcion_4:cOpc4.value };
+      if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value);
+      else await sb.from('food_catalog').insert([p]);
+      resetCatForm(); loadCatTable(); loadCatalogPicker();
+    }
+
+    async function delCat(id) {
+      if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalogPicker(); }
+    }
+
+    // ---------- HISTORIAL ----------
     async function loadHistory() {
-      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category))').order('menu_date', {ascending:false});
+      const { data } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category))')
+        .order('menu_date', {ascending:false});
       historyTable.innerHTML = (data||[]).map(m => {
         const pts = m.menu_menu_items.map(rel => rel.menu_items ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
-        return `<tr><td style="width:120px;"><b>${m.menu_date}</b></td><td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #e2e8f0;">${pts}</div></td><td style="text-align:right;">
-            <div style="display:flex; gap:8px; justify-content:flex-end;"><button class="btn btn-primary" onclick="reUse(${m.id})">REUTILIZAR</button><button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></div>
-        </td></tr>`;
+        return `<tr>
+          <td style="width:120px;"><b>${m.menu_date}</b></td>
+          <td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px; border:1px solid #e2e8f0;">${pts}</div></td>
+          <td style="text-align:right;">
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+              <button class="btn btn-primary" onclick="reUse(${m.id})">REUTILIZAR</button>
+              <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button>
+            </div>
+          </td>
+        </tr>`;
       }).join('');
     }
-    function reUse(id) {
-        const m = (historyTable.innerHTML.includes('CARGANDO') ? [] : JSON.parse(JSON.stringify(historyTable.parentElement.parentElement.dataset.history || '[]'))).find(x => x.id === id);
-        // Nota: Por simplicidad recargamos draft directamente desde el DOM en esta versión rápida.
-        alert("PARA REUTILIZAR, USA EL BOTÓN REUTILIZAR.");
-    }
-    async function delMenu(id) { if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); } }
-    async function delAllMenus() { if(!confirm("¿BORRAR TODO?")) return; await sb.from('menu_menu_items').delete().neq('id', 0); await sb.from('menus').delete().neq('id', 0); loadHistory(); }
 
+    async function reUse(id) {
+      const { data, error } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .eq('id', id).single();
+      if (error || !data) return alert("No se pudo cargar el menú.");
+
+      draft = (data.menu_menu_items || [])
+        .map(rel => rel.menu_items)
+        .filter(Boolean)
+        .map(mi => ({ name: mi.name, category: mi.category, description: mi.description }));
+      if (menuName) menuName.value = data.name;
+      menuDate.value = data.menu_date;
+      renderD();
+      switchView('builder');
+      alert("Menú cargado en borrador.");
+    }
+
+    async function delMenu(id) {
+      if(confirm("¿BORRAR?")) {
+        await sb.from('menu_menu_items').delete().eq('menu_id', id);
+        await sb.from('menus').delete().eq('id', id);
+        loadHistory();
+      }
+    }
+
+    async function delAllMenus() {
+      const v = prompt("Escribe BORRAR TODO para confirmar:");
+      if (v !== 'BORRAR TODO') return alert("Cancelado.");
+      await sb.from('menu_menu_items').delete().neq('id', 0);
+      await sb.from('menus').delete().neq('id', 0);
+      loadHistory();
+    }
+
+    // ---------- USUARIOS ----------
     async function loadUsrTable() {
       const { data } = await sb.from('user_permissions').select('*').order('email');
-      usrTable.innerHTML = (data || []).map(u => `<tr><td style="text-transform:none; padding:15px;">${u.email}</td><td style="text-align:right; padding:15px;"><button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button></td></tr>`).join('');
-    }
-    async function saveUsr() {
-        await sb.auth.signUp({ email: uEmail.value.trim(), password: uPass.value });
-        await sb.from('user_permissions').upsert({ email: uEmail.value.trim().toLowerCase(), can_manage_catalog: pCat.checked, can_manage_users: pUsr.checked });
-        uEmail.value=""; uPass.value=""; loadUsrTable(); alert("CREADO");
+      usrTable.innerHTML = (data || []).map(u => `
+        <tr>
+          <td style="text-transform:none; padding:15px;">${u.email}</td>
+          <td style="text-align:right; padding:15px;">
+            <button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button>
+          </td>
+        </tr>`).join('');
     }
 
-    document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
+    async function saveUsr() {
+      await sb.auth.signUp({ email: uEmail.value.trim(), password: uPass.value });
+      await sb.from('user_permissions').upsert({
+        email: uEmail.value.trim().toLowerCase(),
+        can_manage_catalog: pCat.checked,
+        can_manage_users: pUsr.checked
+      });
+      uEmail.value=""; uPass.value="";
+      loadUsrTable();
+      alert("CREADO");
+    }
+
+    async function delUsr(id) {
+      await sb.from('user_permissions').delete().eq('id', id);
+      loadUsrTable();
+    }
+
+    // Inputs en mayúsculas (excepto email/password/date)
+    document.addEventListener('input', e => {
+      if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type))
+        e.target.value = e.target.value.toUpperCase();
+    });
+
+    // Init
     menuDate.value = getToday();
+    loadSavedMenus(); // llena el selector de menús guardados
     check();
   </script>
 </body>
