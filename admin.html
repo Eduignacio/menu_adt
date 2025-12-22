@@ -5,79 +5,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>ADT - ADMIN PANEL</title>
-  <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- Inter font -->
+  https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
   <style>
     :root{
-      /* Paleta Neon Breeze */
-      --bg: #edf2f7;              /* fondo general */
-      --surface: #f9fafb;         /* tarjetas */
-      --text: #1f2937;            /* texto principal */
-      --muted: #6b7280;           /* texto secundario */
-      --border: #e5e7eb;          /* borde suave */
-      --accent: #3b82f6;          /* azul primario */
-      --accent-hover: #2563eb;    /* azul oscuro hover */
-      --danger: #ef4444;          /* rojo peligro */
-      --ok: #10b981;              /* verde ok */
-      --warn: #f59e0b;            /* amarillo avisos */
-      --radius: 16px;             /* radios redondeados */
-      --shadow-1: 0 8px 18px rgba(31,41,55,.12);       /* sombra suave */
-      --shadow-2: 0 18px 40px rgba(31,41,55,.18);      /* sombra profunda */
-      --sidebar-bg: #0f172a;      /* sidebar oscuro */
-      --sidebar-border: #23314d;  /* borde sidebar */
-      --sidebar-text: #e5e7eb;
-
-      /* Neumorphism: luces/sombras */
-      --neo-up: #ffffff;
-      --neo-down: #d6dae0;
+      --bg:#f1f5f9; --surface:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
+      --accent:#6366f1; --accent-hover:#4f46e5; --danger:#ef4444; --radius:14px;
+      --sidebar-bg:#0f172a; --sidebar-text:#e5e7eb; --sidebar-border:#1f2937;
+      --shadow-1:0 4px 12px rgba(0,0,0,.08); --shadow-2:0 14px 34px rgba(0,0,0,.12);
     }
 
-    *{box-sizing:border-box;font-family:'Inter',sans-serif;}
+    *{box-sizing:border-box;font-family:'Inter',sans-serif;text-transform:uppercase}
     body{margin:0;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
 
-    /* LOGIN */
-    #loginOverlay{
-      position:fixed;inset:0;background:linear-gradient(135deg,#e0e7ff,#fef3c7);
-      display:flex;align-items:center;justify-content:center;padding:24px;z-index:9999;
-    }
-    .login-card{
-      width:100%;max-width:380px;border-radius:20px;background:var(--surface);
-      border:1px solid var(--border);box-shadow:var(--shadow-2);padding:26px;
-    }
-    .login-card h2{margin:0 0 16px;text-align:center;font-weight:800}
-    .login-card label{font-size:10px;font-weight:900;color:var(--muted);margin:8px 0 6px;display:block}
-    .login-card input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;font-weight:700}
-    .btn-primary{width:100%;padding:12px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:900;cursor:pointer}
-    .btn-primary:hover{background:var(--accent-hover)}
-
     /* SIDEBAR */
-    .sidebar{
-      width:320px;background:var(--sidebar-bg);color:var(--sidebar-text);
-      display:flex;flex-direction:column;height:100vh;border-right:1px solid var(--sidebar-border);
-      overflow-y:auto
-    }
+    .sidebar{width:320px;background:var(--sidebar-bg);color:var(--sidebar-text);
+      display:flex;flex-direction:column;border-right:1px solid var(--sidebar-border);height:100vh;overflow-y:auto}
     .sidebar-brand{position:sticky;top:0;background:var(--sidebar-bg);padding:18px 20px;border-bottom:1px solid var(--sidebar-border);z-index:2}
     .sidebar-brand h2{margin:0;font-size:16px;letter-spacing:2px}
     .sidebar-nav{padding:12px;display:grid;gap:10px}
-    .nav-section{border:1px solid var(--sidebar-border);border-radius:14px;overflow:hidden}
-    .nav-section-title{padding:10px 12px;font-size:10px;color:#93a2b7;background:#0b1326}
-    .nav-btn{
-      width:100%;text-align:left;padding:12px 14px;border:none;background:transparent;color:#cbd5e1;
-      font-weight:800;font-size:11px;cursor:pointer
-    }
+    .nav-section{border:1px solid var(--sidebar-border);border-radius:12px;overflow:hidden}
+    .nav-section-title{padding:10px 12px;font-size:10px;color:#94a3b8;background:#0b1326}
+    .nav-btn{width:100%;text-align:left;padding:12px 14px;border:none;background:transparent;color:#cbd5e1;font-weight:800;font-size:11px;cursor:pointer}
     .nav-btn:hover{background:#0b1326}
     .nav-btn.active{background:#16213a;color:#fff;border-left:4px solid var(--accent)}
 
-    /* Constructor extras en sidebar */
+    /* Buscador + catálogo en Sidebar: SOLO en Constructor->Menú */
     .search-cat{position:sticky;top:60px;background:#0b1326;padding:12px;z-index:1}
-    .search-cat input{
-      width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#13203f;color:#fff;
-      font-size:11px;text-transform:none
-    }
-    .catalog-scroll{
-      flex:1;padding:12px;background:#0f172a;overflow-y:auto;max-height:calc(100vh - 160px);
-      scrollbar-color:#334155 transparent;scrollbar-width:thin
-    }
+    .search-cat input{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#13203f;color:#fff;font-size:11px;text-transform:none}
+    .catalog-scroll{flex:1;padding:12px;background:#0f172a;overflow-y:auto;max-height:calc(100vh - 160px)}
     .catalog-scroll::-webkit-scrollbar{width:8px}
     .catalog-scroll::-webkit-scrollbar-thumb{background:#334155;border-radius:8px}
     .cat-accordion{border:1px solid #1f2937;border-radius:12px;overflow:hidden;margin-bottom:10px}
@@ -87,134 +43,90 @@
     .cat-accordion.active .cat-content{max-height:2000px;padding:10px 8px}
     .food-card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:12px;margin:8px}
     .food-card b{display:block;color:#94a3b8;font-size:11px;margin-bottom:10px}
-    .btn-grid-4{display:grid;grid-template-columns: 1fr 1fr;gap:6px}
+    .btn-grid-4{display:grid;grid-template-columns:1fr 1fr;gap:6px}
     .btn-quick{padding:10px;border-radius:10px;border:1px solid #334155;background:#1f2937;color:#fff;font-weight:800;font-size:10px;cursor:pointer}
     .btn-quick:hover{background:var(--accent);border-color:var(--accent)}
 
     /* MAIN */
     .main-area{flex:1;display:flex;flex-direction:column}
-    .top-bar{
-      background:var(--surface);border-bottom:1px solid var(--border);padding:14px 22px;
-      display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5
-    }
-    .btn-toggle{
-      width:42px;height:42px;border-radius:14px;border:1px solid var(--border);
-      background:linear-gradient(145deg,var(--neo-up),var(--neo-down));box-shadow:6px 6px 12px #cfd3da,-6px -6px 12px #ffffff;
-      display:flex;align-items:center;justify-content:center;color:#374151;cursor:pointer
-    }
-    .view-port{flex:1;overflow-y:auto;padding:28px}
+    .top-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+    .view-port{flex:1;overflow-y:auto;padding:26px}
     .container{max-width:1100px;margin:0 auto}
 
-    /* Cards + Inputs (neumorphism suave) */
-    .card{
-      background:linear-gradient(145deg,var(--surface),#eef1f5);
-      border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-1)
-    }
+    /* Cards + inputs */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-1);margin-bottom:16px}
     label{font-size:10px;font-weight:900;color:var(--muted);margin-bottom:6px;display:block}
-    input,select{
-      width:100%;padding:12px;border-radius:14px;border:1px solid var(--border);background:#fff;font-weight:800
-    }
+    input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-weight:800}
 
-    /* Tabs de modo */
-    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-    .tab-btn{
-      padding:14px;border-radius:14px;border:1px solid var(--border);background:#f3f4f6;color:var(--text);font-weight:900;cursor:pointer;text-align:center
-    }
+    /* Tabs dentro de CONSTRUCTOR (solo Menú/Historal) */
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+    .tab-btn{padding:12px;border-radius:12px;border:1px solid var(--border);background:#eef2ff;color:var(--text);font-weight:900;cursor:pointer;text-align:center}
     .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-    /* Menús guardados rápidos (chips con scroll horizontal) */
-    .quick-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
-    .quick-row::-webkit-scrollbar{height:8px}
-    .quick-row::-webkit-scrollbar-thumb{background:#c7d2fe;border-radius:8px}
-    .quick-chip{
-      flex:0 0 auto;padding:10px 12px;border-radius:14px;border:1px solid var(--border);
-      background:#fff;font-weight:900;font-size:11px;display:flex;gap:8px;align-items:center;cursor:pointer;
-      box-shadow: 6px 6px 14px #d8dbe1,-6px -6px 14px #fff
-    }
-    .quick-chip .date{color:var(--muted);font-size:10px;font-weight:800}
+    /* Botones */
+    .btn{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;color:var(--text);font-weight:900;font-size:11px;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn.primary:hover{background:var(--accent-hover)}
+    .btn.danger{background:#fee2e2;color:var(--danger);border-color:#fecaca}
 
-    /* Smart builder (manual) */
-    .smart-header{font-weight:800;font-size:12px;color:var(--accent);margin-bottom:8px}
-    .smart-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-    @media (max-width:900px){.smart-grid{grid-template-columns:1fr}}
-    .smart-input-row{display:flex;gap:8px;align-items:center;position:relative}
-    .smart-btn{
-      padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);
-      font-weight:900;font-size:11px;cursor:pointer;box-shadow: 6px 6px 14px #d8dbe1,-6px -6px 14px #fff
-    }
-    .smart-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:none}
-    .smart-btn.primary:hover{background:var(--accent-hover)}
-    .smart-btn.danger{background:#fee2e2;color:var(--danger);border-color:#fecaca;box-shadow:none}
-    .smart-help{font-size:10px;color:var(--muted);text-transform:none;margin-top:4px}
+    /* Chips borrador */
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;font-weight:900}
+    .chip .cat{font-size:10px;color:var(--muted)}
+    .chip .chip-btn{border:none;background:transparent;font-weight:900;font-size:11px;color:var(--muted);cursor:pointer}
+    .chip .chip-btn:hover{color:var(--accent)}
 
     /* Typeahead */
-    .typeahead{
-      position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--border);
-      border-radius:12px;box-shadow:var(--shadow-2);z-index:50;max-height:240px;overflow-y:auto
-    }
+    .typeahead{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-2);z-index:50;max-height:240px;overflow-y:auto}
     .typeahead.hidden{display:none}
     .type-item{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:800;font-size:12px;color:var(--text)}
     .type-item .hint{font-size:10px;color:var(--muted)}
     .type-item:hover,.type-item.active{background:#eef2ff;color:var(--accent)}
 
-    /* Chips borrador */
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{
-      display:inline-flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;border:1px solid var(--border);
-      background:#fff;font-size:12px;font-weight:900;box-shadow: 6px 6px 14px #d8dbe1,-6px -6px 14px #fff
-    }
-    .chip .cat{font-size:10px;color:var(--muted)}
-    .chip .chip-btn{border:none;background:transparent;font-weight:900;font-size:11px;color:var(--muted);cursor:pointer}
-    .chip .chip-btn:hover{color:var(--accent)}
-    .chip.dragging{opacity:.65;transform:scale(.98)}
-
-    .btn-publish{
-      width:100%;padding:16px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-weight:900;cursor:pointer;box-shadow:var(--shadow-1)
-    }
-    .btn-publish:hover{background:var(--accent-hover)}
-
-    /* Toast */
-    .toast{
-      position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-2);
-      font-weight:900;font-size:12px;z-index:9999
-    }
-    .toast.hidden{display:none}
+    /* Table wrap */
+    .table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:12px}
+    table{width:100%;border-collapse:collapse}
+    th{background:#f8fafc;text-align:left;font-size:10px;color:var(--muted);padding:12px;border-bottom:1px solid var(--border)}
+    td{padding:12px;border-bottom:1px solid var(--bg);font-size:12px;font-weight:700}
   </style>
 </head>
 <body>
 
   <!-- LOGIN -->
-  <div id="loginOverlay">
-    <div class="login-card">
-      <h2>ADT ADMIN</h2>
-      <label>EMAIL</label><input id="lEmail" type="email" placeholder="usuario@ejemplo.com">
-      <label>PASSWORD</label><input id="lPass" type="password" placeholder="••••••••">
-      <button class="btn-primary" onclick="handleLogin()">ENTRAR</button>
+  <div id="loginOverlay" class="hidden">
+    <div class="card" style="max-width:380px;margin:auto;">
+      <h2 style="margin:0 0 10px;text-align:center;">ADT ADMIN</h2>
+      <label>EMAIL</label><input id="lEmail" type="email">
+      <label>PASSWORD</label><input id="lPass" type="password">
+      <button class="btn primary" style="width:100%;" onclick="handleLogin()">ENTRAR</button>
       <p id="loginMsg" style="color:var(--danger);font-size:10px;text-align:center;margin-top:10px;text-transform:none;display:none;"></p>
     </div>
   </div>
 
   <!-- APP -->
-  <div id="appMain" class="hidden" style="display:flex;width:100%;">
+  <div id="appMain" style="display:flex;width:100%;">
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-brand"><h2>MENU SYSTEM</h2></div>
 
       <nav class="sidebar-nav">
+        <!-- CONSTRUCTOR -->
         <div class="nav-section">
           <div class="nav-section-title">🛠 CONSTRUCTOR</div>
-          <button class="nav-btn active" id="navB" onclick="switchView('builder')">MENÚ</button>
-          <button class="nav-btn" id="navH" onclick="switchView('history')">HISTORIAL</button>
+          <button class="nav-btn active" id="navBuilder" onclick="switchView('builder')">MENÚ</button>
+          <button class="nav-btn" id="navHistory" onclick="switchView('history')">HISTORIAL</button>
         </div>
-        <div class="nav-section hidden" id="adminSection">
+
+        <!-- ADMINISTRADOR -->
+        <div class="nav-section" id="adminSection">
           <div class="nav-section-title">🔒 ADMINISTRADOR</div>
-          <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">ALIMENTOS</button>
-          <button class="nav-btn hidden" id="navU" onclick="switchView('users')">USUARIOS</button>
+          <button class="nav-btn" id="navCatalog" onclick="switchView('catalog')">ALIMENTOS</button>
+          <button class="nav-btn" id="navUsers" onclick="switchView('users')">USUARIOS</button>
         </div>
       </nav>
 
-      <!-- Extras del CONSTRUCTOR -->
-      <div id="builderSidebarExtras">
+      <!-- SOLO aparece en CONSTRUCTOR → MENÚ -->
+      <div id="builderSidebarExtras" class="hidden">
         <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCat()"></div>
         <div id="catalogList" class="catalog-scroll"></div>
       </div>
@@ -223,22 +135,17 @@
     <!-- MAIN -->
     <main class="main-area">
       <header class="top-bar">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <button class="btn-toggle">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-          </button>
-          <h1 id="viewTitle" style="font-size:14px;margin:0;font-weight:800;">🛠 CONSTRUCTOR</h1>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <h1 id="viewTitle" style="font-size:14px;margin:0;">🛠 CONSTRUCTOR</h1>
+        <div style="display:flex;gap:10px;align-items:center;">
           <span id="userBadge" style="font-size:10px;font-weight:900;color:var(--accent);text-transform:lowercase;"></span>
-          <button onclick="handleLogout()" class="smart-btn">SALIR</button>
+          <button onclick="handleLogout()" class="btn">SALIR</button>
         </div>
       </header>
 
       <section class="view-port">
         <div class="container">
 
-          <!-- CONSTRUCTOR -->
+          <!-- ========== CONSTRUCTOR → MENÚ ========== -->
           <div id="viewBuilder">
             <div class="card">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
@@ -246,49 +153,41 @@
                 <div><label>NOMBRE DEL MENÚ</label><input id="menuName" placeholder="EJ: MENÚ DEL DÍA"></div>
               </div>
 
-              <!-- Menús guardados rápidos -->
-              <div style="margin-top:10px;">
-                <label>MENÚS GUARDADOS (RÁPIDO)</label>
-                <div id="quickRow" class="quick-row"></div>
-              </div>
-
-              <!-- Tabs modo -->
-              <div class="tabs" style="margin-top:10px;">
-                <button id="tabCatalog" class="tab-btn active" onclick="setBuilderMode('catalog')">📂 CATÁLOGO</button>
-                <button id="tabManual"  class="tab-btn"        onclick="setBuilderMode('manual')">✍️ MANUAL</button>
+              <div class="tabs">
+                <button class="tab-btn active" id="tabCatalog" onclick="setBuilderMode('catalog')">📂 CATÁLOGO</button>
+                <button class="tab-btn" id="tabManual" onclick="setBuilderMode('manual')">✍️ MANUAL</button>
               </div>
 
               <!-- Manual -->
-              <div id="manualCard" class="card" style="margin-top:8px;display:none;">
-                <div class="smart-header">MENÚ MANUAL</div>
-                <div class="smart-grid">
+              <div id="manualCard" class="card hidden">
+                <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">MENÚ MANUAL</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
                   <div>
                     <label>ESCRIBIR PLATO</label>
-                    <div class="smart-input-row">
-                      <input id="typedDish" class="smart-input" placeholder="EJ: LASAÑA DE CARNE">
-                      <button class="smart-btn primary" id="btnAddDish">AGREGAR</button>
-                      <button class="smart-btn" id="btnClearDish">LIMPIAR</button>
+                    <div style="position:relative;display:flex;gap:8px;">
+                      <input id="typedDish" placeholder="EJ: LASAÑA DE CARNE" class="smart-input">
+                      <button class="btn primary" id="btnAddDish">AGREGAR</button>
+                      <button class="btn" id="btnClearDish">LIMPIAR</button>
                       <div id="typeahead" class="typeahead hidden"></div>
                     </div>
-                    <div class="smart-help">Enter: agrega/selecciona · Esc: limpia · se agrega en MAYÚSCULAS.</div>
+                    <small style="color:var(--muted);text-transform:none">Enter: agrega/selecciona · Esc: limpia · en MAYÚSCULAS.</small>
                   </div>
                   <div>
                     <label>CATEGORÍA</label>
-                    <div class="smart-input-row">
-                      <select id="typedCategory" class="smart-input"></select>
-                      <button class="smart-btn" id="btnRefreshCats">↻</button>
+                    <div style="display:flex;gap:8px;">
+                      <select id="typedCategory"></select>
+                      <button class="btn" id="btnRefreshCats">↻</button>
                     </div>
-                    <div class="smart-help">Elige una categoría o usa LIBRE.</div>
                   </div>
                   <div>
                     <label>GESTIÓN DE MENÚS</label>
-                    <div class="smart-input-row wrap">
-                      <select id="savedSelect" class="smart-input"></select>
-                      <button class="smart-btn" onclick="saveCurrentMenu()">GUARDAR</button>
-                      <button class="smart-btn" onclick="loadSelectedMenu()">CARGAR</button>
-                      <button class="smart-btn" onclick="renameSelectedMenu()">RENOMBRAR</button>
-                      <button class="smart-btn" onclick="duplicateSelectedMenu()">DUPLICAR</button>
-                      <button class="smart-btn danger" onclick="deleteSelectedMenu()">BORRAR</button>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <select id="savedSelect" style="flex:1"></select>
+                      <button class="btn" onclick="saveCurrentMenu()">GUARDAR</button>
+                      <button class="btn" onclick="loadSelectedMenu()">CARGAR</button>
+                      <button class="btn" onclick="renameSelectedMenu()">RENOMBRAR</button>
+                      <button class="btn" onclick="duplicateSelectedMenu()">DUPLICAR</button>
+                      <button class="btn danger" onclick="deleteSelectedMenu()">BORRAR</button>
                     </div>
                   </div>
                 </div>
@@ -297,30 +196,31 @@
                   <label>BORRADOR DEL MENÚ</label>
                   <div id="draftChips" class="chips"></div>
                 </div>
-
                 <div style="margin-top:10px;display:flex;gap:8px;">
-                  <button class="smart-btn" id="btnClearDraft">LIMPIAR BORRADOR</button>
-                  <button class="smart-btn" id="btnSortDraft">ORDENAR A-Z</button>
-                  <button class="smart-btn" id="btnExportDraft">COPIAR TEXTO</button>
+                  <button class="btn" id="btnClearDraft">LIMPIAR BORRADOR</button>
+                  <button class="btn" id="btnSortDraft">ORDENAR A-Z</button>
+                  <button class="btn" id="btnExportDraft">COPIAR TEXTO</button>
                 </div>
               </div>
 
-              <button class="btn-publish" style="margin-top:12px;" onclick="publishMenu()">PUBLICAR AHORA</button>
+              <button class="btn primary" style="margin-top:10px;" onclick="publishMenu()">PUBLICAR AHORA</button>
             </div>
           </div>
 
-          <!-- HISTORIAL -->
+          <!-- ========== CONSTRUCTOR → HISTORIAL ========== -->
           <div id="viewHistory" class="hidden">
             <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-              <button onclick="delAllMenus()" class="smart-btn danger">🗑️ BORRAR TODO EL HISTORIAL</button>
+              <button class="btn danger" onclick="delAllMenus()">🗑️ BORRAR TODO EL HISTORIAL</button>
             </div>
-            <div class="card"><table id="historyTable" style="width:100%"></table></div>
+            <div class="card">
+              <table id="historyTable"></table>
+            </div>
           </div>
 
-          <!-- ADMIN: CATALOGO -->
+          <!-- ========== ADMINISTRADOR → ALIMENTOS ========== -->
           <div id="viewCatalog" class="hidden">
             <div class="card">
-              <div class="smart-header">GESTIÓN DEL CATÁLOGO</div>
+              <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">GESTIÓN DEL CATÁLOGO</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                 <input type="hidden" id="editCatId">
                 <div><label>CATEGORÍA</label><input id="cCat" placeholder="EJ: ARROZ"></div>
@@ -333,22 +233,22 @@
                 <div><label>OPCIÓN 4</label><input id="cOpc4"></div>
               </div>
               <div style="display:flex;gap:8px;justify-content:flex-end;">
-                <button class="smart-btn" id="btnCancelCat" onclick="resetCatForm()" style="display:none;">✕ CANCELAR</button>
-                <button class="smart-btn primary" onclick="saveFood()">GUARDAR ALIMENTO</button>
+                <button class="btn" id="btnCancelCat" onclick="resetCatForm()" style="display:none;">✕ CANCELAR</button>
+                <button class="btn primary" onclick="saveFood()">GUARDAR ALIMENTO</button>
               </div>
             </div>
-            <div class="card">
+            <div class="card table-wrap">
               <table style="width:100%;">
-                <thead><tr><th style="text-align:left;">CAT.</th><th style="text-align:left;">ACOMPAÑAMIENTO</th><th style="text-align:right;">ACCIÓN</th></tr></thead>
+                <thead><tr><th>CAT.</th><th>ACOMPAÑAMIENTO</th><th style="text-align:right;">ACCIÓN</th></tr></thead>
                 <tbody id="catTable"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- ADMIN: USUARIOS -->
+          <!-- ========== ADMINISTRADOR → USUARIOS ========== -->
           <div id="viewUsers" class="hidden">
             <div class="card">
-              <div class="smart-header">USUARIOS</div>
+              <div style="font-weight:800;color:var(--accent);margin-bottom:6px;">USUARIOS</div>
               <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">
                 <input type="hidden" id="uId">
                 <div><label>EMAIL</label><input id="uEmail" type="email" style="text-transform:none !important;"></div>
@@ -356,11 +256,11 @@
                 <div style="display:flex;gap:10px;align-items:center;">
                   <label style="font-size:10px;"><input type="checkbox" id="pCat"> CAT.</label>
                   <label style="font-size:10px;"><input type="checkbox" id="pUsr"> USR.</label>
-                  <button class="smart-btn primary" onclick="saveUsr()">GUARDAR</button>
+                  <button class="btn primary" onclick="saveUsr()">GUARDAR</button>
                 </div>
               </div>
             </div>
-            <div class="card"><table id="usrTable" style="width:100%"></table></div>
+            <div class="card table-wrap"><table id="usrTable" style="width:100%"></table></div>
           </div>
 
         </div>
@@ -368,8 +268,8 @@
     </main>
   </div>
 
-  <!-- Supabase v2 -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS v2 -->
+  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
   <script>
     /* Supabase */
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
@@ -381,114 +281,124 @@
     let catalogCache = [];
     let draft = [];
     let savedMenus = [];
-    let typeList = [];
-    let taActive = -1;
+    let typeList = []; let taActive = -1;
 
-    /* Utilidades */
-    const toUpper = s => (s || '').trim().toUpperCase();
-    const esc = s => (s ?? '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":"&#39;"}[c]));
-    function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),1500); }
+    /* Util */
+    const toUpper = s => (s||'').trim().toUpperCase();
+    const esc = s => (s??'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":"&#39;"}[c]));
+    function showToast(msg){
+      const id = 'toast';
+      if (!document.getElementById(id)){
+        const t = document.createElement('div'); t.id=id; t.className='card'; t.style.position='fixed'; t.style.left='50%'; t.style.bottom='24px'; t.style.transform='translateX(-50%)'; t.style.padding='10px 14px';
+        document.body.appendChild(t);
+      }
+      const t = document.getElementById(id); t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none',1500);
+    }
 
-    /* Auth/Permisos */
+    /* Login/Permisos */
     async function handleLogin(){
       const { error } = await sb.auth.signInWithPassword({ email:lEmail.value.trim().toLowerCase(), password:lPass.value });
-      if (error){ loginMsg.textContent = "ERROR: " + error.message; loginMsg.style.display='block'; } else location.reload();
+      if (error){ loginMsg.textContent="ERROR: "+error.message; loginMsg.style.display='block'; } else location.reload();
     }
     function handleLogout(){ sb.auth.signOut(); localStorage.clear(); location.reload(); }
+
     async function check(){
       const { data:{ session } } = await sb.auth.getSession();
       if (session){
         const email = session.user.email.toLowerCase();
         userBadge.textContent = email;
-        if (email === "eduardoignacio.g.h@gmail.com"){ perms.cat=true; perms.usr=true; } // UI hint
+        if (email === "eduardoignacio.g.h@gmail.com"){ perms.cat=true; perms.usr=true; } // UI-only
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
         if (db){ perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
-        loginOverlay.style.display='none'; appMain.classList.remove('hidden');
-        applyUiPermissions(); loadCatalogPicker();
+        loginOverlay.classList.add('hidden');
+        applyUiPermissions();
+        loadCatalogPicker();
+      } else {
+        loginOverlay.classList.remove('hidden');
       }
     }
     function applyUiPermissions(){
-      const showAdmin = !!(perms.cat || perms.usr);
-      adminSection.classList.toggle('hidden', !showAdmin);
-      navC.classList.toggle('hidden', !perms.cat);
-      navU.classList.toggle('hidden', !perms.usr);
+      // Admin section visible si hay permisos (puedes ajustarlo a tu gusto)
+      adminSection.classList.toggle('hidden', !(perms.cat || perms.usr));
+      navCatalog.classList.toggle('hidden', !perms.cat);
+      navUsers.classList.toggle('hidden', !perms.usr);
     }
 
-    /* Navegación */
+    /* Navegación: NO MEZCLAR secciones */
     function switchView(v){
-      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.view-port .container > div').forEach(d=>d.classList.add('hidden'));
-      ({builder:'navB',history:'navH',catalog:'navC',users:'navU'}[v] && document.getElementById({builder:'navB',history:'navH',catalog:'navC',users:'navU'}[v]).classList.add('active'));
-      document.getElementById('view'+v.charAt(0).toUpperCase()+v.slice(1)).classList.remove('hidden');
-      viewTitle.textContent = {builder:'🛠 CONSTRUCTOR',history:'📜 HISTORIAL',catalog:'📂 ALIMENTOS',users:'👥 USUARIOS'}[v];
-      builderSidebarExtras.style.display = (v==='builder' && tabCatalog.classList.contains('active')) ? 'block' : 'none';
+      // botones activos
+      [navBuilder, navHistory, navCatalog, navUsers].forEach(b=>b?.classList.remove('active'));
+      ({builder:navBuilder, history:navHistory, catalog:navCatalog, users:navUsers}[v])?.classList.add('active');
+
+      // vistas
+      [viewBuilder, viewHistory, viewCatalog, viewUsers].forEach(el=>el.classList.add('hidden'));
+      ({builder:viewBuilder, history:viewHistory, catalog:viewCatalog, users:viewUsers}[v]).classList.remove('hidden');
+
+      // título
+      viewTitle.textContent = { builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS' }[v];
+
+      // catálogo en sidebar SOLO en constructor->menú
+      const showBuilderCatalog = (v==='builder' && tabCatalog.classList.contains('active'));
+      builderSidebarExtras.classList.toggle('hidden', !showBuilderCatalog);
+
+      // cargas específicas
       if (v==='history') loadHistory();
       if (v==='catalog') loadCatTable();
       if (v==='users') loadUsrTable();
     }
+
+    /* Tabs de CONSTRUCTOR (menú/manual) */
     function setBuilderMode(mode){
-      const showCatalog = (mode==='catalog');
+      const showCatalog = mode==='catalog';
       tabCatalog.classList.toggle('active', showCatalog);
       tabManual.classList.toggle('active', !showCatalog);
-      builderSidebarExtras.style.display = showCatalog ? 'block' : 'none';
-      manualCard.style.display = showCatalog ? 'none' : 'block';
+      manualCard.classList.toggle('hidden', showCatalog);
+      builderSidebarExtras.classList.toggle('hidden', !showCatalog);
       if (!showCatalog) typedDish.focus();
     }
 
-    /* Guardados */
+    /* Guardados (localStorage) */
     function cryptoId(){ return 'm_' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
     function loadSavedMenus(){
       try{ savedMenus = JSON.parse(localStorage.getItem('savedMenus')||'[]'); }catch{ savedMenus=[]; }
-      renderSavedSelect(); renderQuickMenus();
-    }
-    function persistSavedMenus(){ localStorage.setItem('savedMenus', JSON.stringify(savedMenus)); }
-    function currentMenuName(){ return (menuName.value ? menuName.value : 'MENÚ DEL DÍA').toUpperCase(); }
-    function renderSavedSelect(){
       savedSelect.innerHTML = savedMenus.length
         ? savedMenus.map(m=>`<option value="${m.id}">${esc(m.name)} - ${m.menu_date}</option>`).join('')
         : `<option value="">(sin menús guardados)</option>`;
     }
-    function renderQuickMenus(){
-      const sorted=[...savedMenus].sort((a,b)=>new Date(b.createdAt||b.menu_date)-new Date(a.createdAt||a.menu_date));
-      const top=sorted.slice(0,8);
-      quickRow.innerHTML = top.length
-        ? top.map(m=>`<div class="quick-chip" onclick="loadQuickMenu('${m.id}')"><span>${esc(m.name)}</span><span class="date">${esc(m.menu_date)}</span></div>`).join('')
-        : `<div style="color:var(--muted);font-size:10px;font-weight:900;">No hay menús guardados aún.</div>`;
-    }
-    function loadQuickMenu(id){
-      const m = savedMenus.find(x=>x.id===id); if (!m) return showToast('Menú no encontrado');
-      menuName.value=m.name; menuDate.value=m.menu_date; draft=m.items.slice(); renderDraftChips(); setBuilderMode('manual'); showToast('Menú cargado');
-    }
     function saveCurrentMenu(){
       if (!menuDate.value) return showToast('Selecciona fecha');
       if (!draft.length) return showToast('Agrega platos');
-      const entry={ id:cryptoId(), name:currentMenuName(), menu_date:menuDate.value, items:draft.slice(), createdAt:new Date().toISOString() };
-      savedMenus.push(entry); persistSavedMenus(); renderSavedSelect(); renderQuickMenus(); showToast('Guardado');
+      const entry = { id:cryptoId(), name:(menuName.value||'MENÚ DEL DÍA').toUpperCase(), menu_date:menuDate.value, items:draft.slice(), createdAt:new Date().toISOString() };
+      savedMenus.push(entry); localStorage.setItem('savedMenus', JSON.stringify(savedMenus));
+      loadSavedMenus(); showToast('Guardado');
     }
     function loadSelectedMenu(){
       const m = savedMenus.find(x=>x.id===savedSelect.value); if (!m) return showToast('Selecciona un menú');
       menuName.value=m.name; menuDate.value=m.menu_date; draft=m.items.slice(); renderDraftChips(); setBuilderMode('manual'); showToast('Cargado');
     }
     function renameSelectedMenu(){
-      const m = savedMenus.find(x=>x.id===savedSelect.value); if (!m) return showToast('Selecciona un menú');
-      const n = prompt('Nuevo nombre del menú:', m.name); if (!n) return; m.name=n.toUpperCase();
-      persistSavedMenus(); renderSavedSelect(); renderQuickMenus(); showToast('Renombrado');
+      const m=savedMenus.find(x=>x.id===savedSelect.value); if(!m) return showToast('Selecciona un menú');
+      const n=prompt('Nuevo nombre:', m.name); if(!n) return; m.name=n.toUpperCase();
+      localStorage.setItem('savedMenus', JSON.stringify(savedMenus)); loadSavedMenus(); showToast('Renombrado');
     }
     function duplicateSelectedMenu(){
-      const m = savedMenus.find(x=>x.id===savedSelect.value); if (!m) return showToast('Selecciona un menú');
+      const m=savedMenus.find(x=>x.id===savedSelect.value); if(!m) return showToast('Selecciona un menú');
       const copy={...m,id:cryptoId(),name:`${m.name} (COPIA)`,createdAt:new Date().toISOString()};
-      savedMenus.push(copy); persistSavedMenus(); renderSavedSelect(); renderQuickMenus(); showToast('Duplicado');
+      savedMenus.push(copy); localStorage.setItem('savedMenus', JSON.stringify(savedMenus)); loadSavedMenus(); showToast('Duplicado');
     }
     function deleteSelectedMenu(){
       const id=savedSelect.value; if(!id) return showToast('Selecciona un menú');
-      if(!confirm('¿Borrar este menú guardado?')) return;
-      savedMenus=savedMenus.filter(x=>x.id!==id); persistSavedMenus(); renderSavedSelect(); renderQuickMenus(); showToast('Borrado');
+      if(!confirm('¿Borrar este menú?')) return;
+      savedMenus=savedMenus.filter(x=>x.id!==id); localStorage.setItem('savedMenus', JSON.stringify(savedMenus)); loadSavedMenus(); showToast('Borrado');
     }
 
-    /* Catálogo */
+    /* Catálogo (sidebar) */
     async function loadCatalogPicker(){
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || []; renderCatalogList(catalogCache); fillTypedCategory(); rebuildTypeaheadSource();
+      catalogCache = data || [];
+      renderCatalogList(catalogCache);
+      fillTypedCategory();
+      rebuildTypeaheadSource();
     }
     function renderCatalogList(items){
       const grouped=items.reduce((acc,i)=>{(acc[i.categoria]=acc[i.categoria]||[]).push(i);return acc;}, {});
@@ -497,46 +407,46 @@
           <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">${esc(cat)} <span>▼</span></button>
           <div class="cat-content">
             ${grouped[cat].map(i=>`
-              <div class="food-card">
-                <b>${esc(i.acompanamiento)}</b>
-                <div class="btn-grid-4">
-                  <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.pollo||'')}','${esc(cat)}')">${esc(i.pollo||'-')}</button>
-                  <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.cerdo||'')}','${esc(cat)}')">${esc(i.cerdo||'-')}</button>
-                  <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.carne_roja||'')}','${esc(cat)}')">${esc(i.carne_roja||'-')}</button>
-                  <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.opcion_4||'')}','${esc(cat)}')">${esc(i.opcion_4||'-')}</button>
-                </div>
-              </div>`).join('')}
+            <div class="food-card">
+              <b>${esc(i.acompanamiento)}</b>
+              <div class="btn-grid-4">
+                <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.pollo||'')}','${esc(cat)}')">${esc(i.pollo||'-')}</button>
+                <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.cerdo||'')}','${esc(cat)}')">${esc(i.cerdo||'-')}</button>
+                <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.carne_roja||'')}','${esc(cat)}')">${esc(i.carne_roja||'-')}</button>
+                <button class="btn-quick" onclick="quickAdd('${esc(i.acompanamiento)}','${esc(i.opcion_4||'')}','${esc(cat)}')">${esc(i.opcion_4||'-')}</button>
+              </div>
+            </div>`).join('')}
           </div>
         </div>`).join('');
     }
     function filterCat(){
-      const q=toUpper(catSearch.value); const norm=s=>toUpper(s||'');
-      const filtered=catalogCache.filter(f=>norm(f.acompanamiento).includes(q)||norm(f.categoria).includes(q));
+      const q = toUpper(catSearch.value); const norm = s => toUpper(s||'');
+      const filtered = catalogCache.filter(f => norm(f.acompanamiento).includes(q) || norm(f.categoria).includes(q));
       renderCatalogList(filtered); if(q) document.querySelectorAll('.cat-accordion').forEach(a=>a.classList.add('active'));
     }
     function quickAdd(a,p,c){
       if(!p||p==='-')return;
-      const name=`${toUpper(a)} + ${toUpper(p)}`;
-      if(draft.some(d=>d.name===name&&toUpper(d.category)===toUpper(c))) return showToast('Ya está en borrador');
-      draft.push({name,category:toUpper(c),description:`BASE: ${a} | PREP: ${p}`});
+      const name = `${toUpper(a)} + ${toUpper(p)}`;
+      if(draft.some(d=>d.name===name && toUpper(d.category)===toUpper(c))) return showToast('Ya está en borrador');
+      draft.push({ name, category: toUpper(c), description:`BASE: ${a} | PREP: ${p}` });
       renderDraftChips(); setBuilderMode('manual'); showToast('Agregado desde catálogo');
     }
 
-    /* Typeahead */
+    /* Typeahead (manual) */
     function fillTypedCategory(){
       const cats=[...new Set((catalogCache||[]).map(i=>toUpper(i.categoria)))].sort();
       typedCategory.innerHTML = `<option value="LIBRE">LIBRE</option>` + cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
     }
     function rebuildTypeaheadSource(){
       typeList=[]; for(const i of catalogCache){
-        const base=toUpper(i.acompanamiento); const cat=toUpper(i.categoria);
+        const base=toUpper(i.acompanamiento), cat=toUpper(i.categoria);
         const opts=[i.pollo,i.cerdo,i.carne_roja,i.opcion_4].filter(x=>x&&x!=='-');
         for(const o of opts){ const option=toUpper(o); typeList.push({name:`${base} + ${option}`,category:cat,base,option}); }
       }
       const seen=new Set(); typeList=typeList.filter(s=>!seen.has(s.name)&&seen.add(s.name));
     }
     function updateTypeahead(){
-      const q=toUpper(typedDish.value); const cat=toUpper(typedCategory.value||'LIBRE');
+      const q=toUpper(typedDish.value), cat=toUpper(typedCategory.value||'LIBRE');
       if(!q){ hideTypeahead(); return; }
       let list=typeList.filter(s=>s.name.includes(q)||s.base.includes(q)||s.option.includes(q));
       if(cat!=='LIBRE') list=list.filter(s=>s.category===cat);
@@ -546,9 +456,10 @@
     function renderTypeahead(results){
       typeahead.innerHTML=''; taActive=-1; if(!results.length){ hideTypeahead(); return; }
       results.forEach((s,idx)=>{
-        const el=document.createElement('div');
-        el.className='type-item'; el.innerHTML=`<span>${esc(s.name)}</span><span class="hint">${esc(s.category)}</span>`;
-        el.addEventListener('mouseenter',()=>setActive(idx)); el.addEventListener('click',()=>chooseSuggestion(s));
+        const el=document.createElement('div'); el.className='type-item';
+        el.innerHTML=`<span>${esc(s.name)}</span><span class="hint">${esc(s.category)}</span>`;
+        el.addEventListener('mouseenter',()=>setActive(idx));
+        el.addEventListener('click',()=>chooseSuggestion(s));
         typeahead.appendChild(el);
       });
       setActive(0); typeahead.classList.remove('hidden');
@@ -559,7 +470,8 @@
     }
     function moveActive(delta){
       const items=[...typeahead.querySelectorAll('.type-item')]; if(!items.length) return;
-      let next=taActive+delta; if(next<0) next=items.length-1; if(next>=items.length) next=0; setActive(next); items[next].scrollIntoView({block:'nearest'});
+      let next=taActive+delta; if(next<0) next=items.length-1; if(next>=items.length) next=0;
+      setActive(next); items[next].scrollIntoView({block:'nearest'});
     }
     function chooseActive(){
       const items=[...typeahead.querySelectorAll('.type-item')]; if(!items.length) return addTypedDish();
@@ -567,7 +479,7 @@
       if(s) chooseSuggestion(s); else addTypedDish();
     }
     function chooseSuggestion(s){
-      if(draft.some(d=>d.name===s.name&&toUpper(d.category)===s.category)){ hideTypeahead(); typedDish.value=''; return showToast('Ya está en borrador'); }
+      if(draft.some(d=>d.name===s.name && toUpper(d.category)===s.category)){ hideTypeahead(); typedDish.value=''; return showToast('Ya está en borrador'); }
       draft.push({name:s.name,category:s.category,description:`BASE: ${s.base} | PREP: ${s.option}`});
       typedCategory.value=s.category; renderDraftChips(); hideTypeahead(); typedDish.value=''; showToast('Agregado (sugerencia)');
     }
@@ -577,7 +489,7 @@
     function addTypedDish(){
       const name=toUpper(typedDish.value); if(!name){ typedDish.focus(); return showToast('Escribe un plato'); }
       const cat=toUpper(typedCategory.value||'LIBRE');
-      if(draft.some(d=>d.name===name&&toUpper(d.category)===cat)){ typedDish.value=''; return showToast('Ya está en borrador'); }
+      if(draft.some(d=>d.name===name && toUpper(d.category)===cat)){ typedDish.value=''; return showToast('Ya está en borrador'); }
       draft.push({name,category:cat,description:`${cat}: ${name}`}); typedDish.value=''; renderDraftChips(); showToast('Agregado');
     }
     function renderDraftChips(){
@@ -601,24 +513,24 @@
     function inlineEdit(i){
       const nn=prompt('Editar plato:', draft[i].name); if(!nn) return;
       const up=toUpper(nn);
-      if(draft.some((d,idx)=>d.name===up&&toUpper(d.category)===toUpper(draft[i].category)&&idx!==i)) return showToast('Nombre duplicado');
+      if(draft.some((d,idx)=>d.name===up && toUpper(d.category)===toUpper(draft[i].category) && idx!==i)) return showToast('Nombre duplicado');
       draft[i].name=up; renderDraftChips();
     }
     function dupDraft(i){
       const copy={...draft[i]}; let name=copy.name;
-      if(draft.some(d=>d.name===name&&toUpper(d.category)===toUpper(copy.category))) name=`${name} (COPIA)`;
+      if(draft.some(d=>d.name===name && toUpper(d.category)===toUpper(copy.category))) name=`${name} (COPIA)`;
       copy.name=name; draft.push(copy); renderDraftChips();
     }
     function removeDraft(i){ draft.splice(i,1); renderDraftChips(); }
-    function clearDraft(){ if(!draft.length)return; if(!confirm('¿Limpiar borrador?'))return; draft=[]; renderDraftChips(); showToast('Borrador limpio'); }
+    function clearDraft(){ if(!draft.length) return; if(!confirm('¿Limpiar borrador?')) return; draft=[]; renderDraftChips(); showToast('Borrador limpio'); }
     function sortDraftAZ(){ draft.sort((a,b)=>a.name.localeCompare(b.name,'es')); renderDraftChips(); }
     function exportDraftText(){ const text=draft.map(x=>`• ${x.category}: ${x.name}`).join('\n'); navigator.clipboard.writeText(text).then(()=>showToast('Copiado')); }
 
-    /* Publicar */
+    /* Publicar en Supabase */
     async function publishMenu(){
-      if(!menuDate.value||!draft.length) return alert("FALTA INFO");
-      const menuTitle=currentMenuName();
-      const { data:m, error } = await sb.from('menus').insert([{ name:menuTitle, menu_date:menuDate.value }]).select().single();
+      if(!menuDate.value || !draft.length) return alert("FALTA INFO");
+      const title = (menuName.value||'MENÚ DEL DÍA').toUpperCase();
+      const { data:m, error } = await sb.from('menus').insert([{ name:title, menu_date:menuDate.value }]).select().single();
       if(error||!m) return alert("No se pudo publicar: "+(error?.message||'Error'));
       for(const p of draft){
         const { data:item, error:eItem } = await sb.from('menu_items').insert([p]).select().single();
@@ -628,28 +540,30 @@
       alert("PUBLICADO ✅"); draft=[]; renderDraftChips();
     }
 
-    /* Historial */
+    /* Historial (Constructor) */
     async function loadHistory(){
       const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category))').order('menu_date',{ascending:false});
-      historyTable.innerHTML = (data||[]).map(m=>{
-        const pts=m.menu_menu_items.map(rel=>rel.menu_items?`<span style="display:block;font-size:10px;color:#64748b;">• ${esc(rel.menu_items.category)}: <b>${esc(rel.menu_items.name)}</b></span>`:'').join('');
-        return `<tr>
-          <td style="width:120px;"><b>${esc(m.menu_date)}</b></td>
-          <td><b>${esc(m.name)}</b><br><div style="background:#f8fafc;padding:10px;border-radius:12px;border:1px solid #e2e8f0;">${pts}</div></td>
-          <td style="text-align:right;">
-            <div style="display:flex;gap:8px;justify-content:flex-end;">
-              <button class="smart-btn" onclick="reUse(${m.id})">REUTILIZAR</button>
-              <button class="smart-btn danger" onclick="delMenu(${m.id})">X</button>
-            </div>
-          </td>
-        </tr>`;
-      }).join('');
+      historyTable.innerHTML = `<tbody>${
+        (data||[]).map(m=>{
+          const pts = (m.menu_menu_items||[]).map(rel=>rel.menu_items?`<span style="display:block;font-size:10px;color:#64748b;">• ${esc(rel.menu_items.category)}: <b>${esc(rel.menu_items.name)}</b></span>`:'').join('');
+          return `<tr>
+            <td style="width:120px;"><b>${esc(m.menu_date)}</b></td>
+            <td><b>${esc(m.name)}</b><br><div style="background:#f8fafc;padding:10px;border-radius:12px;border:1px solid #e2e8f0;">${pts}</div></td>
+            <td style="text-align:right;">
+              <button class="btn" onclick="reUse(${m.id})">REUTILIZAR</button>
+              <button class="btn danger" onclick="delMenu(${m.id})">X</button>
+            </td>
+          </tr>`;
+        }).join('')
+      }</tbody>`;
     }
     async function reUse(id){
       const { data, error } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').eq('id',id).single();
       if(error||!data) return alert("No se pudo cargar.");
-      draft=(data.menu_menu_items||[]).map(rel=>rel.menu_items).filter(Boolean).map(mi=>({name:mi.name,category:mi.category,description:mi.description}));
-      menuName.value=data.name; menuDate.value=data.menu_date; renderDraftChips(); switchView('builder'); setBuilderMode('manual'); showToast('Menú cargado');
+      draft = (data.menu_menu_items||[]).map(rel=>rel.menu_items).filter(Boolean)
+              .map(mi=>({name:mi.name,category:mi.category,description:mi.description}));
+      menuName.value=data.name; menuDate.value=data.menu_date; renderDraftChips();
+      switchView('builder'); setBuilderMode('manual'); showToast('Menú cargado');
     }
     async function delMenu(id){
       if(!confirm("¿BORRAR?")) return;
@@ -659,21 +573,23 @@
     }
     async function delAllMenus(){
       const v=prompt("Escribe BORRAR TODO para confirmar:"); if(v!=='BORRAR TODO') return alert("Cancelado.");
-      await sb.from('menu_menu_items').delete().neq('id',0); await sb.from('menus').delete().neq('id',0); loadHistory();
+      await sb.from('menu_menu_items').delete().neq('id',0);
+      await sb.from('menus').delete().neq('id',0);
+      loadHistory();
     }
 
     /* Admin: Catálogo */
     async function loadCatTable(){
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
       catalogCache=data||[];
-      catTable.innerHTML=catalogCache.map(i=>`
+      catTable.innerHTML = (catalogCache||[]).map(i=>`
         <tr>
           <td><b>${esc(i.categoria)}</b></td>
           <td>${esc(i.acompanamiento)}</td>
           <td style="text-align:right;">
-            <button class="smart-btn" onclick="editCat(${i.id})">✏️</button>
-            <button class="smart-btn" onclick="dupCat(${i.id})">➕</button>
-            <button class="smart-btn danger" onclick="delCat(${i.id})">🗑️</button>
+            <button class="btn" onclick="editCat(${i.id})">✏️</button>
+            <button class="btn" onclick="dupCat(${i.id})">➕</button>
+            <button class="btn danger" onclick="delCat(${i.id})">🗑️</button>
           </td>
         </tr>`).join('');
     }
@@ -690,7 +606,8 @@
     function resetCatForm(){ editCatId.value=""; cCat.value=""; cAcomp.value=""; cOpc1.value=""; cOpc2.value=""; cOpc3.value=""; cOpc4.value=""; btnCancelCat.style.display='none'; }
     async function saveFood(){
       const p={categoria:cCat.value,acompanamiento:cAcomp.value,pollo:cOpc1.value,cerdo:cOpc2.value,carne_roja:cOpc3.value,opcion_4:cOpc4.value};
-      if(editCatId.value) await sb.from('food_catalog').update(p).eq('id',editCatId.value); else await sb.from('food_catalog').insert([p]);
+      if(editCatId.value) await sb.from('food_catalog').update(p).eq('id',editCatId.value);
+      else await sb.from('food_catalog').insert([p]);
       resetCatForm(); loadCatTable(); loadCatalogPicker();
     }
     async function delCat(id){ if(!confirm('¿BORRAR?'))return; await sb.from('food_catalog').delete().eq('id',id); loadCatTable(); loadCatalogPicker(); }
@@ -698,12 +615,10 @@
     /* Admin: Usuarios */
     async function loadUsrTable(){
       const { data } = await sb.from('user_permissions').select('*').order('email');
-      usrTable.innerHTML=(data||[]).map(u=>`
+      usrTable.innerHTML = (data||[]).map(u=>`
         <tr>
           <td style="text-transform:none;padding:10px;">${esc(u.email)}</td>
-          <td style="text-align:right;padding:10px;">
-            <button class="smart-btn danger" onclick="delUsr(${u.id})">QUITAR</button>
-          </td>
+          <td style="text-align:right;padding:10px;"><button class="btn danger" onclick="delUsr(${u.id})">QUITAR</button></td>
         </tr>`).join('');
     }
     async function saveUsr(){
@@ -717,6 +632,7 @@
     document.addEventListener('input', e=>{
       if(e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value=e.target.value.toUpperCase();
     });
+    // manual
     btnAddDish.addEventListener('click', addTypedDish);
     btnClearDish.addEventListener('click', ()=>{ typedDish.value=''; hideTypeahead(); typedDish.focus(); });
     btnRefreshCats.addEventListener('click', ()=>{ fillTypedCategory(); showToast('Categorías actualizadas'); });
@@ -729,18 +645,13 @@
     });
     typedCategory.addEventListener('change', updateTypeahead);
     document.addEventListener('click', e=>{ if(!typeahead.contains(e.target) && e.target!==typedDish) hideTypeahead(); });
-    btnClearDraft.addEventListener('click', clearDraft);
-    btnSortDraft.addEventListener('click', sortDraftAZ);
-    btnExportDraft.addEventListener('click', exportDraftText);
 
-    /* Init */
+    // init
     menuDate.value=(new Date()).toISOString().slice(0,10);
     loadSavedMenus();
     check();
-    setBuilderMode('catalog');
+    switchView('builder'); // por defecto: Constructor → Menú
+    setBuilderMode('catalog'); // muestra catálogo en sidebar
   </script>
-
-  <div id="toast" class="toast hidden"></div>
 </body>
 </html>
-``
