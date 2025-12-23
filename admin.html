@@ -9,49 +9,95 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --sidebar: #0f172a; --accent: #6366f1; --bg: #f1f5f9; --card: #ffffff;
-      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --radius: 12px;
-      --danger: #ef4444; --warning: #f59e0b; --sidebar-width: 320px;
+      --sidebar: #0f172a; --accent: #6366f1; --bg: #0b1222; --card: #0f172a;
+      --text: #e2e8f0; --muted: #94a3b8; --border: #1e293b; --radius: 12px;
+      --danger: #ef4444; --warning: #f59e0b; --chip: #172036;
     }
+
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
+    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
 
     /* LOGIN */
     #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .login-card { background: white; padding: 40px; border-radius: 24px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-    .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
-    #loginErr { color: #ef4444; font-size: 10px; text-align: center; margin-top: 10px; display: none; text-transform: none; }
+    .login-card { background: #0f172a; color: var(--text); padding: 32px; border-radius: 20px; width: 360px; border: 1px solid var(--border); }
+    .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; background: #0b1222; color: var(--text); }
+    #loginErr { color: var(--danger); font-size: 10px; text-align: center; margin-top: 8px; display: none; text-transform: none; }
 
     /* SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; transition: 0.3s ease; z-index: 1000; border-right: 1px solid #1e293b; }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
-    .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; background: #020617; }
-    .sidebar-brand h2 { margin: 0; font-size: 14px; color: var(--accent); letter-spacing: 2px; }
+    .sidebar { width: 320px; background: var(--sidebar); color: var(--text); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; border-right: 1px solid var(--border); }
+    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; }
+    body.sidebar-hidden .sidebar { margin-left: -320px; }
+    .sidebar-brand { padding: 22px 18px; border-bottom: 1px solid var(--border); text-align: center; background: #0b1222; }
+    .sidebar-brand h2 { margin: 0; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
 
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; margin-bottom: 4px; }
-    .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
+    .nav-group { padding: 10px; flex-shrink: 0; }
+    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: var(--muted); text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; margin-bottom: 6px; }
+    .nav-btn.active { background: #172036; color: var(--text); border-left: 4px solid var(--accent); }
+
+    /* SELECTOR RÁPIDO */
+    #pickerSection { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .search-cat { padding: 12px; background: #0b1222; }
+    .search-cat input {
+      width: 100%; background: #172036 !important; border: 1px solid var(--border);
+      padding: 10px; border-radius: 10px; color: var(--text); font-size: 11px; outline: none; text-transform: none !important;
+    }
+    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: var(--sidebar); }
+    .cat-accordion { margin-bottom: 8px; }
+    .cat-trigger {
+      width: 100%; padding: 12px; background: #172036; border: 1px solid var(--border); color: var(--text);
+      text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 8px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .cat-count { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; color: var(--muted); }
+    .cat-content { max-height: 0; overflow: hidden; transition: 0.25s ease-out; }
+    .cat-accordion.active .cat-content { max-height: 2000px; padding: 10px 0; }
+
+    .food-card { background: #0b1222; padding: 12px; border-radius: 12px; margin: 8px 4px; border: 1px solid var(--border); }
+    .food-card b { display: block; font-size: 10px; margin-bottom: 10px; color: var(--muted); letter-spacing: 0.5px; }
+
+    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .btn-quick {
+      font-size: 10px; padding: 8px; background: var(--chip); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer; border-radius: 8px; font-weight: 800; transition: 0.2s; text-align: center;
+    }
+    .btn-quick:hover { background: var(--accent); color: #0b1222; transform: translateY(-1px); }
+    .btn-quick:active { transform: scale(0.98); }
 
     /* MAIN */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .btn-toggle { background: var(--sidebar); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; margin-right: 15px; }
-    .view-port { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; }
+    .top-bar { padding: 14px 20px; background: #0f172a; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .btn-toggle { background: #172036; color: var(--text); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); margin-right: 15px; }
+    .view-port { flex: 1; overflow-y: auto; padding: 24px; }
     .container { max-width: 1100px; margin: 0 auto; width: 100%; }
 
     /* CARD */
-    .card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-warning { background: #fff7ed; color: var(--warning); }
-    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
-    .hidden { display: none !important; }
+    .card { background: #0f172a; padding: 18px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 18px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 12px; background: #0b1222; color: var(--text); }
+    label { font-size: 10px; font-weight: 900; color: var(--muted); margin-bottom: 6px; display: block; }
 
-    /* TABS */
-    .tab-nav { display:flex; gap:10px; margin:20px 0; }
-    .tab-btn { padding: 10px 12px; background: #e2e8f0; border: none; border-radius: 8px; cursor:pointer; font-weight:900; font-size:11px; }
-    .tab-btn.active { background: var(--accent); color: white; }
+    .btn { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-primary { background: var(--accent); color: #0b1222; border-color: transparent; }
+    .btn-warning { background: #1e293b; color: var(--warning); }
+    .btn-danger  { background: #1e293b; color: var(--danger); border-color: #3b1f23; }
+
+    .draft-item { background: #0b1222; border: 1px solid var(--border); padding: 14px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); }
+    .hidden { display: none !important; }
+    #visitBadge { background: #172036; color: var(--accent); padding: 6px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; border: 1px solid var(--border); }
+
+    /* Tabs */
+    .tab-nav { display:flex; gap:10px; margin:16px 0; }
+    .tab-btn { padding: 10px 12px; background: #172036; border: 1px solid var(--border); border-radius: 8px; cursor:pointer; font-weight:900; font-size:11px; color: var(--text); }
+    .tab-btn.active { background: var(--accent); color: #0b1222; border-color: transparent; }
+
+    table { width: 100%; border-collapse: collapse; }
+    table td { padding: 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+    table tr:hover td { background: #0b1222; }
+
+    @media (max-width: 850px) {
+      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
+      body.sidebar-open .sidebar { transform: translateX(0); }
+      body.sidebar-open .sidebar-overlay { display: block; }
+    }
   </style>
 </head>
 <body id="mainBody">
@@ -59,64 +105,59 @@
   <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 30px;">ADT ADMIN PRO</h2>
+      <h2 style="text-align: center; margin: 0 0 20px;">ADT ADMIN PRO</h2>
       <label>EMAIL</label><input id="lEmail" type="email" placeholder="usuario@dominio.com">
-      <label style="margin-top:15px;">PASSWORD</label><input id="lPass" type="password" placeholder="••••••••">
-      <button class="btn btn-primary" style="width: 100%; margin-top: 15px; justify-content: center;" onclick="handleLogin()">ENTRAR</button>
+      <label style="margin-top:12px;">PASSWORD</label><input id="lPass" type="password" placeholder="••••••••">
+      <button class="btn btn-primary" style="width: 100%; margin-top: 12px; justify-content: center;" onclick="handleLogin()">ENTRAR</button>
       <p id="loginErr">ACCESO DENEGADO</p>
     </div>
   </div>
 
-  <div class="sidebar">
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar">
     <div class="sidebar-brand"><h2>MENU GESTION</h2></div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
       <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
-      <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
-      <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
-      <button class="nav-btn hidden" id="navV" onclick="switchView('viewers')">👁 VIEWERS</button> <!-- NUEVO -->
     </nav>
 
     <!-- Selector rápido -->
-    <div id="pickerSection" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+    <div id="pickerSection">
       <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR PLATO..." oninput="filterCatalog()"></div>
       <div id="catalogList" class="catalog-scroll"></div>
     </div>
-  </div>
+
+    <div class="nav-group admin-bottom">
+      <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
+      <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
+    </div>
+  </aside>
 
   <main class="main-area">
     <header class="top-bar">
       <div style="display: flex; align-items: center;">
-        <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-open')">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <button class="btn-toggle" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
+        <h1 id="viewTitle" style="font-size: 13px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
       </div>
-      <div style="display: flex; align-items: center; gap: 15px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
         <div id="visitBadge">VISITAS: <span id="vCount">...</span></div>
         <span id="userBadge" style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
-        <button class="btn" style="background:#e2e8f0; padding: 8px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
+        <button class="btn" style="background:#172036; padding: 8px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
       </div>
     </header>
 
     <section class="view-port" id="appMain">
       <div class="container">
+
         <!-- CONSTRUCTOR -->
         <div id="viewBuilder">
           <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div>
-                <label>FECHA DEL MENÚ</label>
-                <input id="menuDate" type="date" onchange="calcName()">
-              </div>
-              <div>
-                <label>NOMBRE DEL MENÚ</label>
-                <input id="menuName" placeholder="MENÚ DEL DÍA">
-                <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
-                  <input id="isDailyMenu" type="checkbox" checked onchange="toggleDailyMenu()">
-                  <label for="isDailyMenu" style="display:inline; margin:0;">ES MENÚ DEL DÍA</label>
-                </div>
-              </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date"></div>
+              <div><label>NOMBRE AUTOMÁTICO</label><div id="autoName" style="font-size:18px; font-weight:900; color:var(--accent); margin-top:8px;">MENÚ DEL DÍA</div></div>
             </div>
 
             <div class="tab-nav">
@@ -124,30 +165,24 @@
               <button class="tab-btn" id="tabM" onclick="setMode('man')">✍️ MANUAL</button>
             </div>
 
-            <div id="manArea" class="hidden" style="margin-bottom:20px;">
+            <div id="manArea" class="hidden" style="margin-bottom:12px;">
               <label>ESCRIBIR PLATO PERSONALIZADO</label>
-              <div style="display:flex; gap:10px;">
-                <input id="mIn" style="flex:1;" placeholder="Nombre del plato">
-                <button class="btn btn-primary" onclick="addMan()">AÑADIR</button>
-              </div>
+              <div style="display:flex; gap:10px;"><input id="mIn" style="flex:1;" placeholder="Nombre del plato"><button class="btn btn-primary" onclick="addMan()">AÑADIR</button></div>
             </div>
 
-            <button id="btnPublish" class="btn btn-primary" style="width: 100%; padding: 20px; justify-content: center; font-size: 13px;" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
-            <div id="draftList" style="margin-top: 30px;"></div>
-            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px; border:2px dashed var(--border); border-radius:15px; font-size:12px;">
-              EL BORRADOR ESTÁ VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.
-            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 14px; justify-content: center; font-size: 12px;" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
+
+            <div id="draftList" style="margin-top: 18px;"></div>
+            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:18px; border:1px dashed var(--border); border-radius:12px; font-size:12px;">EL BORRADOR ESTÁ VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.</div>
           </div>
         </div>
 
         <!-- HISTORIAL -->
         <div id="viewHistory" class="hidden">
-          <div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
             <button class="btn btn-danger" onclick="delAll()">🗑️ BORRAR TODO EL HISTORIAL</button>
           </div>
-          <div class="card">
-            <table id="historyTable" style="width:100%"></table>
-          </div>
+          <div class="card"><table id="historyTable"></table></div>
         </div>
 
         <!-- CATÁLOGO -->
@@ -161,24 +196,26 @@
               <div><label>OPC 2</label><input id="cO2"></div>
               <div><label>OPC 3</label><input id="cO3"></div>
               <div><label>OPC 4</label><input id="cO4"></div>
-              <div style="display:flex; align-items:flex-end; gap:5px;">
+              <div style="display:flex; align-items:flex-end; gap:6px;">
                 <button class="btn btn-primary" onclick="saveFood()">GUARDAR</button>
                 <button class="btn hidden" id="btnCancelCat" onclick="resetCat()">X</button>
               </div>
             </div>
           </div>
-          <div class="card"><table id="catTable" style="width:100%"></table></div>
+          <div class="card"><table id="catTable"></table></div>
         </div>
 
         <!-- USUARIOS -->
         <div id="viewUsers" class="hidden">
-          <div class="card"><table id="usrTable" style="width:100%"></table></div>
-        </div>
-
-        <!-- 👁 VIEWERS (Nuevo) -->
-        <div id="viewViewers" class="hidden">
+          <!-- Permisos admin existentes -->
           <div class="card">
-            <h3 style="margin-top:0; font-size:14px;">USUARIOS AUTORIZADOS PARA INDEX</h3>
+            <h3 style="margin:0 0 12px; font-size:12px; color:var(--muted);">USUARIOS (PERMISOS ADMIN)</h3>
+            <table id="usrTable"></table>
+          </div>
+
+          <!-- Viewers (acceso al INDEX) -->
+          <div class="card">
+            <h3 style="margin:0 0 12px; font-size:12px; color:var(--muted);">USUARIOS AUTORIZADOS PARA INDEX</h3>
             <div style="display:grid; grid-template-columns: 1fr 120px 120px; gap:10px; align-items:end;">
               <div>
                 <label>EMAIL / USUARIO</label>
@@ -198,10 +235,9 @@
               </div>
             </div>
           </div>
-          <div class="card">
-            <table id="viewersTable" style="width:100%"></table>
-          </div>
+          <div class="card"><table id="viewersTable"></table></div>
         </div>
+
       </div>
     </section>
   </main>
@@ -213,182 +249,58 @@
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    let perms = { cat: false, usr: false, viewers: false }, draft = [], catalogCache = [], historyCache = [], viewersCache = [];
+    let perms = { cat: false, usr: false }, draft = [], catalogCache = [], historyCache = [], viewersCache = [];
 
-    /* AUTH */
+    function toggleSidebar() { document.getElementById('mainBody').classList.toggle('sidebar-open'); }
+
+    async function check() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        const email = session.user.email.toLowerCase();
+        userBadge.innerText = email;
+        if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
+        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
+        loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
+        if (perms.cat) navC.classList.remove('hidden');
+        if (perms.usr) navU.classList.remove('hidden');
+        loadCatalog(); getStats();
+      }
+    }
+
     async function handleLogin() {
       loginErr.style.display = 'none';
-      try {
-        const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
-        if (error) { loginErr.style.display = 'block'; }
-        else location.reload();
-      } catch (e) { console.error('login', e); loginErr.style.display = 'block'; }
+      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
+      if (error) loginErr.style.display = 'block'; else location.reload();
     }
     function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
 
-    /* UI */
+    async function getStats() {
+      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+      if (data) vCount.innerText = data.count;
+    }
+
     function switchView(v) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
-      const btn = {builder:'navB', history:'navH', catalog:'navC', users:'navU', viewers:'navV'}[v];
+      const btn = {builder:'navB', history:'navH', catalog:'navC', users:'navU'}[v];
       document.getElementById(btn).classList.add('active');
       document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
-      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS', viewers:'👁 VIEWERS'}[v];
-
+      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
       if(v === 'catalog') loadCatTable();
       if(v === 'history') loadHistory();
-      if(v === 'users') loadUsrTable();
-      if(v === 'viewers') loadViewers();
+      if(v === 'users') { loadUsrTable(); loadViewers(); }
     }
 
-    async function check() {
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-          const email = session.user.email.toLowerCase();
-          userBadge.innerText = email;
-
-          // Superadmin
-          if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; perms.viewers = true; }
-
-          // Permisos desde DB
-          const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-          if (db) {
-            perms.cat = db.can_manage_catalog || perms.cat;
-            perms.usr = db.can_manage_users || perms.usr;
-            // Si quieres control separado para viewers, puedes añadir can_manage_viewers en tu tabla user_permissions
-            perms.viewers = db.can_manage_users || perms.viewers; // usar can_manage_users para habilitar VIEWERS
-          }
-
-          // Mostrar UI
-          loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
-          if (perms.cat) navC.classList.remove('hidden');
-          if (perms.usr) navU.classList.remove('hidden');
-          if (perms.viewers) navV.classList.remove('hidden');
-
-          // Cargas iniciales
-          await loadCatalog();
-          await getStats();
-        }
-      } catch (e) {
-        console.error('check()', e);
-      }
-    }
-
-    /* VISITAS */
-    async function getStats() {
-      try {
-        const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-        if (data) vCount.innerText = data.count;
-      } catch (e) { console.error('getStats', e); }
-    }
-
-    /* Constructor */
     function setMode(m) {
-      tabC.classList.toggle('active', m==='cat');
-      tabM.classList.toggle('active', m==='man');
-      manArea.classList.toggle('hidden', m==='cat');
-      pickerSection.classList.toggle('hidden', m==='man');
-    }
-    function toggleDailyMenu() {
-      const isDaily = isDailyMenu.checked;
-      menuName.disabled = isDaily;
-      if (isDaily) { menuName.value = 'MENÚ DEL DÍA'; }
-    }
-    function calcName() {
-      if (isDailyMenu.checked) { menuName.value = 'MENÚ DEL DÍA'; }
-      else if (!menuName.value.trim() && menuDate.value) {
-        const [y,m,d] = menuDate.value.split("-");
-        menuName.value = `MENÚ ${d}/${m}/${y}`;
-      }
-    }
-    function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c }); renderD(); }
-    function addMan() { const v = (mIn.value || "").trim(); if(!v) return; draft.push({ name: v.toUpperCase(), category: 'MANUAL' }); mIn.value=""; renderD(); }
-    function renderD() {
-      draftList.innerHTML = draft.map((p, i) => `
-        <div class="draft-item">
-          <div><b>${p.name}</b><br><small style="color:var(--accent); font-weight:800;">${p.category}</small></div>
-          <div style="display:flex; gap:5px;">
-            <button class="btn btn-warning" style="padding:8px" onclick="eD(${i})">✏️</button>
-            <button class="btn btn-primary" style="padding:8px" onclick="draft.push({...draft[${i}]});renderD()">👯</button>
-            <button class="btn btn-danger" style="padding:8px" onclick="draft.splice(${i},1);renderD()">X</button>
-          </div>
-        </div>`).join('');
-      emptyMsg.classList.toggle('hidden', draft.length > 0);
-    }
-    function eD(i) { const n = prompt("EDITAR NOMBRE DEL PLATO:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
-
-    async function publishMenu() {
-      const date = (menuDate.value || "").trim();
-      const isDaily = isDailyMenu.checked;
-      const name = isDaily ? 'MENÚ DEL DÍA' : (menuName.value || '').trim().toUpperCase();
-
-      if(!date) return alert("FALTA FECHA DEL MENÚ.");
-      if(!draft.length) return alert("FALTAN ÍTEMS DEL MENÚ.");
-      if(!name) return alert("FALTA NOMBRE DEL MENÚ.");
-
-      btnPublish.disabled = true;
-      btnPublish.innerText = "PUBLICANDO...";
-
-      try {
-        // Validar unicidad si es MENÚ DEL DÍA
-        if (isDaily) {
-          const { data: exists } = await sb
-            .from('menus')
-            .select('id')
-            .eq('menu_date', date)
-            .eq('name', 'MENÚ DEL DÍA')
-            .limit(1);
-          if (exists && exists.length) {
-            alert("Ya existe MENÚ DEL DÍA para esta fecha. Revisa el historial o cambia la fecha.");
-            return;
-          }
-        }
-
-        const { data: m, error: eMenu } = await sb
-          .from('menus')
-          .insert([{ name, menu_date: date }])
-          .select()
-          .single();
-        if (eMenu || !m) { console.error(eMenu); alert("ERROR AL CREAR MENÚ"); return; }
-
-        for (const p of draft) {
-          const payloadItem = {
-            name: (p.name || '').toUpperCase(),
-            category: p.category || 'VARIOS',
-            description: p.description || null
-          };
-          const { data: item, error: eItem } = await sb
-            .from('menu_items')
-            .insert([payloadItem])
-            .select()
-            .single();
-          if (eItem || !item) { console.error(eItem, p); alert("ERROR AL CREAR ITEM: " + (p.name || '')); continue; }
-
-          const { error: eLink } = await sb
-            .from('menu_menu_items')
-            .insert([{ menu_id: m.id, menu_item_id: item.id }]);
-          if (eLink) { console.error(eLink); alert("ERROR AL VINCULAR ITEM: " + item.name); }
-        }
-
-        alert("¡MENÚ PUBLICADO EXITOSAMENTE! ✅");
-        draft = []; renderD();
-      } catch (e) {
-        console.error('publishMenu()', e);
-        alert("ERROR INESPERADO AL PUBLICAR");
-      } finally {
-        btnPublish.disabled = false;
-        btnPublish.innerText = "🚀 PUBLICAR MENÚ AHORA";
-      }
+      tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man');
+      manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man');
     }
 
-    /* Catálogo */
+    /* CATÁLOGO (carga y render) */
     async function loadCatalog() {
-      try {
-        const { data } = await sb.from('food_catalog').select('*').order('categoria');
-        catalogCache = data || [];
-        renderCatalog(catalogCache);
-      } catch (e) { console.error('loadCatalog', e); }
+      const { data } = await sb.from('food_catalog').select('*').order('categoria');
+      catalogCache = data || []; renderCatalog(catalogCache);
     }
     function renderCatalog(items) {
       const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
@@ -412,6 +324,7 @@
           </div>
         </div>`).join('');
     }
+
     function filterCatalog() {
       const q = (catSearch.value || "").trim().toUpperCase();
       const filtered = catalogCache.filter(f =>
@@ -426,132 +339,176 @@
       if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
     }
 
-    /* Historial */
+    /* BORRADOR */
+    function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c }); renderD(); }
+    function addMan() { const v = (mIn.value || "").trim(); if(!v) return; draft.push({ name: v.toUpperCase(), category: 'MANUAL' }); mIn.value=""; renderD(); }
+
+    function renderD() {
+      draftList.innerHTML = draft.map((p, i) => `
+        <div class="draft-item">
+          <div><b>${p.name}</b><br><small style="color:var(--accent); font-weight:800;">${p.category}</small></div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-warning" onclick="eD(${i})">✏️</button>
+            <button class="btn btn-primary" onclick="draft.push({...draft[${i}]});renderD()">👯</button>
+            <button class="btn btn-danger" onclick="draft.splice(${i},1);renderD()">X</button>
+          </div>
+        </div>`).join('');
+      emptyMsg.classList.toggle('hidden', draft.length > 0);
+    }
+    function eD(i) { const n = prompt("EDITAR NOMBRE DEL PLATO:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
+
+    /* PUBLICAR MENÚ */
+    async function publishMenu() {
+      const date = menuDate.value;
+      if(!date || !draft.length) return alert("FALTA INFO");
+
+      const { data: m, error: eMenu } = await sb.from('menus').insert([{ name: "MENÚ DEL DÍA", menu_date: date }]).select().single();
+      if (eMenu || !m) { console.error(eMenu); return alert("ERROR AL CREAR MENÚ"); }
+
+      for(const p of draft) {
+        const payloadItem = {
+          name: (p.name || '').toUpperCase(),
+          category: p.category || 'VARIOS',
+          description: p.description || null
+        };
+        const { data: item, error: eItem } = await sb.from('menu_items').insert([payloadItem]).select().single();
+        if (eItem || !item) { console.error(eItem, p); alert("ERROR AL CREAR ITEM: " + (p.name || '')); continue; }
+        const { error: eLink } = await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
+        if (eLink) { console.error(eLink); alert("ERROR AL VINCULAR ITEM: " + item.name); }
+      }
+      alert("¡MENÚ PUBLICADO EXITOSAMENTE! ✅");
+      draft = []; renderD();
+    }
+
+    /* TABLA CATÁLOGO */
+    async function loadCatTable() {
+      const { data } = await sb.from('food_catalog').select('*').order('categoria');
+      catalogCache = data || [];
+      catTable.innerHTML = catalogCache.map(i => `
+        <tr>
+          <td><b>${i.categoria}</b></td>
+          <td>${i.acompanamiento}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button>
+            <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button>
+            <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button>
+          </td>
+        </tr>`).join('');
+    }
+    function editCat(id) { const i = catalogCache.find(x => x.id === id); if(!i) return;
+      editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento;
+      cO1.value = i.pollo || ""; cO2.value = i.cerdo || ""; cO3.value = i.carne_roja || ""; cO4.value = i.opcion_4 || "";
+      btnCancelCat.classList.remove('hidden');
+    }
+    function dupCat(id) { const i = catalogCache.find(x => x.id === id); if(!i) return;
+      editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = (i.acompanamiento || "") + " (COPIA)";
+      cO1.value = i.pollo || ""; cO2.value = i.cerdo || ""; cO3.value = i.carne_roja || ""; cO4.value = i.opcion_4 || "";
+      btnCancelCat.classList.remove('hidden');
+    }
+    function resetCat() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cO1.value=""; cO2.value=""; cO3.value=""; cO4.value=""; btnCancelCat.classList.add('hidden'); }
+    async function saveFood() {
+      const p = {
+        categoria: (cCat.value || "").toUpperCase(),
+        acompanamiento: (cAcomp.value || "").toUpperCase(),
+        pollo: (cO1.value || "").toUpperCase(),
+        cerdo: (cO2.value || "").toUpperCase(),
+        carne_roja: (cO3.value || "").toUpperCase(),
+        opcion_4: (cO4.value || "").toUpperCase()
+      };
+      if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value);
+      else await sb.from('food_catalog').insert([p]);
+      resetCat(); loadCatTable(); loadCatalog();
+    }
+    async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalog(); } }
+
+    /* HISTORIAL */
     async function loadHistory() {
-      try {
-        const { data } = await sb
-          .from('menus')
-          .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
-          .order('menu_date', {ascending:false});
-        historyCache = data || [];
-        historyTable.innerHTML = historyCache.map(m => {
-          const pts = (m.menu_menu_items || []).map(rel => rel.menu_items ? `
-            <span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
-          return `
-            <tr>
-              <td style="width:120px;"><b>${m.menu_date}</b></td>
-              <td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px;">${pts}</div></td>
-              <td style="text-align:right;">
-                <button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button>
-                <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button>
-              </td>
-            </tr>`;
-        }).join('');
-      } catch (e) { console.error('loadHistory', e); }
+      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').order('menu_date', {ascending:false});
+      historyCache = data || [];
+      historyTable.innerHTML = historyCache.map(m => {
+        const pts = (m.menu_menu_items || []).map(rel => rel.menu_items ? `
+          <span style="display:block; font-size:10px; color:#94a3b8;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
+        return `
+          <tr>
+            <td style="width:120px;"><b>${m.menu_date}</b></td>
+            <td><b>${m.name}</b><br><div style="background:#0b1222; padding:10px; border-radius:12px;">${pts}</div></td>
+            <td style="text-align:right;">
+              <button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button>
+              <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button>
+            </td>
+          </tr>`;
+      }).join('');
     }
     function reUseMenu(id) {
       const m = historyCache.find(x => x.id === id);
-      if (!m) return;
-      draft = (m.menu_menu_items || []).map(rel => ({ name: rel.menu_items?.name || "", category: rel.menu_items?.category || "VARIOS" }));
+      draft = (m?.menu_menu_items || []).map(rel => ({ name: rel.menu_items?.name || "", category: rel.menu_items?.category || "VARIOS" }));
       switchView('builder'); renderD(); alert("MENÚ CARGADO ✅");
     }
     async function delMenu(id) {
       if(!confirm("¿BORRAR?")) return;
-      try {
-        await sb.from('menu_menu_items').delete().eq('menu_id', id);
-        await sb.from('menus').delete().eq('id', id);
-        loadHistory();
-      } catch (e) { console.error('delMenu', e); alert("ERROR AL BORRAR MENÚ"); }
+      await sb.from('menu_menu_items').delete().eq('menu_id', id);
+      await sb.from('menus').delete().eq('id', id);
+      loadHistory();
     }
     async function delAll() {
       if(!confirm("¿BORRAR TODO?")) return;
-      try {
-        await sb.from('menu_menu_items').delete().neq('id',0);
-        await sb.from('menus').delete().neq('id',0);
-        loadHistory();
-      } catch (e) { console.error('delAll', e); alert("ERROR AL BORRAR HISTORIAL"); }
+      await sb.from('menu_menu_items').delete().neq('id',0);
+      await sb.from('menus').delete().neq('id',0);
+      loadHistory();
     }
 
-    /* Usuarios (permisos admin existentes) */
+    /* USUARIOS (permisos admin) */
     async function loadUsrTable() {
-      try {
-        const { data } = await sb.from('user_permissions').select('*').order('email');
-        usrTable.innerHTML = (data || []).map(u => `
-          <tr>
-            <td style="text-transform:none; padding:15px;">${u.email}</td>
-            <td style="text-align:right; padding:15px;">
-              <button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button>
-            </td>
-          </tr>`).join('');
-      } catch (e) { console.error('loadUsrTable', e); }
+      const { data } = await sb.from('user_permissions').select('*').order('email');
+      usrTable.innerHTML = (data || []).map(u => `
+        <tr>
+          <td style="text-transform:none; padding:12px;">${u.email}</td>
+          <td style="text-align:right; padding:12px;">
+            <button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button>
+          </td>
+        </tr>`).join('');
     }
-    async function delUsr(id) {
-      if(!confirm("¿Quitar permisos?")) return;
-      try { await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); }
-      catch (e) { console.error('delUsr', e); alert("ERROR AL QUITAR USUARIO"); }
-    }
+    async function delUsr(id) { if(!confirm("¿Quitar permisos?")) return; await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); }
 
-    /* 👁 VIEWERS: gestión de acceso al INDEX (nuevo) */
-    function resetViewer() {
-      vEditId.value = ""; vEmail.value = ""; vActive.value = "true";
-    }
+    /* VIEWERS (acceso index) */
+    function resetViewer() { vEditId.value=""; vEmail.value=""; vActive.value="true"; }
     async function loadViewers() {
-      try {
-        const { data } = await sb.from('public_viewers').select('*').order('email');
-        viewersCache = data || [];
-        viewersTable.innerHTML = viewersCache.map(v => `
-          <tr>
-            <td style="text-transform:none; padding:10px;">${v.email}</td>
-            <td style="padding:10px;">${v.active ? 'TRUE' : 'FALSE'}</td>
-            <td style="text-align:right; padding:10px;">
-              <button class="btn btn-warning" onclick="editViewer(${v.id})">✏️</button>
-              <button class="btn btn-danger" onclick="delViewer(${v.id})">🗑️</button>
-            </td>
-          </tr>`).join('');
-      } catch (e) { console.error('loadViewers', e); alert("ERROR AL CARGAR VIEWERS"); }
+      const { data } = await sb.from('public_viewers').select('*').order('email');
+      viewersCache = data || [];
+      viewersTable.innerHTML = viewersCache.map(v => `
+        <tr>
+          <td style="text-transform:none; padding:10px;">${v.email}</td>
+          <td style="padding:10px;">${v.active ? 'TRUE' : 'FALSE'}</td>
+          <td style="text-align:right; padding:10px;">
+            <button class="btn btn-warning" onclick="editViewer(${v.id})">✏️</button>
+            <button class="btn btn-danger" onclick="delViewer(${v.id})">🗑️</button>
+          </td>
+        </tr>`).join('');
     }
     function editViewer(id) {
-      const v = viewersCache.find(x => x.id === id);
-      if (!v) return;
-      vEditId.value = v.id;
-      vEmail.value = v.email;
-      vActive.value = v.active ? "true" : "false";
+      const v = viewersCache.find(x => x.id===id); if(!v) return;
+      vEditId.value = v.id; vEmail.value = v.email; vActive.value = v.active ? "true" : "false";
     }
     async function saveViewer() {
       const email = (vEmail.value || "").trim().toLowerCase();
       const active = vActive.value === "true";
-      if (!email) return alert("EMAIL/USUARIO ES OBLIGATORIO");
-
-      try {
-        if (vEditId.value) {
-          await sb.from('public_viewers').update({ email, active }).eq('id', vEditId.value);
-        } else {
-          await sb.from('public_viewers').insert([{ email, active }]);
-        }
-        resetViewer(); loadViewers();
-      } catch (e) { console.error('saveViewer', e); alert("ERROR AL GUARDAR VIEWER"); }
+      if(!email) return alert("EMAIL/USUARIO ES OBLIGATORIO");
+      if(vEditId.value) await sb.from('public_viewers').update({ email, active }).eq('id', vEditId.value);
+      else await sb.from('public_viewers').insert([{ email, active }]);
+      resetViewer(); loadViewers();
     }
-    async function delViewer(id) {
-      if(!confirm("¿Eliminar usuario autorizado?")) return;
-      try { await sb.from('public_viewers').delete().eq('id', id); loadViewers(); }
-      catch (e) { console.error('delViewer', e); alert("ERROR AL ELIMINAR VIEWER"); }
-    }
+    async function delViewer(id) { if(!confirm("¿Eliminar usuario autorizado?")) return; await sb.from('public_viewers').delete().eq('id', id); loadViewers(); }
 
-    /* Inputs uppercase salvo email/password/date */
+    /* INPUTS */
     document.addEventListener('input', e => {
       if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) {
         e.target.value = (e.target.value || "").toUpperCase();
       }
     });
 
-    /* Inicio */
+    /* INIT */
     menuDate.value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
-    toggleDailyMenu();
-    (async () => {
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) return;
-      check();
-    })();
+    check();
   </script>
 </body>
 </html>
