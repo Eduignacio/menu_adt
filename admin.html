@@ -5,12 +5,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>CASINO - ADMIN PANEL</title>
-  <!-- Fuente Inter -->
-  
-<!-- Google Fonts: Inter -->
-https://fonts.googleapis.com
-https://fonts.gstatic.com
-https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
+
+  <!-- Google Fonts: Inter -->
+  https://fonts.googleapis.com
+  https://fonts.gstatic.com
+  https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
 
   <style>
     :root {
@@ -135,33 +134,33 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
       <h2 style="text-align: center; margin: 0 0 14px;">ADT ADMIN PRO</h2>
       <label>EMAIL</label><input id="lEmail" type="email" placeholder="usuario@dominio.com">
       <label style="margin-top:12px;">PASSWORD</label><input id="lPass" type="password" placeholder="••••••••">
-      <button class="btn btn-primary" style="width: 100%; margin-top: 12px; justify-content: center;" onclick="handleLogin()">ENTRAR</button>
+      <button class="btn btn-primary" style="width: 100%; margin-top: 12px; justify-content: center;" id="btnLogin">ENTRAR</button>
       <p id="loginErr">ACCESO DENEGADO</p>
     </div>
   </div>
 
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand"><h2>MENU GESTION</h2></div>
     <nav class="sidebar-nav">
-      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 INGRESAR MENUS</button>
-      <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
+      <button class="nav-btn active" id="navB">🛠 INGRESAR MENUS</button>
+      <button class="nav-btn" id="navH">📜 HISTORIAL</button>
     </nav>
     <div id="pickerSection">
-      <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR PLATO..." oninput="filterCatalog()"></div>
+      <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR PLATO..."></div>
       <div id="catalogList" class="catalog-scroll"></div>
     </div>
     <div class="nav-group admin-bottom">
-      <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
-      <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
+      <button class="nav-btn hidden" id="navC">📂 ALIMENTOS</button>
+      <button class="nav-btn hidden" id="navU">👥 USUARIOS</button>
     </div>
   </aside>
 
   <main class="main-area">
     <header class="top-bar">
       <div style="display: flex; align-items: center;">
-        <button class="btn-toggle" onclick="toggleSidebar()" aria-label="Mostrar/ocultar menú">
+        <button class="btn-toggle" id="btnToggle" aria-label="Mostrar/ocultar menú">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
         <h1 id="viewTitle" style="font-size: var(--fs-xs); margin: 0; font-weight: 800; color: var(--muted);">🛠 INGRESAR MENUS</h1>
@@ -169,11 +168,11 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
       <div style="display: flex; align-items: center; gap: 10px;">
         <div id="visitBadge">VISITAS: <span id="vCount">...</span></div>
         <span id="userBadge" style="font-size: var(--fs-xxs); font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
-        <button class="btn" style="background:#172036; padding: 8px 12px; font-size: var(--fs-xxs);" onclick="handleLogout()">SALIR</button>
+        <button class="btn" style="background:#172036; padding: 8px 12px; font-size: var(--fs-xxs);" id="btnLogout">SALIR</button>
       </div>
     </header>
 
-    <section class="view-port" id="appMain">
+    <section class="view-port" id="appMain" class="hidden">
       <div class="container">
 
         <!-- CONSTRUCTOR -->
@@ -185,16 +184,16 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
             </div>
 
             <div class="tab-nav" style="display:flex; gap:10px; margin:16px 0;">
-              <button class="tab-btn active" id="tabC" onclick="setMode('cat')">📂 CATÁLOGO</button>
-              <button class="tab-btn" id="tabM" onclick="setMode('man')">✍️ MANUAL</button>
+              <button class="tab-btn active" id="tabC">📂 CATÁLOGO</button>
+              <button class="tab-btn" id="tabM">✍️ MANUAL</button>
             </div>
 
             <div id="manArea" class="hidden" style="margin-bottom:12px;">
               <label>ESCRIBIR PLATO PERSONALIZADO</label>
-              <div style="display:flex; gap:10px;"><input id="mIn" style="flex:1;" placeholder="Nombre del plato"><button class="btn btn-primary" onclick="addMan()">AÑADIR</button></div>
+              <div style="display:flex; gap:10px;"><input id="mIn" style="flex:1;" placeholder="Nombre del plato"><button class="btn btn-primary" id="btnAddManual">AÑADIR</button></div>
             </div>
 
-            <button class="btn btn-primary" style="width: 100%; padding: 14px; justify-content: center; font-size: var(--fs-xs);" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
+            <button class="btn btn-primary" style="width: 100%; padding: 14px; justify-content: center; font-size: var(--fs-xs);" id="btnPublish">🚀 PUBLICAR MENÚ AHORA</button>
 
             <div id="draftList" style="margin-top: 18px;"></div>
             <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:18px; border:1px dashed var(--border); border-radius:12px; font-size: var(--fs-xs);">EL BORRADOR ESTÁ VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.</div>
@@ -204,7 +203,7 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
         <!-- HISTORIAL -->
         <div id="viewHistory" class="hidden">
           <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
-            <button class="btn btn-danger" onclick="delAll()">🗑️ BORRAR TODO EL HISTORIAL</button>
+            <button class="btn btn-danger" id="btnDelAll">🗑️ BORRAR TODO EL HISTORIAL</button>
           </div>
           <div class="card">
             <div class="table-wrap"><table id="historyTable"></table></div>
@@ -223,8 +222,8 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
               <div><label>OPC 3</label><input id="cO3"></div>
               <div><label>OPC 4</label><input id="cO4"></div>
               <div style="display:flex; align-items:flex-end; gap:6px;">
-                <button class="btn btn-primary" onclick="saveFood()">GUARDAR</button>
-                <button class="btn hidden" id="btnCancelCat" onclick="resetCat()">X</button>
+                <button class="btn btn-primary" id="btnSaveFood">GUARDAR</button>
+                <button class="btn hidden" id="btnCancelCat">X</button>
               </div>
             </div>
           </div>
@@ -254,8 +253,8 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
             </div>
             <div style="display:flex; gap:8px; margin-top:12px;">
               <input type="hidden" id="admEditId">
-              <button class="btn btn-primary" onclick="saveAdminPerms()">GUARDAR</button>
-              <button class="btn btn-warning" onclick="resetAdminPerms()">LIMPIAR</button>
+              <button class="btn btn-primary" id="btnSaveAdmin">GUARDAR</button>
+              <button class="btn btn-warning" id="btnResetAdmin">LIMPIAR</button>
             </div>
           </div>
 
@@ -279,11 +278,12 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
               </div>
               <div style="display:flex; gap:8px;">
                 <input type="hidden" id="vEditId">
-                <button class="btn btn-primary" onclick="saveViewer()">GUARDAR</button>
-                <button class="btn btn-warning" onclick="resetViewer()">LIMPIAR</button>
+                <button class="btn btn-primary" id="btnSaveViewer">GUARDAR</button>
+                <button class="btn btn-warning" id="btnResetViewer">LIMPIAR</button>
               </div>
             </div>
           </div>
+
           <div class="card">
             <div class="table-wrap"><table id="viewersTable"></table></div>
           </div>
@@ -293,74 +293,548 @@ https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap
     </section>
   </main>
 
-  <!-- Supabase JS -->
-  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js</script>
+  <!-- Supabase JS v2 (CDN - global: supabase) -->
+  https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    // ======= CONFIG SUPABASE =======
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
-    const sb = window.supabase.createClient(S_URL, S_KEY);
+    const sb = supabase.createClient(S_URL, S_KEY);
 
+    // ======= STATE =======
     let perms = { cat: false, usr: false }, draft = [], catalogCache = [], historyCache = [], viewersCache = [];
+    let sessionEmail = "";
 
-    function toggleSidebar() {
-      document.body.classList.toggle('sidebar-open'); // << FIX principal
+    // ======= DOM HELPERS =======
+    const $ = id => document.getElementById(id);
+    const show  = el => el.classList.remove('hidden');
+    const hide  = el => el.classList.add('hidden');
+    const text  = (el, t) => { el.textContent = t; };
+    const html  = (el, h) => { el.innerHTML = h; };
+    const fmtDate = d => new Date(d).toLocaleDateString('es-CL', { timeZone: 'America/Santiago' });
+
+    // ======= INIT =======
+    function initDate() {
+      $('menuDate').value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
+      $('autoName').textContent = "MENÚ DEL DÍA";
     }
 
+    function bindUI() {
+      $('btnToggle').onclick = toggleSidebar;
+      $('sidebarOverlay').onclick = toggleSidebar;
+
+      $('btnLogin').onclick = handleLogin;
+      $('btnLogout').onclick = handleLogout;
+
+      $('navB').onclick = () => switchView('builder');
+      $('navH').onclick = () => switchView('history');
+      $('navC').onclick = () => switchView('catalog');
+      $('navU').onclick = () => switchView('users');
+
+      $('tabC').onclick = () => setMode('cat');
+      $('tabM').onclick = () => setMode('man');
+
+      $('catSearch').oninput = filterCatalog;
+      $('btnAddManual').onclick = addMan;
+      $('btnPublish').onclick = publishMenu;
+      $('btnDelAll').onclick = delAll;
+
+      $('btnSaveFood').onclick = saveFood;
+      $('btnCancelCat').onclick = resetCat;
+
+      $('btnSaveAdmin').onclick = saveAdminPerms;
+      $('btnResetAdmin').onclick = resetAdminPerms;
+
+      $('btnSaveViewer').onclick = saveViewer;
+      $('btnResetViewer').onclick = resetViewer;
+    }
+
+    // ======= SIDEBAR =======
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
+
+    // ======= AUTH =======
     async function check() {
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
-        const email = session.user.email.toLowerCase();
-        userBadge.innerText = email;
+        sessionEmail = (session.user.email || "").toLowerCase();
+        text($('userBadge'), sessionEmail);
 
-        if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
-        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        // Permisos por email fijo + BD
+        if (sessionEmail === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
+        const { data: db } = await sb.from('user_permissions').select('*').eq('email', sessionEmail).maybeSingle();
         if (db) { perms.cat = !!db.can_manage_catalog || perms.cat; perms.usr = !!db.can_manage_users || perms.usr; }
 
-        loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
-        if (perms.cat) navC.classList.remove('hidden');
-        if (perms.usr) navU.classList.remove('hidden');
+        hide($('loginOverlay'));
+        show($('appMain'));
 
-        loadCatalog(); getStats();
+        if (perms.cat) $('navC').classList.remove('hidden');
+        if (perms.usr) $('navU').classList.remove('hidden');
+
+        loadCatalog();
+        getStats();
+      } else {
+        show($('loginOverlay'));
+        hide($('appMain'));
       }
     }
 
     async function handleLogin() {
-      loginErr.style.display = 'none';
-      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
-      if (error) loginErr.style.display = 'block'; else location.reload();
+      $('loginErr').style.display = 'none';
+      const email = $('lEmail').value.trim().toLowerCase();
+      const pass  = $('lPass').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) { $('loginErr').style.display = 'block'; }
+      else { location.reload(); }
     }
-    function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
 
+    function handleLogout() {
+      sb.auth.signOut(); localStorage.clear(); location.reload();
+    }
+
+    // ======= STATS =======
     async function getStats() {
-      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-      if(data) vCount.innerText = data.count;
+      const { data, error } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+      if (!error && data) text($('vCount'), data.count);
     }
 
+    // ======= NAV =======
     function switchView(v) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
-      const btn = {builder:'navB', history:'navH', catalog:'navC', users:'navU'}[v];
-      document.getElementById(btn).classList.add('active');
-      document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
-      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
 
-      if(v === 'catalog') loadCatTable();
-      if(v === 'history') loadHistory();
-      if(v === 'users') { loadUsrTable(); loadViewers(); }
+      const btnId = {builder:'navB', history:'navH', catalog:'navC', users:'navU'}[v];
+      $(btnId).classList.add('active');
+
+      const viewId = {builder:'viewBuilder', history:'viewHistory', catalog:'viewCatalog', users:'viewUsers'}[v];
+      $(viewId).classList.remove('hidden');
+
+      text($('viewTitle'), {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v]);
+
+      if (v === 'catalog') loadCatTable();
+      if (v === 'history') loadHistory();
+      if (v === 'users') { loadUsrTable(); loadViewers(); }
     }
 
     function setMode(m) {
-      tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man');
-      manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man');
-      document.querySelector('.view-port').scrollBy({ top: 1, behavior: 'auto' }); // suaviza en móvil
+      $('tabC').classList.toggle('active', m === 'cat');
+      $('tabM').classList.toggle('active', m === 'man');
+      $('manArea').classList.toggle('hidden', m === 'cat');
+      $('pickerSection').classList.toggle('hidden', m === 'man');
+      document.querySelector('.view-port').scrollBy({ top: 1, behavior: 'auto' });
     }
 
-    /* ... (resto de funciones: catálogo, draft, publicar, historial, permisos, viewers) ... */
-    /* (Iguales que en tu versión responsiva previa; no los repito para no alargar) */
+    // ======= CATÁLOGO (LEFT PICKER) =======
+    async function loadCatalog() {
+      const { data, error } = await sb
+        .from('catalog')
+        .select('id, cat, acomp, o1, o2, o3, o4')
+        .order('cat', { ascending: true });
 
-    // INIT
-    menuDate.value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
-    document.getElementById('tabC').classList.add('active');
+      if (error) { console.error(error); return; }
+      catalogCache = data || [];
+
+      const grouped = {};
+      catalogCache.forEach(row => {
+        const opts = [row.o1, row.o2, row.o3, row.o4].filter(Boolean);
+        if (!grouped[row.cat]) grouped[row.cat] = [];
+        grouped[row.cat].push({ id: row.id, acomp: row.acomp, opts });
+      });
+
+      const list = $('catalogList');
+      html(list, '');
+
+      Object.keys(grouped).forEach(cat => {
+        const items = grouped[cat];
+        const acc = document.createElement('div');
+        acc.className = 'cat-accordion';
+        acc.innerHTML = `
+          <button class="cat-trigger">
+            <span>${cat}</span>
+            <span class="cat-count">${items.reduce((sum, it) => sum + it.opts.length, 0)} OPC.</span>
+          </button>
+          <div class="cat-content"></div>
+        `;
+        const trigger = acc.querySelector('.cat-trigger');
+        const content = acc.querySelector('.cat-content');
+        trigger.onclick = () => acc.classList.toggle('active');
+
+        items.forEach(it => {
+          const card = document.createElement('div');
+          card.className = 'food-card';
+          card.innerHTML = `<b>${cat}${it.acomp ? ' · ' + it.acomp : ''}</b><div class="btn-grid-4"></div>`;
+          const grid = card.querySelector('.btn-grid-4');
+          it.opts.forEach(op => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-quick';
+            btn.textContent = op;
+            btn.onclick = () => addDraft(`${op}${it.acomp ? ' + ' + it.acomp : ''}`, cat);
+            grid.appendChild(btn);
+          });
+          content.appendChild(card);
+        });
+
+        list.appendChild(acc);
+      });
+    }
+
+    function filterCatalog() {
+      const q = $('catSearch').value.trim().toLowerCase();
+      document.querySelectorAll('.cat-accordion').forEach(acc => {
+        const title = acc.querySelector('.cat-trigger span').textContent.toLowerCase();
+        acc.style.display = (!q || title.includes(q)) ? '' : 'none';
+      });
+    }
+
+    // ======= DRAFT =======
+    function renderDraft() {
+      const list = $('draftList');
+      html(list, '');
+      if (!draft.length) { show($('emptyMsg')); return; }
+      hide($('emptyMsg'));
+
+      draft.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'draft-item';
+        row.innerHTML = `
+          <div>${item.name}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-warning" onclick="moveUp(${idx})">↑</button>
+            <button class="btn btn-warning" onclick="moveDown(${idx})">↓</button>
+            <button class="btn btn-danger" onclick="removeDraft(${idx})">✖</button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function addDraft(name, cat = '') {
+      draft.push({ name, cat });
+      renderDraft();
+    }
+    function addMan() {
+      const val = $('mIn').value.trim();
+      if (!val) return;
+      addDraft(val);
+      $('mIn').value = '';
+    }
+    function removeDraft(i) {
+      draft.splice(i, 1);
+      renderDraft();
+    }
+    function moveUp(i) {
+      if (i <= 0) return;
+      [draft[i-1], draft[i]] = [draft[i], draft[i-1]];
+      renderDraft();
+    }
+    function moveDown(i) {
+      if (i >= draft.length - 1) return;
+      [draft[i+1], draft[i]] = [draft[i], draft[i+1]];
+      renderDraft();
+    }
+
+    // ======= PUBLICAR MENÚ =======
+    async function publishMenu() {
+      if (!draft.length) return alert('El borrador está vacío.');
+      const dateStr = $('menuDate').value;
+      const nameStr = $('autoName').textContent || 'MENÚ DEL DÍA';
+
+      const payload = {
+        date: dateStr,
+        name: nameStr,
+        items: draft.map(d => d.name),
+        created_by: sessionEmail
+      };
+
+      const { error } = await sb
+        .from('menu_history')
+        .insert({ date: dateStr, name: nameStr, items: payload.items, created_by: sessionEmail });
+
+      if (error) { console.error(error); alert('Error al publicar. Revisa las políticas/RLS.'); return; }
+
+      draft = [];
+      renderDraft();
+      alert('Menú publicado.');
+      loadHistory();
+    }
+
+    // ======= HISTORIAL =======
+    async function loadHistory() {
+      const { data, error } = await sb
+        .from('menu_history')
+        .select('id, date, name, items, created_by, created_at')
+        .order('date', { ascending: false })
+        .limit(250);
+
+      if (error) { console.error(error); return; }
+      historyCache = data || [];
+
+      const tbl = $('historyTable');
+      html(tbl, '');
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `
+        <td><b>FECHA</b></td><td><b>NOMBRE</b></td><td><b>PLATOS</b></td><td><b>CREADO POR</b></td><td></td>
+      `;
+      tbl.appendChild(hdr);
+
+      historyCache.forEach(r => {
+        const tr = document.createElement('tr');
+        const count = (Array.isArray(r.items) ? r.items.length : 0);
+        tr.innerHTML = `
+          <td>${fmtDate(r.date)}</td>
+          <td>${r.name}</td>
+          <td>${count}</td>
+          <td>${r.created_by || ''}</td>
+          <td style="text-align:right;"><button class="btn btn-danger" onclick="delOneHistory(${r.id})">Eliminar</button></td>
+        `;
+        tbl.appendChild(tr);
+
+        // Detalle
+        const tr2 = document.createElement('tr');
+        tr2.innerHTML = `<td colspan="5" style="color: var(--muted);">${(r.items || []).map(i => `• ${i}`).join(' &nbsp;&nbsp; ')}</td>`;
+        tbl.appendChild(tr2);
+      });
+    }
+
+    async function delOneHistory(id) {
+      if (!confirm('¿Eliminar este registro?')) return;
+      const { error } = await sb.from('menu_history').delete().eq('id', id);
+      if (error) { console.error(error); alert('No se pudo eliminar. Revisa políticas.'); return; }
+      loadHistory();
+    }
+
+    async function delAll() {
+      if (!confirm('¿Borrar TODO el historial?')) return;
+      const { error } = await sb.from('menu_history').delete().neq('id', -1);
+      if (error) { console.error(error); alert('No se pudo borrar todo.'); return; }
+      loadHistory();
+    }
+
+    // ======= CATÁLOGO (CRUD) =======
+    function resetCat() {
+      $('editCatId').value = '';
+      $('cCat').value = '';
+      $('cAcomp').value = '';
+      $('cO1').value = '';
+      $('cO2').value = '';
+      $('cO3').value = '';
+      $('cO4').value = '';
+      $('btnCancelCat').classList.add('hidden');
+    }
+
+    async function saveFood() {
+      const id = $('editCatId').value;
+      const row = {
+        cat: $('cCat').value.trim(),
+        acomp: $('cAcomp').value.trim(),
+        o1: $('cO1').value.trim(),
+        o2: $('cO2').value.trim(),
+        o3: $('cO3').value.trim(),
+        o4: $('cO4').value.trim(),
+      };
+      if (!row.cat) return alert('La categoría (CAT) es requerida.');
+
+      let res;
+      if (id) res = await sb.from('catalog').update(row).eq('id', +id);
+      else    res = await sb.from('catalog').insert(row);
+
+      if (res.error) { console.error(res.error); alert('Error al guardar. Revisa políticas.'); return; }
+      resetCat();
+      loadCatTable();
+      loadCatalog();
+    }
+
+    async function loadCatTable() {
+      const { data, error } = await sb.from('catalog').select('*').order('cat', { ascending: true });
+      if (error) { console.error(error); return; }
+
+      const tbl = $('catTable');
+      html(tbl, '');
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `<td><b>CAT</b></td><td><b>ACOMP</b></td><td><b>OPCIONES</b></td><td></td>`;
+      tbl.appendChild(hdr);
+
+      (data || []).forEach(r => {
+        const ops = [r.o1, r.o2, r.o3, r.o4].filter(Boolean).join(' · ');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.cat}</td>
+          <td>${r.acomp || ''}</td>
+          <td>${ops}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editCat(${r.id})">Editar</button>
+            <button class="btn btn-danger" onclick="delCat(${r.id})">Eliminar</button>
+          </td>
+        `;
+        tbl.appendChild(tr);
+      });
+    }
+
+    function editCat(id) {
+      const row = catalogCache.find(x => x.id === id);
+      if (!row) return;
+      $('editCatId').value = id;
+      $('cCat').value = row.cat || '';
+      $('cAcomp').value = row.acomp || '';
+      $('cO1').value = row.o1 || '';
+      $('cO2').value = row.o2 || '';
+      $('cO3').value = row.o3 || '';
+      $('cO4').value = row.o4 || '';
+      $('btnCancelCat').classList.remove('hidden');
+    }
+
+    async function delCat(id) {
+      if (!confirm('¿Eliminar este alimento?')) return;
+      const { error } = await sb.from('catalog').delete().eq('id', id);
+      if (error) { console.error(error); alert('No se pudo eliminar.'); return; }
+      loadCatTable();
+      loadCatalog();
+    }
+
+    // ======= USUARIOS (Permisos Admin) =======
+    function resetAdminPerms() {
+      $('admEditId').value = '';
+      $('admEmail').value = '';
+      $('admIsAdmin').checked = false;
+      $('admCat').checked = false;
+      $('admUsr').checked = false;
+      $('admViewers').checked = false;
+    }
+
+    async function saveAdminPerms() {
+      const email = $('admEmail').value.trim().toLowerCase();
+      if (!email) return alert('Email requerido.');
+
+      const isAdmin = $('admIsAdmin').checked;
+      const row = {
+        email,
+        can_manage_catalog: isAdmin ? true : $('admCat').checked,
+        can_manage_users:   isAdmin ? true : $('admUsr').checked,
+        can_manage_viewers: isAdmin ? true : $('admViewers').checked
+      };
+
+      const { error } = await sb.from('user_permissions').upsert(row, { onConflict: 'email' });
+      if (error) { console.error(error); alert('No se pudo guardar permisos.'); return; }
+      resetAdminPerms();
+      loadUsrTable();
+    }
+
+    async function loadUsrTable() {
+      const { data, error } = await sb.from('user_permissions').select('*').order('email', { ascending: true });
+      if (error) { console.error(error); return; }
+
+      const tbl = $('usrTable');
+      html(tbl, '');
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `<td><b>EMAIL</b></td><td><b>CAT.</b></td><td><b>USU.</b></td><td><b>VIEWERS</b></td><td></td>`;
+      tbl.appendChild(hdr);
+
+      (data || []).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.email}</td>
+          <td>${r.can_manage_catalog ? '✔' : '—'}</td>
+          <td>${r.can_manage_users ? '✔' : '—'}</td>
+          <td>${r.can_manage_viewers ? '✔' : '—'}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="fillAdmin('${r.email}', ${!!r.can_manage_catalog}, ${!!r.can_manage_users}, ${!!r.can_manage_viewers})">Editar</button>
+            <button class="btn btn-danger" onclick="delAdmin('${r.email}')">Eliminar</button>
+          </td>
+        `;
+        tbl.appendChild(tr);
+      });
+    }
+
+    function fillAdmin(email, cat, usr, viewers) {
+      $('admEmail').value = email;
+      $('admIsAdmin').checked = cat && usr && viewers;
+      $('admCat').checked = cat;
+      $('admUsr').checked = usr;
+      $('admViewers').checked = viewers;
+    }
+
+    async function delAdmin(email) {
+      if (!confirm('¿Eliminar permisos de este usuario?')) return;
+      const { error } = await sb.from('user_permissions').delete().eq('email', email);
+      if (error) { console.error(error); alert('No se pudo eliminar permisos.'); return; }
+      loadUsrTable();
+    }
+
+    // ======= VIEWERS =======
+    function resetViewer() {
+      $('vEditId').value = '';
+      $('vEmail').value = '';
+      $('vActive').value = 'true';
+    }
+
+    async function saveViewer() {
+      const username = $('vEmail').value.trim();
+      if (!username) return alert('Usuario requerido.');
+      const active = $('vActive').value === 'true';
+
+      const id = $('vEditId').value;
+      let res;
+      if (id) res = await sb.from('viewers').update({ username, active }).eq('id', +id);
+      else    res = await sb.from('viewers').insert({ username, active });
+
+      if (res.error) { console.error(res.error); alert('Error al guardar viewer.'); return; }
+      resetViewer();
+      loadViewers();
+    }
+
+    async function loadViewers() {
+      const { data, error } = await sb.from('viewers').select('*').order('username', { ascending: true });
+      if (error) { console.error(error); return; }
+      viewersCache = data || [];
+
+      const tbl = $('viewersTable');
+      html(tbl, '');
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `<td><b>USUARIO</b></td><td><b>ACTIVO</b></td><td></td>`;
+      tbl.appendChild(hdr);
+
+      viewersCache.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.username}</td>
+          <td>${r.active ? '✔' : '—'}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editViewer(${r.id})">Editar</button>
+            <button class="btn btn-danger" onclick="delViewer(${r.id})">Eliminar</button>
+          </td>
+        `;
+        tbl.appendChild(tr);
+      });
+    }
+
+    function editViewer(id) {
+      const r = viewersCache.find(x => x.id === id);
+      if (!r) return;
+      $('vEditId').value = id;
+      $('vEmail').value = r.username;
+      $('vActive').value = r.active ? 'true' : 'false';
+    }
+
+    async function delViewer(id) {
+      if (!confirm('¿Eliminar este viewer?')) return;
+      const { error } = await sb.from('viewers').delete().eq('id', id);
+      if (error) { console.error(error); alert('No se pudo eliminar viewer.'); return; }
+      loadViewers();
+    }
+
+    // ======= EXPOSE for inline onclick in table rows =======
+    window.removeDraft = removeDraft;
+    window.moveUp = moveUp;
+    window.moveDown = moveDown;
+    window.delOneHistory = delOneHistory;
+    window.editCat = editCat;
+    window.delCat = delCat;
+
+    // ======= START =======
+    initDate();
+    bindUI();
     check();
   </script>
 </body>
