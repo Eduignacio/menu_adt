@@ -4,16 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>MENÚ DIGITAL | ADT</title>
-  <!-- Fuente Raleway de la imagen -->
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;900&display=swap" rel="stylesheet">
+  <!-- Fuente Raleway de alto impacto -->
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #161c2d;          /* Fondo profundo */
-      --card: #2d3250;        /* Color de tarjeta según paleta */
-      --border-soft: #424769; /* Gris azulado medio */
-      --muted: #676f9d;       /* Azul grisáceo claro */
-      --accent: #f9b17a;      /* Melocotón / Naranja suave */
-      --text: #ffffff;        /* Blanco puro */
+      --bg: #161c2d;           /* Fondo profundo */
+      --card: #2d3250;         /* Tarjeta azul medianoche */
+      --border: #424769;       /* Bordes azulados */
+      --muted: #676f9d;        /* Texto secundario */
+      --accent: #f9b17a;       /* Color Melocotón (Acento) */
+      --text: #ffffff;
       --sidebar-width: 300px;
     }
 
@@ -21,15 +21,15 @@
     
     body { 
       margin: 0; 
-      min-height: 100vh; 
+      display: flex; 
+      height: 100vh; 
       background-color: var(--bg); 
       color: var(--text); 
-      display: flex; 
       overflow: hidden; 
       transition: all 0.3s ease;
     }
 
-    /* BARRA LATERAL (ESTILO DARK UI) */
+    /* --- BARRA LATERAL (SIDEBAR) --- */
     .sidebar { 
       width: var(--sidebar-width); 
       background: var(--card); 
@@ -39,7 +39,7 @@
       flex-shrink: 0; 
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s ease; 
       z-index: 1001; 
-      border-right: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border);
     }
 
     .sidebar-overlay { 
@@ -51,36 +51,37 @@
 
     .sidebar-header { padding: 50px 20px 30px; text-align: center; }
     
+    /* TIPOGRAFÍA ADT ESTILO LOGO */
     .brand-adt { 
-      font-size: 72px; 
+      font-size: 82px; 
       font-weight: 900; 
       color: var(--text); 
-      letter-spacing: -4px; 
+      letter-spacing: -5px; 
       line-height: 0.8; 
       margin-bottom: 30px; 
       display: block;
-      text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      user-select: none;
     }
 
     .date-box { 
       background: rgba(255,255,255,0.03); 
       padding: 20px; 
       border-radius: 18px; 
-      border: 1px solid var(--border-soft);
+      border: 1px solid var(--border);
       border-top: 4px solid var(--accent); 
       text-align: center; 
       margin: 0 20px;
     }
     .date-box span { display: block; font-size: 10px; color: var(--muted); margin-bottom: 5px; font-weight: 800; letter-spacing: 1px; }
-    .date-box b { font-size: 20px; color: var(--text); }
+    .date-box b { font-size: 20px; color: var(--accent); letter-spacing: 1px; }
 
-    /* ÁREA PRINCIPAL */
+    /* --- ÁREA PRINCIPAL --- */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
     
     .top-nav { 
       padding: 15px 25px; 
       background: rgba(22, 28, 45, 0.8); 
-      border-bottom: 1px solid var(--border-soft); 
+      border-bottom: 1px solid var(--border); 
       display: flex; 
       align-items: center; 
       justify-content: space-between; 
@@ -99,19 +100,19 @@
       box-shadow: 0 4px 15px rgba(249, 177, 122, 0.3);
       transition: 0.2s;
     }
-    .btn-menu:hover { transform: scale(1.05); }
+    .btn-menu:hover { transform: scale(1.05); background: #ffffff; }
 
     .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 30px 20px 100px; }
 
-    /* MENU CARDS (GLASSMORPISM) */
+    /* --- TARJETAS DE MENÚ --- */
     .menu-card { 
       background: var(--card); 
-      border-radius: 28px; 
+      border-radius: 30px; 
       padding: 40px; 
-      border: 1px solid var(--border-soft); 
+      border: 1px solid var(--border); 
       box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
       margin-bottom: 40px; 
-      animation: slideUp 0.6s ease-out; 
+      animation: slideUp 0.6s ease-out forwards;
     }
     @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -119,8 +120,8 @@
       display: inline-block; 
       background: var(--accent); 
       color: var(--bg); 
-      padding: 7px 18px; 
-      border-radius: 10px; 
+      padding: 6px 15px; 
+      border-radius: 8px; 
       font-size: 13px; 
       font-weight: 900; 
       margin-bottom: 30px; 
@@ -133,7 +134,7 @@
       color: var(--accent); 
       margin: 35px 0 15px; 
       padding-bottom: 8px; 
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border);
       letter-spacing: 2px;
     }
 
@@ -142,10 +143,13 @@
     .item-name { font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.3; }
     .item-desc { font-size: 13px; color: var(--muted); text-transform: none; margin-top: 6px; font-weight: 400; }
 
-    /* VISITOR COUNTER */
-    .sidebar-footer { margin-top: auto; padding: 30px 20px; text-align: center; border-top: 1px solid var(--border-soft); }
-    .visitor-stat span { display: block; font-size: 9px; color: var(--muted); font-weight: 800; }
+    /* --- CONTADOR Y FOOTER --- */
+    .sidebar-footer { margin-top: auto; padding: 30px 20px; text-align: center; border-top: 1px solid var(--border); }
+    .visitor-stat { margin-bottom: 20px; }
+    .visitor-stat span { display: block; font-size: 9px; color: var(--muted); font-weight: 800; margin-bottom: 5px; }
     .visitor-stat b { font-size: 18px; color: var(--accent); font-weight: 900; }
+
+    .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; font-size: 14px; letter-spacing: 2px; }
 
     @media (max-width: 900px) {
       .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
@@ -164,18 +168,18 @@
     <div class="sidebar-header">
       <span class="brand-adt">ADT</span>
       <div class="date-box">
-        <span>MENÚ PARA HOY</span>
+        <span>CARTILLA PARA HOY</span>
         <b id="dateDisplay">...</b>
       </div>
     </div>
 
     <div class="sidebar-footer">
       <div class="visitor-stat">
-          <span>VISITAS TOTALES</span>
+          <span>VISITAS AL SITIO</span>
           <b id="visitorCount">0</b>
       </div>
-      <p style="font-size: 8px; font-weight: 800; color: var(--muted); margin-top: 20px;">
-        SISTEMA ADT • ACTUALIZADO
+      <p style="font-size: 8px; font-weight: 800; color: var(--muted); letter-spacing: 1px;">
+        ADT SYSTEM • ACTUALIZACIÓN AUTOMÁTICA
       </p>
     </div>
   </aside>
@@ -186,12 +190,12 @@
       <button class="btn-menu" onclick="toggleSidebar()">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
-      <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">CARTILLA DIGITAL</div>
-      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.5;">ADM</a>
+      <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">MENÚ DIGITAL ADT</div>
+      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.4;">ADMIN</a>
     </div>
 
     <div class="container" id="menusContainer">
-      <div style="text-align:center; padding:100px 20px; color:var(--muted); font-weight:800; letter-spacing:2px;">CARGANDO MENÚ...</div>
+      <div class="loader" id="status">CARGANDO...</div>
     </div>
   </main>
 
@@ -203,6 +207,7 @@
 
     function toggleSidebar() { document.getElementById('bodyTag').classList.toggle('sidebar-open'); }
 
+    // Fecha local Chile
     function getTodayString() {
       const now = new Date();
       return now.toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
@@ -236,9 +241,9 @@
 
       if (error || !menus || menus.length === 0) {
         container.innerHTML = `
-            <div style="text-align:center; padding:80px 20px; color:var(--muted);">
+            <div style="text-align:center; padding:100px 20px; color:var(--muted);">
                 <h2 style="font-size:18px; color:var(--text);">PRÓXIMAMENTE</h2>
-                <p style="text-transform:none; font-size:12px;">Estamos preparando los platos del día.</p>
+                <p style="text-transform:none; font-size:12px;">El menú para hoy aún no ha sido publicado.</p>
             </div>`;
         return;
       }
@@ -246,7 +251,10 @@
       container.innerHTML = "";
       menus.forEach(m => {
         const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
-        const grouped = items.reduce((acc, it) => { (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it); return acc; }, {});
+        const grouped = items.reduce((acc, it) => {
+          (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it);
+          return acc;
+        }, {});
         
         let html = `<div class="menu-card"><div class="menu-badge">${m.name}</div>`;
         Object.keys(grouped).sort().forEach(cat => {
