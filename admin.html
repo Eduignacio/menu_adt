@@ -13,7 +13,6 @@
       --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --radius: 12px;
       --danger: #ef4444; --warning: #f59e0b; --sidebar-width: 320px;
     }
-
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
 
@@ -137,22 +136,29 @@
         <!-- CONSTRUCTOR -->
         <div id="viewBuilder">
           <div class="card">
+            <!-- Fecha + Nombre + Check -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
               <div>
                 <label>FECHA DEL MENÚ</label>
                 <input id="menuDate" type="date" onchange="calcName()">
               </div>
               <div>
-                <label>NOMBRE AUTOMÁTICO</label>
-                <div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:8px;">MENÚ DEL DÍA</div>
+                <label>NOMBRE DEL MENÚ</label>
+                <input id="menuName" placeholder="MENÚ DEL DÍA">
+                <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+                  <input id="isDailyMenu" type="checkbox" checked onchange="toggleDailyMenu()">
+                  <label for="isDailyMenu" style="display:inline; margin:0;">ES MENÚ DEL DÍA</label>
+                </div>
               </div>
             </div>
 
+            <!-- Tabs -->
             <div class="tab-nav">
               <button class="tab-btn active" id="tabC" onclick="setMode('cat')">📂 CATÁLOGO</button>
               <button class="tab-btn" id="tabM" onclick="setMode('man')">✍️ MANUAL</button>
             </div>
 
+            <!-- Manual -->
             <div id="manArea" class="hidden" style="margin-bottom:20px;">
               <label>ESCRIBIR PLATO PERSONALIZADO</label>
               <div style="display:flex; gap:10px;">
@@ -161,8 +167,10 @@
               </div>
             </div>
 
+            <!-- Publicar -->
             <button id="btnPublish" class="btn btn-primary" style="width: 100%; padding: 20px; justify-content: center; font-size: 13px;" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
             
+            <!-- Borrador -->
             <div id="draftList" style="margin-top: 30px;"></div>
             <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px; border:2px dashed var(--border); border-radius:15px; font-size:12px;">EL BORRADOR ESTÁ VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.</div>
           </div>
@@ -216,11 +224,32 @@
     let perms = { cat: false, usr: false }, draft = [], catalogCache = [], historyCache = [];
 
     function toggleSidebar() { document.getElementById('mainBody').classList.toggle('sidebar-open'); }
+
+    function toggleDailyMenu() {
+      const isDaily = isDailyMenu.checked;
+      menuName.disabled = isDaily;
+      if (isDaily) {
+        menuName.value = 'MENÚ DEL DÍA';
+      } else {
+        // Si estaba vacío, proponemos un nombre por fecha
+        if (!menuName.value.trim() && menuDate.value) {
+          const [y,m,d] = menuDate.value.split("-");
+          menuName.value = `MENÚ ${d}/${m}/${y}`;
+        }
+      }
+    }
+
     function calcName() {
-      const d = menuDate.value;
-      if (!d) { autoName.innerText = "MENÚ DEL DÍA"; return; }
-      const [y,m,dd] = d.split("-");
-      autoName.innerText = `MENÚ DEL DÍA (${dd}/${m}/${y})`;
+      // Al cambiar la fecha, si es menú del día, mantenemos el nombre fijo
+      if (isDailyMenu.checked) {
+        menuName.value = 'MENÚ DEL DÍA';
+      } else {
+        // Si el nombre está vacío, sugerimos uno con la fecha
+        if (!menuName.value.trim() && menuDate.value) {
+          const [y,m,d] = menuDate.value.split("-");
+          menuName.value = `MENÚ ${d}/${m}/${y}`;
+        }
+      }
     }
 
     /* ---------- AUTH & PERMISOS ---------- */
@@ -356,23 +385,49 @@
 
     /* ---------- PUBLICAR MENÚ ---------- */
     async function publishMenu() {
-      const date = menuDate.value;
-      if(!date || !draft.length) return alert("FALTA INFO: fecha y/o ítems del menú.");
+      const date = (menuDate.value || "").trim();
+      const isDaily = isDailyMenu.checked;
+      const name = isDaily ? 'MENÚ DEL DÍA' : (menuName.value || '').trim().toUpperCase();
+
+      if(!date) return alert("FALTA FECHA DEL MENÚ.");
+      if(!draft.length) return alert("FALTAN ÍTEMS DEL MENÚ.");
+      if(!name) return alert("FALTA NOMBRE DEL MENÚ.");
 
       btnPublish.disabled = true;
       btnPublish.innerText = "PUBLICANDO...";
 
       try {
-        // 1) Crear menú del día
+        // Si es MENÚ DEL DÍA, valida unicidad para la fecha
+        if (isDaily) {
+          const { data: exists, error: eExists } = await sb
+            .from('menus')
+            .select('id')
+            .eq('menu_date', date)
+            .eq('name', 'MENÚ DEL DÍA')
+            .limit(1);
+          if (eExists) { console.error('check exists error', eExists); }
+          if (exists && exists.length) {
+            alert("Ya existe MENÚ DEL DÍA para esta fecha. Revisa el historial o cambia la fecha.");
+            return;
+          }
+        }
+
+        // 1) Crear menú
         const { data: m, error: eMenu } = await sb
           .from('menus')
-          .insert([{ name: "MENÚ DEL DÍA", menu_date: date }])
+          .insert([{ name, menu_date: date }])
           .select()
           .single();
 
         if (eMenu || !m) {
           console.error('Error creando menú:', eMenu);
-          alert("ERROR AL CREAR MENÚ");
+          // Manejo amigable si el backend tiene índice único parcial
+          const msg = (eMenu && (eMenu.message || eMenu.error_description || eMenu.hint)) || '';
+          if (isDaily && (msg.includes('duplicate key') || msg.includes('uq_menus_daily') || eMenu?.code === '23505')) {
+            alert("Ya existe MENÚ DEL DÍA para esta fecha. Revisa el historial o cambia la fecha.");
+          } else {
+            alert("ERROR AL CREAR MENÚ");
+          }
           return;
         }
 
@@ -546,7 +601,7 @@
 
     /* ---------- ARRANQUE ---------- */
     menuDate.value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
-    calcName();
+    toggleDailyMenu(); // setea nombre y bloqueo inicial
     check();
   </script>
 </body>
