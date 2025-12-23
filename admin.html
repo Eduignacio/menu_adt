@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>ADT - ADMIN PANEL PRO</title>
   <!-- Fuente Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --sidebar: #0f172a; --accent: #6366f1; --bg: #0b1222; --card: #0f172a;
@@ -84,10 +84,7 @@
     .hidden { display: none !important; }
     #visitBadge { background: #172036; color: var(--accent); padding: 6px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; border: 1px solid var(--border); }
 
-    /* Tabs */
-    .tab-nav { display:flex; gap:10px; margin:16px 0; }
-    .tab-btn { padding: 10px 12px; background: #172036; border: 1px solid var(--border); border-radius: 8px; cursor:pointer; font-weight:900; font-size:11px; color: var(--text); }
-    .tab-btn.active { background: var(--accent); color: #0b1222; border-color: transparent; }
+    .section-title { font-size:12px; color: var(--muted); margin:0 0 12px; padding:10px; border:1px solid var(--border); border-radius:12px; background:#0b1222; }
 
     table { width: 100%; border-collapse: collapse; }
     table td { padding: 10px; border-bottom: 1px solid var(--border); color: var(--text); }
@@ -207,15 +204,38 @@
 
         <!-- USUARIOS -->
         <div id="viewUsers" class="hidden">
-          <!-- Permisos admin existentes -->
+          <!-- Permisos admin (con checks) -->
           <div class="card">
-            <h3 style="margin:0 0 12px; font-size:12px; color:var(--muted);">USUARIOS (PERMISOS ADMIN)</h3>
+            <h3 class="section-title">USUARIOS (PERMISOS ADMIN)</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:start;">
+              <div>
+                <label>EMAIL / USUARIO</label>
+                <input id="admEmail" placeholder="correo@empresa.cl" />
+              </div>
+              <div>
+                <label>MODULOS</label>
+                <div style="display:grid; grid-template-columns: repeat(4, auto); gap:10px; align-items:center;">
+                  <label><input type="checkbox" id="admIsAdmin"> ADMINISTRADOR</label>
+                  <label><input type="checkbox" id="admCat"> CATÁLOGO</label>
+                  <label><input type="checkbox" id="admUsr"> USUARIOS</label>
+                  <label><input type="checkbox" id="admViewers"> VIEWERS (INDEX)</label>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:12px;">
+              <input type="hidden" id="admEditId">
+              <button class="btn btn-primary" onclick="saveAdminPerms()">GUARDAR</button>
+              <button class="btn btn-warning" onclick="resetAdminPerms()">LIMPIAR</button>
+            </div>
+          </div>
+
+          <div class="card">
             <table id="usrTable"></table>
           </div>
 
           <!-- Viewers (acceso al INDEX) -->
           <div class="card">
-            <h3 style="margin:0 0 12px; font-size:12px; color:var(--muted);">USUARIOS AUTORIZADOS PARA INDEX</h3>
+            <h3 class="section-title">USUARIOS AUTORIZADOS PARA INDEX</h3>
             <div style="display:grid; grid-template-columns: 1fr 120px 120px; gap:10px; align-items:end;">
               <div>
                 <label>EMAIL / USUARIO</label>
@@ -258,12 +278,17 @@
       if (session) {
         const email = session.user.email.toLowerCase();
         userBadge.innerText = email;
+
+        // Superadmin directo
         if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
+
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
+        if (db) { perms.cat = !!db.can_manage_catalog || perms.cat; perms.usr = !!db.can_manage_users || perms.usr; }
+
         loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
         if (perms.cat) navC.classList.remove('hidden');
         if (perms.usr) navU.classList.remove('hidden');
+
         loadCatalog(); getStats();
       }
     }
@@ -275,10 +300,7 @@
     }
     function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
 
-    async function getStats() {
-      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-      if (data) vCount.innerText = data.count;
-    }
+    async function getStats() { const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single(); if(data) vCount.innerText = data.count; }
 
     function switchView(v) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -297,7 +319,7 @@
       manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man');
     }
 
-    /* CATÁLOGO (carga y render) */
+    /* ===== CATÁLOGO ===== */
     async function loadCatalog() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
       catalogCache = data || []; renderCatalog(catalogCache);
@@ -324,7 +346,6 @@
           </div>
         </div>`).join('');
     }
-
     function filterCatalog() {
       const q = (catSearch.value || "").trim().toUpperCase();
       const filtered = catalogCache.filter(f =>
@@ -339,7 +360,7 @@
       if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
     }
 
-    /* BORRADOR */
+    /* ===== BORRADOR & PUBLICAR ===== */
     function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c }); renderD(); }
     function addMan() { const v = (mIn.value || "").trim(); if(!v) return; draft.push({ name: v.toUpperCase(), category: 'MANUAL' }); mIn.value=""; renderD(); }
 
@@ -357,7 +378,6 @@
     }
     function eD(i) { const n = prompt("EDITAR NOMBRE DEL PLATO:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
 
-    /* PUBLICAR MENÚ */
     async function publishMenu() {
       const date = menuDate.value;
       if(!date || !draft.length) return alert("FALTA INFO");
@@ -365,7 +385,7 @@
       const { data: m, error: eMenu } = await sb.from('menus').insert([{ name: "MENÚ DEL DÍA", menu_date: date }]).select().single();
       if (eMenu || !m) { console.error(eMenu); return alert("ERROR AL CREAR MENÚ"); }
 
-      for(const p of draft) {
+      for (const p of draft) {
         const payloadItem = {
           name: (p.name || '').toUpperCase(),
           category: p.category || 'VARIOS',
@@ -380,50 +400,12 @@
       draft = []; renderD();
     }
 
-    /* TABLA CATÁLOGO */
-    async function loadCatTable() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || [];
-      catTable.innerHTML = catalogCache.map(i => `
-        <tr>
-          <td><b>${i.categoria}</b></td>
-          <td>${i.acompanamiento}</td>
-          <td style="text-align:right;">
-            <button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button>
-            <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button>
-            <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button>
-          </td>
-        </tr>`).join('');
-    }
-    function editCat(id) { const i = catalogCache.find(x => x.id === id); if(!i) return;
-      editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento;
-      cO1.value = i.pollo || ""; cO2.value = i.cerdo || ""; cO3.value = i.carne_roja || ""; cO4.value = i.opcion_4 || "";
-      btnCancelCat.classList.remove('hidden');
-    }
-    function dupCat(id) { const i = catalogCache.find(x => x.id === id); if(!i) return;
-      editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = (i.acompanamiento || "") + " (COPIA)";
-      cO1.value = i.pollo || ""; cO2.value = i.cerdo || ""; cO3.value = i.carne_roja || ""; cO4.value = i.opcion_4 || "";
-      btnCancelCat.classList.remove('hidden');
-    }
-    function resetCat() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cO1.value=""; cO2.value=""; cO3.value=""; cO4.value=""; btnCancelCat.classList.add('hidden'); }
-    async function saveFood() {
-      const p = {
-        categoria: (cCat.value || "").toUpperCase(),
-        acompanamiento: (cAcomp.value || "").toUpperCase(),
-        pollo: (cO1.value || "").toUpperCase(),
-        cerdo: (cO2.value || "").toUpperCase(),
-        carne_roja: (cO3.value || "").toUpperCase(),
-        opcion_4: (cO4.value || "").toUpperCase()
-      };
-      if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value);
-      else await sb.from('food_catalog').insert([p]);
-      resetCat(); loadCatTable(); loadCatalog();
-    }
-    async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalog(); } }
-
-    /* HISTORIAL */
+    /* ===== HISTORIAL ===== */
     async function loadHistory() {
-      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').order('menu_date', {ascending:false});
+      const { data } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .order('menu_date', {ascending:false});
       historyCache = data || [];
       historyTable.innerHTML = historyCache.map(m => {
         const pts = (m.menu_menu_items || []).map(rel => rel.menu_items ? `
@@ -457,20 +439,87 @@
       loadHistory();
     }
 
-    /* USUARIOS (permisos admin) */
+    /* ===== USUARIOS (permisos admin con checks) ===== */
+    function resetAdminPerms() {
+      admEditId.value = ""; admEmail.value = "";
+      admIsAdmin.checked = false; admCat.checked = false; admUsr.checked = false; admViewers.checked = false;
+    }
+
     async function loadUsrTable() {
       const { data } = await sb.from('user_permissions').select('*').order('email');
-      usrTable.innerHTML = (data || []).map(u => `
-        <tr>
-          <td style="text-transform:none; padding:12px;">${u.email}</td>
-          <td style="text-align:right; padding:12px;">
-            <button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button>
-          </td>
-        </tr>`).join('');
+      const rows = (data || []).map(u => {
+        const cat = u.can_manage_catalog ? 'TRUE' : 'FALSE';
+        const usr = u.can_manage_users ? 'TRUE' : 'FALSE';
+        const vwr = (u.can_manage_viewers ? 'TRUE' : 'FALSE'); // puede no existir
+        const isAdmin = (u.can_manage_catalog && u.can_manage_users && (u.can_manage_viewers ?? true)) ? 'TRUE' : 'FALSE';
+        return `
+          <tr>
+            <td style="text-transform:none; width:40%;">${u.email}</td>
+            <td>ADMIN: ${isAdmin}</td>
+            <td>CATÁLOGO: ${cat}</td>
+            <td>USUARIOS: ${usr}</td>
+            <td>VIEWERS: ${vwr}</td>
+            <td style="text-align:right;">
+              <button class="btn btn-warning" onclick="editAdminPerms(${u.id})">✏️</button>
+              <button class="btn btn-danger" onclick="delUsr(${u.id})">🗑️</button>
+            </td>
+          </tr>`;
+      }).join('');
+      usrTable.innerHTML = rows || `<tr><td style="text-transform:none;">Sin registros</td></tr>`;
     }
-    async function delUsr(id) { if(!confirm("¿Quitar permisos?")) return; await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); }
 
-    /* VIEWERS (acceso index) */
+    function editAdminPerms(id) {
+      sb.from('user_permissions').select('*').eq('id', id).maybeSingle().then(({data}) => {
+        if (!data) return;
+        admEditId.value = data.id;
+        admEmail.value = data.email || "";
+        admCat.checked = !!data.can_manage_catalog;
+        admUsr.checked = !!data.can_manage_users;
+        // si no existe en la tabla, asumimos false
+        admViewers.checked = !!data.can_manage_viewers;
+        // administrador si todas las casillas están (o las principales)
+        admIsAdmin.checked = (admCat.checked && admUsr.checked && admViewers.checked);
+      });
+    }
+
+    async function saveAdminPerms() {
+      const email = (admEmail.value || "").trim().toLowerCase();
+      let cCat = admCat.checked, cUsr = admUsr.checked, cVwr = admViewers.checked;
+      if (admIsAdmin.checked) { cCat = true; cUsr = true; cVwr = true; }
+      if (!email) return alert("EMAIL/USUARIO ES OBLIGATORIO");
+
+      const payload = {
+        email,
+        can_manage_catalog: cCat,
+        can_manage_users: cUsr,
+        // este campo puede no existir; enviamos igual y si da error lo ignoramos
+        can_manage_viewers: cVwr
+      };
+
+      try {
+        if (admEditId.value) {
+          const { error } = await sb.from('user_permissions').update(payload).eq('id', admEditId.value);
+          if (error && error.message) console.warn('update user_permissions:', error.message);
+        } else {
+          // upsert evita duplicados por email
+          const { error } = await sb.from('user_permissions').upsert(payload, { onConflict: 'email' });
+          if (error && error.message) console.warn('upsert user_permissions:', error.message);
+        }
+        resetAdminPerms();
+        loadUsrTable();
+      } catch (e) {
+        console.error('saveAdminPerms', e);
+        alert("ERROR AL GUARDAR PERMISOS");
+      }
+    }
+
+    async function delUsr(id) {
+      if(!confirm("¿Eliminar permisos de admin?")) return;
+      try { await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); }
+      catch (e) { console.error('delUsr', e); alert("ERROR AL ELIMINAR USUARIO"); }
+    }
+
+    /* ===== VIEWERS (acceso index) ===== */
     function resetViewer() { vEditId.value=""; vEmail.value=""; vActive.value="true"; }
     async function loadViewers() {
       const { data } = await sb.from('public_viewers').select('*').order('email');
@@ -493,13 +542,15 @@
       const email = (vEmail.value || "").trim().toLowerCase();
       const active = vActive.value === "true";
       if(!email) return alert("EMAIL/USUARIO ES OBLIGATORIO");
-      if(vEditId.value) await sb.from('public_viewers').update({ email, active }).eq('id', vEditId.value);
-      else await sb.from('public_viewers').insert([{ email, active }]);
-      resetViewer(); loadViewers();
+      try {
+        if(vEditId.value) await sb.from('public_viewers').update({ email, active }).eq('id', vEditId.value);
+        else await sb.from('public_viewers').insert([{ email, active }]);
+        resetViewer(); loadViewers();
+      } catch (e) { console.error('saveViewer', e); alert("ERROR AL GUARDAR VIEWER"); }
     }
     async function delViewer(id) { if(!confirm("¿Eliminar usuario autorizado?")) return; await sb.from('public_viewers').delete().eq('id', id); loadViewers(); }
 
-    /* INPUTS */
+    /* INPUTS MAYUS salvo email/password/date */
     document.addEventListener('input', e => {
       if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) {
         e.target.value = (e.target.value || "").toUpperCase();
@@ -512,3 +563,4 @@
   </script>
 </body>
 </html>
+``
