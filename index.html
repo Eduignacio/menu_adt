@@ -5,165 +5,80 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>MENÚ DIGITAL | ADT</title>
-  <!-- Fuente Raleway de alto impacto -->
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #161c2d;           /* Fondo profundo */
-      --card: #2d3250;         /* Tarjeta azul medianoche */
-      --border: #424769;       /* Bordes azulados */
-      --muted: #676f9d;        /* Texto secundario */
-      --accent: #f9b17a;       /* Color Melocotón (Acento) */
-      --text: #ffffff;
-      --sidebar-width: 300px;
+      --bg: #161c2d; --card: #2d3250; --border: #424769; --muted: #676f9d;
+      --accent: #f9b17a; --text: #ffffff; --sidebar-width: 300px; --danger:#ef4444;
     }
-
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Raleway', sans-serif; -webkit-tap-highlight-color: transparent; }
-    
-    body { 
-      margin: 0; 
-      display: flex; 
-      height: 100vh; 
-      background-color: var(--bg); 
-      color: var(--text); 
-      overflow: hidden; 
-      transition: all 0.3s ease;
-    }
+    body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
 
-    /* --- BARRA LATERAL (SIDEBAR) --- */
-    .sidebar { 
-      width: var(--sidebar-width); 
-      background: var(--card); 
-      color: white; 
-      display: flex; 
-      flex-direction: column; 
-      flex-shrink: 0; 
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s ease; 
-      z-index: 1001; 
-      border-right: 1px solid var(--border);
-    }
+    /* Overlay acceso */
+    #accessOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
+    .access-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .access-card h2 { margin: 0 0 20px; font-size: 18px; letter-spacing: 2px; text-align: center; }
+    .access-card label { display:block; font-size: 10px; font-weight: 900; color: var(--muted); margin-bottom: 6px; }
+    .access-card input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: #2a2f49; color: #fff; text-transform: none !important; }
+    .access-actions { display:flex; gap:10px; margin-top: 15px; }
+    .btn { padding: 12px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; letter-spacing: 1px; }
+    .btn-primary { background: var(--accent); color: var(--bg); flex: 1; }
+    .err { margin-top: 10px; color: var(--danger); font-size: 10px; text-transform:none; text-align:center; display:none; }
 
-    .sidebar-overlay { 
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7); 
-      display: none; z-index: 1000; backdrop-filter: blur(4px); 
-    }
-
+    /* Sidebar */
+    .sidebar { width: var(--sidebar-width); background: var(--card); color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 1001; border-right: 1px solid var(--border); }
+    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; backdrop-filter: blur(4px); }
     body.sidebar-open .sidebar { transform: translateX(0); }
     body.sidebar-open .sidebar-overlay { display: block; }
-
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-
     .sidebar-header { padding: 50px 20px 30px; text-align: center; }
-    
-    /* TIPOGRAFÍA ADT ESTILO LOGO */
-    .brand-adt { 
-      font-size: 82px; 
-      font-weight: 900; 
-      color: var(--text); 
-      letter-spacing: -5px; 
-      line-height: 0.8; 
-      margin-bottom: 30px; 
-      display: block;
-      user-select: none;
-    }
-
-    .date-box { 
-      background: rgba(255,255,255,0.03); 
-      padding: 20px; 
-      border-radius: 18px; 
-      border: 1px solid var(--border);
-      border-top: 4px solid var(--accent); 
-      text-align: center; 
-      margin: 0 20px;
-    }
+    .brand-adt { font-size: 82px; font-weight: 900; color: var(--text); letter-spacing: -5px; line-height: 0.8; margin-bottom: 30px; display: block; user-select: none; }
+    .date-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; border: 1px solid var(--border); border-top: 4px solid var(--accent); text-align: center; margin: 0 20px; }
     .date-box span { display: block; font-size: 10px; color: var(--muted); margin-bottom: 5px; font-weight: 800; letter-spacing: 1px; }
     .date-box b { font-size: 20px; color: var(--accent); letter-spacing: 1px; }
 
-    /* --- ÁREA PRINCIPAL --- */
+    /* Main */
     .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-    
-    .top-nav { 
-      padding: 15px 25px; 
-      background: rgba(22, 28, 45, 0.8); 
-      border-bottom: 1px solid var(--border); 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-menu { 
-      background: var(--accent); 
-      color: var(--bg); 
-      border: none; 
-      width: 45px; height: 45px; 
-      border-radius: 12px; 
-      cursor: pointer; 
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 15px rgba(249, 177, 122, 0.3);
-      transition: 0.2s;
-    }
+    .top-nav { padding: 15px 25px; background: rgba(22, 28, 45, 0.8); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); }
+    .btn-menu { background: var(--accent); color: var(--bg); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(249,177,122,0.3); transition: 0.2s; }
     .btn-menu:hover { transform: scale(1.05); background: #ffffff; }
-
     .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 30px 20px 100px; }
 
-    /* --- TARJETAS DE MENÚ --- */
-    .menu-card { 
-      background: var(--card); 
-      border-radius: 30px; 
-      padding: 40px; 
-      border: 1px solid var(--border); 
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
-      margin-bottom: 40px; 
-      animation: slideUp 0.6s ease-out forwards;
-    }
+    /* Cards */
+    .menu-card { background: var(--card); border-radius: 30px; padding: 40px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); margin-bottom: 40px; animation: slideUp 0.6s ease-out forwards; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-    .menu-badge { 
-      display: inline-block; 
-      background: var(--accent); 
-      color: var(--bg); 
-      padding: 6px 15px; 
-      border-radius: 8px; 
-      font-size: 13px; 
-      font-weight: 900; 
-      margin-bottom: 30px; 
-      letter-spacing: 1px;
-    }
-
-    .category-title { 
-      font-size: 11px; 
-      font-weight: 900; 
-      color: var(--accent); 
-      margin: 35px 0 15px; 
-      padding-bottom: 8px; 
-      border-bottom: 1px solid var(--border);
-      letter-spacing: 2px;
-    }
-
+    .menu-badge { display: inline-block; background: var(--accent); color: var(--bg); padding: 6px 15px; border-radius: 8px; font-size: 13px; font-weight: 900; margin-bottom: 30px; letter-spacing: 1px; }
+    .category-title { font-size: 11px; font-weight: 900; color: var(--accent); margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing: 2px; }
     .item-row { padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
     .item-row:last-child { border-bottom: none; }
     .item-name { font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.3; }
     .item-desc { font-size: 13px; color: var(--muted); text-transform: none; margin-top: 6px; font-weight: 400; }
 
-    /* --- CONTADOR Y FOOTER --- */
     .sidebar-footer { margin-top: auto; padding: 30px 20px; text-align: center; border-top: 1px solid var(--border); }
-    .visitor-stat { margin-bottom: 20px; }
     .visitor-stat span { display: block; font-size: 9px; color: var(--muted); font-weight: 800; margin-bottom: 5px; }
     .visitor-stat b { font-size: 18px; color: var(--accent); font-weight: 900; }
 
     .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; font-size: 14px; letter-spacing: 2px; }
-
-    @media (max-width: 900px) {
-      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
-      .brand-adt { font-size: 60px; }
-    }
   </style>
 </head>
 <body id="bodyTag">
 
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <!-- Overlay de acceso -->
+  <div id="accessOverlay">
+    <div class="access-card">
+      <h2>ACCESO AL MENÚ</h2>
+      <label>USUARIO / EMAIL AUTORIZADO</label>
+      <input id="viewerEmail" type="text" placeholder="correo@empresa.cl" />
+      <div class="access-actions">
+        <button class="btn btn-primary" onclick="handleAccess()">ENTRAR</button>
+      </div>
+      <div id="accessErr" class="err">El usuario no está autorizado.</div>
+      <p style="font-size:10px; color:var(--muted); text-transform:none; text-align:center; margin-top:10px;">
+        El acceso no requiere contraseña, pero valida que tu correo/usuario esté habilitado.
+      </p>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" onclick="document.getElementById('bodyTag').classList.toggle('sidebar-open')"></div>
 
   <!-- BARRA LATERAL -->
   <aside class="sidebar">
@@ -189,7 +104,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="main-area">
     <div class="top-nav">
-      <button class="btn-menu" onclick="toggleSidebar()">
+      <button class="btn-menu" onclick="document.getElementById('bodyTag').classList.toggle('sidebar-open')">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
       <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">MENÚ DIGITAL ADT</div>
@@ -207,18 +122,40 @@
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
+    const ACCESS_FLAG = 'adt_view_ok';
 
-    function toggleSidebar() { document.getElementById('bodyTag').classList.toggle('sidebar-open'); }
+    /* Acceso sin password: RPC can_view(email) */
+    async function handleAccess() {
+      const input = document.getElementById('viewerEmail');
+      const err = document.getElementById('accessErr');
+      err.style.display = 'none';
 
-    // Fecha local Chile => "YYYY-MM-DD"
+      const email = (input.value || '').trim().toLowerCase();
+      if (!email) { err.innerText = 'Ingresa tu usuario/correo.'; err.style.display = 'block'; return; }
+
+      try {
+        const { data, error } = await sb.rpc('can_view', { p_email: email });
+        if (error) { console.error(error); err.innerText = 'Error al validar el usuario.'; err.style.display = 'block'; return; }
+        if (data === true) {
+          sessionStorage.setItem(ACCESS_FLAG, email);
+          document.getElementById('accessOverlay').style.display = 'none';
+          init();
+        } else {
+          err.innerText = 'El usuario no está autorizado.'; err.style.display = 'block';
+        }
+      } catch (e) {
+        console.error('handleAccess', e);
+        err.innerText = 'Error inesperado. Intenta nuevamente.'; err.style.display = 'block';
+      }
+    }
+
+    /* Fecha local Chile */
     function getTodayString() {
       return new Date().toLocaleString("en-CA", { timeZone: "America/Santiago" }).split(',')[0];
     }
-    function fmtDate(iso) {
-      const [y, m, d] = iso.split("-");
-      return `${d} / ${m} / ${y}`;
-    }
+    function fmtDate(iso) { const [y, m, d] = iso.split("-"); return `${d} / ${m} / ${y}`; }
 
+    /* Visitantes */
     async function handleVisitors() {
       try {
         if (!sessionStorage.getItem('adt_v')) {
@@ -227,26 +164,22 @@
         }
         const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
         if (data) document.getElementById('visitorCount').innerText = data.count;
-      } catch (e) {
-        console.error('Visitor stats error:', e);
-      }
+      } catch (e) { console.error('Visitor stats error:', e); }
     }
 
+    /* Data */
     async function fetchMenusForToday() {
       const today = getTodayString();
       document.getElementById('dateDisplay').innerText = fmtDate(today);
 
-      // Intento A: filtro exacto por DATE
       let { data: menus, error } = await sb
         .from('menus')
         .select(`id, name, menu_date, created_at, menu_menu_items ( menu_items (id, name, category, description) )`)
         .eq('menu_date', today)
         .order('created_at', { ascending: true });
 
-      // Fallback B: rango horario (si menu_date fuera TIMESTAMP/TIMESTAMPTZ)
       if (error || !menus || menus.length === 0) {
-        const start = `${today}T00:00:00`;
-        const end   = `${today}T23:59:59`;
+        const start = `${today}T00:00:00`; const end = `${today}T23:59:59`;
         try {
           const res2 = await sb
             .from('menus')
@@ -255,15 +188,12 @@
             .lte('menu_date', end)
             .order('created_at', { ascending: true });
           menus = res2.data || [];
-        } catch (e2) {
-          console.error('Fallback range query error:', e2);
-          menus = [];
-        }
+        } catch (e2) { console.error('Fallback range query error:', e2); menus = []; }
       }
-
       return menus;
     }
 
+    /* Render (oculta encabezado “MANUAL”, muestra sus ítems) */
     function renderMenus(menus) {
       const container = document.getElementById('menusContainer');
       if (!menus || menus.length === 0) {
@@ -277,33 +207,17 @@
 
       container.innerHTML = "";
       menus.forEach(m => {
-        // Ítems del menú
-        let items = (m.menu_menu_items || [])
-          .map(rel => rel.menu_items)
-          .filter(Boolean);
-
-        // 👉 OPCIONAL: si quieres ocultar COMPLETAMENTE los ítems MANUAL, descomenta la siguiente línea:
-        // items = items.filter(mi => (mi.category || '').trim().toUpperCase() !== 'MANUAL');
-
-        // Agrupar por categoría (normalizando)
+        const items = (m.menu_menu_items || []).map(rel => rel.menu_items).filter(Boolean);
         const grouped = items.reduce((acc, it) => {
           const cat = (it.category || "VARIOS").trim().toUpperCase();
           (acc[cat] = acc[cat] || []).push(it);
           return acc;
         }, {});
-
         let html = `<div class="menu-card"><div class="menu-badge">${m.name}</div>`;
 
-        // Ordena categorías alfabéticamente, pero suprime el encabezado para "MANUAL"
         Object.keys(grouped).sort().forEach(cat => {
-          const isManual = cat === 'MANUAL'; // encabezado oculto para manual
-
-          // No renderizamos el título si la categoría es MANUAL
-          if (!isManual) {
-            html += `<div class="category-title">${cat}</div>`;
-          }
-
-          // Render de ítems (siempre)
+          const isManual = cat === 'MANUAL';
+          if (!isManual) { html += `<div class="category-title">${cat}</div>`; }
           grouped[cat].forEach(it => {
             html += `<div class="item-row">
                       <div class="item-name">${(it.name || '').toUpperCase()}</div>
@@ -317,7 +231,9 @@
       });
     }
 
+    /* Init: requiere acceso validado */
     async function init() {
+      if (!sessionStorage.getItem(ACCESS_FLAG)) return; // bloquea carga si no hay flag
       handleVisitors();
       try {
         const menus = await fetchMenusForToday();
@@ -332,7 +248,11 @@
       }
     }
 
-    init();
+    // Si ya validó, oculta overlay y carga
+    if (sessionStorage.getItem(ACCESS_FLAG)) {
+      document.getElementById('accessOverlay').style.display = 'none';
+      init();
+    }
   </script>
 </body>
 </html>
