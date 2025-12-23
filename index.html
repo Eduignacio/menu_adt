@@ -4,420 +4,251 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-  <title>ADT - ADMIN PANEL PRO</title>
-  <!-- Fuente Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <title>MENÚ DIGITAL | CASINO</title>
+  <!-- Fuente Raleway -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap">
   <style>
     :root {
-      --sidebar: #0f172a; --accent: #6366f1; --bg: #f1f5f9; --card: #ffffff;
-      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --radius: 12px;
-      --danger: #ef4444; --warning: #f59e0b; --sidebar-width: 320px;
+      --bg: #161c2d; --card: #2d3250; --border: #424769; --muted: #676f9d;
+      --accent: #f9b17a; --text: #ffffff; --sidebar-width: 300px; --danger:#ef4444;
     }
+    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Raleway', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; display: flex; height: 100vh; background-color: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
 
-    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
+    /* Overlay acceso */
+    #accessOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
+    .access-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .access-card h2 { margin: 0 0 20px; font-size: 18px; letter-spacing: 2px; text-align: center; }
+    .access-card label { display:block; font-size: 10px; font-weight: 900; color: var(--muted); margin-bottom: 6px; }
+    .access-card input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: #2a2f49; color: #fff; text-transform: none !important; }
+    .access-actions { display:flex; gap:10px; margin-top: 15px; }
+    .btn { padding: 12px 16px; border-radius: 10px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; letter-spacing: 1px; }
+    .btn-primary { background: var(--accent); color: var(--bg); flex: 1; }
+    .err { margin-top: 10px; color: var(--danger); font-size: 10px; text-transform:none; text-align:center; display:none; }
 
-    /* LOGIN */
-    #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .login-card { background: white; padding: 40px; border-radius: 24px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-    .login-card input { text-transform: none !important; width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
-    #loginErr { color: #ef4444; font-size: 10px; text-align: center; margin-top: 10px; display: none; text-transform: none; }
+    /* Sidebar */
+    .sidebar { width: var(--sidebar-width); background: var(--card); color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 1001; border-right: 1px solid var(--border); }
+    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; backdrop-filter: blur(4px); }
+    body.sidebar-open .sidebar { transform: translateX(0); }
+    body.sidebar-open .sidebar-overlay { display: block; }
+    .sidebar-header { padding: 50px 20px 30px; text-align: center; }
+    .brand-adt { font-size: 82px; font-weight: 900; color: var(--text); letter-spacing: -5px; line-height: 0.8; margin-bottom: 30px; display: block; user-select: none; }
+    .date-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; border: 1px solid var(--border); border-top: 4px solid var(--accent); text-align: center; margin: 0 20px; }
+    .date-box span { display: block; font-size: 10px; color: var(--muted); margin-bottom: 5px; font-weight: 800; letter-spacing: 1px; }
+    .date-box b { font-size: 20px; color: var(--accent); letter-spacing: 1px; }
 
-    /* SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; transition: 0.3s ease; z-index: 1000; border-right: 1px solid #1e293b; }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-    .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; background: #020617; }
-    .sidebar-brand h2 { margin: 0; font-size: 14px; color: var(--accent); letter-spacing: 2px; }
+    /* Main */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    .top-nav { padding: 15px 25px; background: rgba(22, 28, 45, 0.8); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); }
+    .btn-menu { background: var(--accent); color: var(--bg); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(249,177,122,0.3); transition: 0.2s; }
+    .btn-menu:hover { transform: scale(1.05); background: #ffffff; }
+    .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 30px 20px 100px; }
 
-    .nav-group { padding: 10px; flex-shrink: 0; }
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; margin-bottom: 4px; }
-    .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
+    /* Cards */
+    .menu-card { background: var(--card); border-radius: 30px; padding: 40px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); margin-bottom: 40px; animation: slideUp 0.6s ease-out forwards; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .menu-badge { display: inline-block; background: var(--accent); color: var(--bg); padding: 6px 15px; border-radius: 8px; font-size: 13px; font-weight: 900; margin-bottom: 30px; letter-spacing: 1px; }
+    .category-title { font-size: 11px; font-weight: 900; color: var(--accent); margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing: 2px; }
+    .item-row { padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .item-desc { font-size: 13px; color: var(--muted); text-transform: none; margin-top: 6px; font-weight: 400; }
 
-    /* SELECTOR RÁPIDO MEJORADO */
-    #pickerSection { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
-    .search-cat { padding: 15px; background: #0b1222; }
-    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 10px; color: white; font-size: 11px; outline: none; text-transform: none !important; }
-    
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
-    .cat-accordion { margin-bottom: 6px; }
-    .cat-trigger { 
-        width: 100%; padding: 14px; background: #1e293b; border: none; color: white; 
-        text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 8px;
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .cat-count { font-size: 9px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #94a3b8; }
-    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
-    .cat-accordion.active .cat-content { max-height: 2000px; padding: 10px 0; }
-    
-    .food-card { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155; margin: 0 5px; }
-    .food-card b { display: block; font-size: 10px; margin-bottom: 10px; color: #94a3b8; letter-spacing: 0.5px; }
-    
-    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .btn-quick { 
-        font-size: 8px; padding: 10px; background: #334155; border: none; 
-        color: white; cursor: pointer; border-radius: 6px; font-weight: 800; 
-        transition: 0.2s; text-align: center;
-    }
-    .btn-quick:hover { background: var(--accent); transform: translateY(-1px); }
-    .btn-quick:active { transform: scale(0.9); }
+    .sidebar-footer { margin-top: auto; padding: 30px 20px; text-align: center; border-top: 1px solid var(--border); }
+    .visitor-stat span { display: block; font-size: 9px; color: var(--muted); font-weight: 800; margin-bottom: 5px; }
+    .visitor-stat b { font-size: 18px; color: var(--accent); font-weight: 900; }
 
-    /* MAIN AREA */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .btn-toggle { background: var(--sidebar); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; margin-right: 15px; }
-    
-    .view-port { flex: 1; overflow-y: auto; padding: 30px; scroll-behavior: smooth; }
-    .container { max-width: 1100px; margin: 0 auto; width: 100%; }
-
-    /* CARD CONSTRUCTOR */
-    .card { background: white; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-warning { background: #fff7ed; color: var(--warning); }
-    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
-
-    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); }
-
-    .hidden { display: none !important; }
-    #visitBadge { background: #f1f5f9; color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: 900; border: 1px solid var(--border); }
-
-    @media (max-width: 850px) {
-      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); margin-left: 0 !important; }
-      body.sidebar-open .sidebar { transform: translateX(0); }
-      body.sidebar-open .sidebar-overlay { display: block; }
-    }
+    .loader { text-align: center; padding: 100px; color: var(--muted); font-weight: 800; font-size: 14px; letter-spacing: 2px; }
   </style>
 </head>
-<body id="mainBody">
+<body id="bodyTag">
 
-  <div id="loginOverlay">
-    <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 30px;">ADT ADMIN PRO</h2>
-      <label>EMAIL</label><input id="lEmail" type="email" placeholder="usuario@dominio.com">
-      <label style="margin-top:15px;">PASSWORD</label><input id="lPass" type="password" placeholder="••••••••">
-      <button class="btn btn-primary" style="width: 100%; margin-top: 15px; justify-content: center;" onclick="handleLogin()">ENTRAR</button>
-      <p id="loginErr" style="display:none;">ACCESO DENEGADO</p>
+  <!-- Overlay de acceso -->
+  <div id="accessOverlay">
+    <div class="access-card">
+      <h2>ACCESO AL MENÚ</h2>
+      <label>USUARIO</label>
+      <input id="viewerEmail" type="text" placeholder="correo@empresa.cl" />
+      <div class="access-actions">
+        <button class="btn btn-primary" onclick="handleAccess()">ENTRAR</button>
+      </div>
+      <div id="accessErr" class="err">El usuario no está autorizado.</div>
+      <p style="font-size:10px; color:var(--muted); text-transform:none; text-align:center; margin-top:10px;">
+        El acceso no requiere contraseña, pero valida que tu usuario esté habilitado.
+      </p>
     </div>
   </div>
 
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar-overlay" onclick="document.getElementById('bodyTag').classList.toggle('sidebar-open')"></div>
 
+  <!-- BARRA LATERAL -->
   <aside class="sidebar">
-    <div class="sidebar-brand"><h2>MENU GESTION</h2></div>
-    <nav class="sidebar-nav">
-      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
-      <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
-    </nav>
-    
-    <div id="pickerSection" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
-        <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR PLATO..." oninput="filterCatalog()"></div>
-        <div id="catalogList" class="catalog-scroll"></div>
+    <div class="sidebar-header">
+      <span class="brand-adt">ADT</span>
+      <div class="date-box">
+        <span>CARTILLA PARA HOY</span>
+        <b id="dateDisplay">...</b>
+      </div>
     </div>
 
-    <div class="nav-group admin-bottom">
-      <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
-      <button class="nav-btn hidden" id="navU" onclick="switchView('users')">👥 USUARIOS</button>
+    <div class="sidebar-footer">
+      <div class="visitor-stat">
+          <span>VISITAS AL SITIO</span>
+          <b id="visitorCount">0</b>
+      </div>
+      <p style="font-size: 8px; font-weight: 800; color: var(--muted); letter-spacing: 1px;">
+        CASINO • ACTUALIZACIÓN AUTOMÁTICA
+      </p>
     </div>
   </aside>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <main class="main-area">
-    <header class="top-bar">
-      <div style="display: flex; align-items: center;">
-        <button class="btn-toggle" onclick="toggleSidebar()">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        </button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
-      </div>
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <div id="visitBadge">VISITAS: <span id="vCount">...</span></div>
-        <span id="userBadge" style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
-        <button class="btn" style="background:#e2e8f0; padding: 8px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
-      </div>
-    </header>
+    <div class="top-nav">
+      <button class="btn-menu" onclick="document.getElementById('bodyTag').classList.toggle('sidebar-open')">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">MENÚ DIGITAL ADT</div>
+      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.6;">ADMIN</a>
+    </div>
 
-    <section class="view-port" id="appMain">
-      <div class="container">
-        
-        <!-- CONSTRUCTOR -->
-        <div id="viewBuilder">
-          <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date"></div>
-              <div><label>NOMBRE AUTOMÁTICO</label><div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:8px;">MENÚ DEL DÍA</div></div>
-            </div>
-
-            <div class="tab-nav" style="display:flex; gap:10px; margin:20px 0;">
-                <button class="tab-btn active" id="tabC" onclick="setMode('cat')">📂 CATÁLOGO</button>
-                <button class="tab-btn" id="tabM" onclick="setMode('man')">✍️ MANUAL</button>
-            </div>
-
-            <div id="manArea" class="hidden" style="margin-bottom:20px;">
-                <label>ESCRIBIR PLATO PERSONALIZADO</label>
-                <div style="display:flex; gap:10px;"><input id="mIn" style="flex:1;"><button class="btn btn-primary" onclick="addMan()">AÑADIR</button></div>
-            </div>
-
-            <button class="btn btn-primary" style="width: 100%; padding: 20px; justify-content: center; font-size: 13px;" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
-            
-            <div id="draftList" style="margin-top: 30px;"></div>
-            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px; border:2px dashed var(--border); border-radius:15px; font-size:12px;">EL BORRADOR ESTÁ VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.</div>
-          </div>
-        </div>
-
-        <!-- HISTORIAL -->
-        <div id="viewHistory" class="hidden">
-            <div style="display:flex; justify-content:flex-end; margin-bottom:15px;"><button class="btn btn-danger" onclick="delAll()">🗑️ BORRAR TODO EL HISTORIAL</button></div>
-            <div class="card"><table id="historyTable" style="width:100%"></table></div>
-        </div>
-
-        <!-- CATÁLOGO -->
-        <div id="viewCatalog" class="hidden">
-            <div class="card">
-                <div class="grid-form">
-                    <input type="hidden" id="editCatId">
-                    <div><label>CAT.</label><input id="cCat"></div>
-                    <div><label>ACOMP.</label><input id="cAcomp"></div>
-                    <div><label>OPC 1</label><input id="cO1"></div>
-                    <div><label>OPC 2</label><input id="cO2"></div>
-                    <div><label>OPC 3</label><input id="cO3"></div>
-                    <div><label>OPC 4</label><input id="cO4"></div>
-                    <div style="display:flex; align-items:flex-end; gap:5px;"><button class="btn btn-primary" onclick="saveFood()">GUARDAR</button><button class="btn hidden" id="btnCancelCat" onclick="resetCat()">X</button></div>
-                </div>
-            </div>
-            <div class="card"><table id="catTable" style="width:100%"></table></div>
-        </div>
-
-        <!-- USUARIOS (perm. admin) + VIEWERS (acceso index) -->
-        <div id="viewUsers" class="hidden">
-          <!-- Tabla de permisos existentes (user_permissions) -->
-          <div class="card">
-            <h3 style="margin:0 0 15px; font-size:12px; color:var(--muted);">USUARIOS (PERMISOS ADMIN)</h3>
-            <table id="usrTable" style="width:100%"></table>
-          </div>
-          <!-- NUEVO: Gestión de usuarios autorizados a ver el INDEX (public_viewers) -->
-          <div class="card">
-            <h3 style="margin:0 0 15px; font-size:12px; color:var(--muted);">USUARIOS AUTORIZADOS PARA INDEX</h3>
-            <div style="display:grid; grid-template-columns: 1fr 120px 120px; gap:10px; align-items:end;">
-              <div>
-                <label>EMAIL / USUARIO</label>
-                <input id="vEmail" placeholder="correo@empresa.cl">
-              </div>
-              <div>
-                <label>ACTIVO</label>
-                <select id="vActive">
-                  <option value="true">TRUE</option>
-                  <option value="false">FALSE</option>
-                </select>
-              </div>
-              <div style="display:flex; gap:8px;">
-                <input type="hidden" id="vEditId">
-                <button class="btn btn-primary" onclick="saveViewer()">GUARDAR</button>
-                <button class="btn btn-warning" onclick="resetViewer()">LIMPIAR</button>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <table id="viewersTable" style="width:100%"></table>
-          </div>
-        </div>
-
-      </div>
-    </section>
+    <div class="container" id="menusContainer">
+      <div class="loader" id="status">CARGANDO...</div>
+    </div>
   </main>
 
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co", S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
+    const ACCESS_FLAG = 'adt_view_ok';
 
-    let perms = { cat: false, usr: false }, draft = [], catalogCache = [], historyCache = [], viewersCache = [];
+    /* Acceso sin password: RPC can_view(email) */
+    async function handleAccess() {
+      const input = document.getElementById('viewerEmail');
+      const err = document.getElementById('accessErr');
+      err.style.display = 'none';
 
-    function toggleSidebar() { document.getElementById('mainBody').classList.toggle('sidebar-open'); }
+      const email = (input.value || '').trim().toLowerCase();
+      if (!email) { err.innerText = 'Ingresa tu usuario/correo.'; err.style.display = 'block'; return; }
 
-    async function check() {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        const email = session.user.email.toLowerCase();
-        userBadge.innerText = email;
-        if (email === "eduardoignacio.g.h@gmail.com") { perms.cat = true; perms.usr = true; }
-        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        if (db) { perms.cat = db.can_manage_catalog || perms.cat; perms.usr = db.can_manage_users || perms.usr; }
-        loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
-        if (perms.cat) navC.classList.remove('hidden');
-        if (perms.usr) navU.classList.remove('hidden');
-        loadCatalog(); getStats();
+      try {
+        const { data, error } = await sb.rpc('can_view', { p_email: email });
+        if (error) { console.error(error); err.innerText = 'Error al validar el usuario.'; err.style.display = 'block'; return; }
+        if (data === true) {
+          sessionStorage.setItem(ACCESS_FLAG, email);
+          document.getElementById('accessOverlay').style.display = 'none';
+          init();
+        } else {
+          err.innerText = 'El usuario no está autorizado.'; err.style.display = 'block';
+        }
+      } catch (e) { console.error('handleAccess', e); err.innerText = 'Error inesperado. Intenta nuevamente.'; err.style.display = 'block'; }
+    }
+
+    /* Fecha local Chile */
+    function getTodayString() { return new Date().toLocaleString("en-CA", { timeZone: "America/Santiago" }).split(',')[0]; }
+    function fmtDate(iso) { const [y, m, d] = iso.split("-"); return `${d} / ${m} / ${y}`; }
+
+    /* Visitantes */
+    async function handleVisitors() {
+      try {
+        if (!sessionStorage.getItem('adt_v')) {
+          await sb.rpc('increment_visitors');
+          sessionStorage.setItem('adt_v', '1');
+        }
+        const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+        if (data) document.getElementById('visitorCount').innerText = data.count;
+      } catch (e) { console.error('Visitor stats error:', e); }
+    }
+
+    /* Data */
+    async function fetchMenusForToday() {
+      const today = getTodayString();
+      document.getElementById('dateDisplay').innerText = fmtDate(today);
+
+      let { data: menus, error } = await sb
+        .from('menus')
+        .select(`id, name, menu_date, created_at, menu_menu_items ( menu_items (id, name, category, description) )`)
+        .eq('menu_date', today)
+        .order('created_at', { ascending: true });
+
+      if (error || !menus || menus.length === 0) {
+        const start = `${today}T00:00:00`; const end = `${today}T23:59:59`;
+        try {
+          const res2 = await sb
+            .from('menus')
+            .select(`id, name, menu_date, created_at, menu_menu_items ( menu_items (*) )`)
+            .gte('menu_date', start)
+            .lte('menu_date', end)
+            .order('created_at', { ascending: true });
+          menus = res2.data || [];
+        } catch (e2) { console.error('Fallback range query error:', e2); menus = []; }
+      }
+      return menus;
+    }
+
+    /* Render (oculta encabezado “MANUAL”, muestra sus ítems) */
+    function renderMenus(menus) {
+      const container = document.getElementById('menusContainer');
+      if (!menus || menus.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:100px 20px; color:var(--muted);">
+            <h2 style="font-size:18px; color:var(--text);">PRÓXIMAMENTE</h2>
+            <p style="text-transform:none; font-size:12px;">El menú para hoy aún no ha sido publicado.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      menus.forEach(m => {
+        const items = (m.menu_menu_items || []).map(rel => rel.menu_items).filter(Boolean);
+        const grouped = items.reduce((acc, it) => {
+          const cat = (it.category || "VARIOS").trim().toUpperCase();
+          (acc[cat] = acc[cat] || []).push(it);
+          return acc;
+        }, {});
+        let html = `<div class="menu-card"><div class="menu-badge">${m.name}</div>`;
+
+        Object.keys(grouped).sort().forEach(cat => {
+          const isManual = cat === 'MANUAL';
+          if (!isManual) { html += `<div class="category-title">${cat}</div>`; }
+          grouped[cat].forEach(it => {
+            html += `<div class="item-row">
+                      <div class="item-name">${(it.name || '').toUpperCase()}</div>
+                      ${it.description ? `<div class="item-desc">${it.description}</div>` : ""}
+                     </div>`;
+          });
+        });
+
+        html += `</div>`;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    /* Init: requiere acceso validado */
+    async function init() {
+      if (!sessionStorage.getItem('adt_view_ok')) return; // bloquea carga si no hay flag
+      handleVisitors();
+      try {
+        const menus = await fetchMenusForToday();
+        renderMenus(menus);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('menusContainer').innerHTML = `
+          <div style="text-align:center; padding:100px 20px; color:var(--muted);">
+            <h2 style="font-size:18px; color:var(--text);">ERROR</h2>
+            <p style="text-transform:none; font-size:12px;">No se pudo cargar el menú. Intenta nuevamente.</p>
+          </div>`;
       }
     }
 
-    async function handleLogin() {
-      loginErr.style.display = 'none';
-      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
-      if (error) loginErr.style.display = 'block'; else location.reload();
+    // Si ya validó antes en esta sesión
+    if (sessionStorage.getItem('adt_view_ok')) {
+      document.getElementById('accessOverlay').style.display = 'none';
+      init();
     }
-    function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
-
-    async function getStats() { const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single(); if(data) vCount.innerText = data.count; }
-
-    function switchView(v) {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
-      const btn = {builder:'navB', history:'navH', catalog:'navC', users:'navU'}[v];
-      document.getElementById(btn).classList.add('active');
-      document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
-      viewTitle.innerText = {builder:'🛠 CONSTRUCTOR', history:'📜 HISTORIAL', catalog:'📂 ALIMENTOS', users:'👥 USUARIOS'}[v];
-      if(v === 'catalog') loadCatTable();
-      if(v === 'history') { loadHistory(); }
-      if(v === 'users') { loadUsrTable(); loadViewers(); }
-    }
-
-    function setMode(m) { tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man'); manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man'); }
-
-    async function loadCatalog() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || []; renderCatalog(catalogCache);
-    }
-    function renderCatalog(items) {
-      const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
-      catalogList.innerHTML = Object.keys(grouped).map(cat => `
-        <div class="cat-accordion">
-          <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">
-            <span>${cat}</span>
-            <span class="cat-count">${grouped[cat].length}</span>
-          </button>
-          <div class="cat-content">
-            ${grouped[cat].map(i => `
-              <div class="food-card">
-                <b>${i.acompanamiento}</b>
-                <div class="btn-grid-4">
-                  ${i.pollo ? `<button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo.replace(/'/g,"\\'")}','${cat}')">${i.pollo}</button>` : ''}
-                  ${i.cerdo ? `<button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo.replace(/'/g,"\\'")}','${cat}')">${i.cerdo}</button>` : ''}
-                  ${i.carne_roja ? `<button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja.replace(/'/g,"\\'")}','${cat}')">${i.carne_roja}</button>` : ''}
-                  ${i.opcion_4 ? `<button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.opcion_4.replace(/'/g,"\\'")}','${cat}')">${i.opcion_4}</button>` : ''}
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`).join('');
-    }
-
-    function filterCatalog() {
-        const q = (catSearch.value || "").toUpperCase();
-        renderCatalog(catalogCache.filter(f =>
-          (f.acompanamiento||"").toUpperCase().includes(q) || (f.categoria||"").toUpperCase().includes(q) ||
-          (f.pollo||"").toUpperCase().includes(q) || (f.cerdo||"").toUpperCase().includes(q) ||
-          (f.carne_roja||"").toUpperCase().includes(q) || (f.opcion_4||"").toUpperCase().includes(q)
-        ));
-        if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
-    }
-
-    function addD(a, p, c) { draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c }); renderD(); }
-    function addMan() { if(!mIn.value) return; draft.push({ name: mIn.value.toUpperCase(), category: 'MANUAL' }); mIn.value=""; renderD(); }
-    function renderD() {
-      draftList.innerHTML = draft.map((p, i) => `
-        <div class="draft-item">
-          <div><b>${p.name}</b><br><small style="color:var(--accent); font-weight:800;">${p.category}</small></div>
-          <div style="display:flex; gap:5px;">
-            <button class="btn btn-warning" style="padding:8px" onclick="eD(${i})">✏️</button>
-            <button class="btn btn-primary" style="padding:8px" onclick="draft.push({...draft[${i}]});renderD()">👯</button>
-            <button class="btn btn-danger" style="padding:8px" onclick="draft.splice(${i},1);renderD()">X</button>
-          </div>
-        </div>`).join('');
-      emptyMsg.classList.toggle('hidden', draft.length > 0);
-    }
-    function eD(i) { const n = prompt("EDITAR NOMBRE DEL PLATO:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
-
-    async function publishMenu() {
-      const date = menuDate.value; if(!date || !draft.length) return alert("FALTA INFO");
-      const { data: m, error: eMenu } = await sb.from('menus').insert([{ name: "MENÚ DEL DÍA", menu_date: date }]).select().single();
-      if (eMenu || !m) { console.error(eMenu); return alert("ERROR AL CREAR MENÚ"); }
-      for(const p of draft) {
-        const { data: item, error: eItem } = await sb.from('menu_items').insert([p]).select().single();
-        if (eItem || !item) { console.error(eItem, p); alert("ERROR AL CREAR ITEM"); continue; }
-        const { error: eLink } = await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
-        if (eLink) { console.error(eLink); alert("ERROR AL VINCULAR ITEM"); }
-      }
-      alert("¡MENÚ PUBLICADO EXITOSAMENTE! ✅"); draft = []; renderD();
-    }
-
-    async function loadCatTable() {
-      const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || [];
-      catTable.innerHTML = catalogCache.map(i => `
-        <tr>
-          <td><b>${i.categoria}</b></td>
-          <td>${i.acompanamiento}</td>
-          <td style="text-align:right;">
-            <button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button>
-            <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button>
-            <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button>
-          </td>
-        </tr>`).join('');
-    }
-    function editCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cO1.value = i.pollo||""; cO2.value = i.cerdo||""; cO3.value = i.carne_roja||""; cO4.value = i.opcion_4||""; btnCancelCat.classList.remove('hidden'); }
-    function dupCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = (i.acompanamiento||"") + " (COPIA)"; cO1.value = i.pollo||""; cO2.value = i.cerdo||""; cO3.value = i.carne_roja||""; cO4.value = i.opcion_4||""; btnCancelCat.classList.remove('hidden'); }
-    function resetCat() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cO1.value=""; cO2.value=""; cO3.value=""; cO4.value=""; btnCancelCat.classList.add('hidden'); }
-    async function saveFood() {
-        const p = { categoria:(cCat.value||"").toUpperCase(), acompanamiento:(cAcomp.value||"").toUpperCase(), pollo:(cO1.value||"").toUpperCase(), cerdo:(cO2.value||"").toUpperCase(), carne_roja:(cO3.value||"").toUpperCase(), opcion_4:(cO4.value||"").toUpperCase() };
-        if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value); else await sb.from('food_catalog').insert([p]);
-        resetCat(); loadCatTable(); loadCatalog();
-    }
-    async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalog(); } }
-
-    async function loadHistory() {
-      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').order('menu_date', {ascending:false});
-      historyCache = data || [];
-      historyTable.innerHTML = historyCache.map(m => {
-        const pts = (m.menu_menu_items||[]).map(rel => rel.menu_items ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
-        return `<tr><td style="width:120px;"><b>${m.menu_date}</b></td><td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px;">${pts}</div></td><td style="text-align:right;"><button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button><button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`;
-      }).join('');
-    }
-    function reUseMenu(id) { const m = historyCache.find(x => x.id === id); draft = (m.menu_menu_items||[]).map(rel => ({ name: rel.menu_items?.name||"", category: rel.menu_items?.category||"VARIOS" })); switchView('builder'); renderD(); alert("MENÚ CARGADO ✅"); }
-    async function delMenu(id) { if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); } }
-    async function delAll() { if(confirm("¿BORRAR TODO?")) { await sb.from('menu_menu_items').delete().neq('id',0); await sb.from('menus').delete().neq('id',0); loadHistory(); } }
-
-    /* USUARIOS (permisos admin existentes) */
-    async function loadUsrTable() {
-      const { data } = await sb.from('user_permissions').select('*').order('email');
-      usrTable.innerHTML = (data||[]).map(u => `
-        <tr>
-          <td style="text-transform:none; padding:15px;">${u.email}</td>
-          <td style="text-align:right; padding:15px;">
-            <button class="btn btn-danger" onclick="delUsr(${u.id})">QUITAR</button>
-          </td>
-        </tr>`).join('');
-    }
-    async function delUsr(id) { if(confirm("¿Quitar permisos?")) { await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); } }
-
-    /* VIEWERS (acceso index) */
-    function resetViewer() { vEditId.value=""; vEmail.value=""; vActive.value="true"; }
-    async function loadViewers() {
-      const { data } = await sb.from('public_viewers').select('*').order('email');
-      viewersCache = data || [];
-      viewersTable.innerHTML = viewersCache.map(v => `
-        <tr>
-          <td style="text-transform:none; padding:10px;">${v.email}</td>
-          <td style="padding:10px;">${v.active ? 'TRUE' : 'FALSE'}</td>
-          <td style="text-align:right; padding:10px;">
-            <button class="btn btn-warning" onclick="editViewer(${v.id})">✏️</button>
-            <button class="btn btn-danger" onclick="delViewer(${v.id})">🗑️</button>
-          </td>
-        </tr>`).join('');
-    }
-    function editViewer(id) { const v = viewersCache.find(x => x.id===id); if(!v) return; vEditId.value = v.id; vEmail.value = v.email; vActive.value = v.active ? "true" : "false"; }
-    async function saveViewer() {
-      const email = (vEmail.value||"").trim().toLowerCase(); const active = vActive.value==="true";
-      if(!email) return alert("EMAIL/USUARIO ES OBLIGATORIO");
-      if(vEditId.value) await sb.from('public_viewers').update({ email, active }).eq('id', vEditId.value);
-      else await sb.from('public_viewers').insert([{ email, active }]);
-      resetViewer(); loadViewers();
-    }
-    async function delViewer(id) { if(confirm("¿Eliminar usuario autorizado?")) { await sb.from('public_viewers').delete().eq('id', id); loadViewers(); } }
-
-    document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = (e.target.value||"").toUpperCase(); });
-    menuDate.value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
-    check();
   </script>
 </body>
 </html>
