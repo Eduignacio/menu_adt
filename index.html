@@ -46,6 +46,11 @@
     .item-name { font-size: 17px; font-weight: 800; color: var(--text); line-height: 1.3; }
     .item-desc { font-size: 12px; color: var(--muted); text-transform: none; margin-top: 6px; font-weight: 500; }
 
+    /* CONTADOR ESTILO */
+    .visitor-box { margin-top: auto; padding: 20px; text-align: center; border-top: 1px solid #1e293b; }
+    .visitor-box span { display: block; font-size: 9px; color: #475569; font-weight: 800; margin-bottom: 4px; }
+    .visitor-box b { font-size: 14px; color: var(--accent); font-weight: 900; }
+
     @media (max-width: 900px) {
       .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
     }
@@ -58,12 +63,19 @@
     <div class="sidebar-header">
       <span class="brand-adt">ADT</span>
       <div class="date-box">
-        <span>HOY</span>
+        <span>MENÚ PARA HOY</span>
         <b id="dateDisplay">...</b>
       </div>
     </div>
-    <div style="margin-top:auto; padding:20px; text-align:center; opacity:0.4; font-size:9px; font-weight:800;">
-        LIMPIEZA AUTOMÁTICA A LAS 00:00 HRS
+    
+    <!-- CONTADOR DE VISITAS -->
+    <div class="visitor-box">
+      <span>PERSONAS HAN VISITADO EL SITIO</span>
+      <b id="visitorCount">...</b>
+    </div>
+
+    <div style="padding:20px; text-align:center; opacity:0.4; font-size:8px; font-weight:800;">
+        LIMPIEZA AUTOMÁTICA 00:00 HRS
     </div>
   </aside>
 
@@ -97,8 +109,23 @@
       return `${year}-${month}-${day}`;
     }
 
+    async function handleVisitors() {
+      // 1. Incrementar solo una vez por sesión del navegador
+      if (!sessionStorage.getItem('adt_visited')) {
+        await sb.rpc('increment_visitors');
+        sessionStorage.setItem('adt_visited', 'true');
+      }
+
+      // 2. Obtener el número actual
+      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+      if (data) {
+        document.getElementById('visitorCount').innerText = data.count;
+      }
+    }
+
     async function init() {
-      const container = document.getElementById('menusContainer');
+      handleVisitors(); // Manejar el contador de visitas
+
       const today = getTodayString();
       const [y, m, d] = today.split("-");
       document.getElementById('dateDisplay').innerText = `${d}-${m}-${y}`;
@@ -108,8 +135,9 @@
         .select(`id, name, menu_menu_items ( menu_items (*) )`)
         .eq('menu_date', today);
 
+      const container = document.getElementById('menusContainer');
       if (error || !menus || menus.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:80px 20px; color:var(--muted);"><h2>NO HAY MENÚ PARA HOY</h2><p>DISPONIBLE DESPUÉS DE LAS 08:30 AM.</p></div>`;
+        container.innerHTML = `<div style="text-align:center; padding:80px 20px; color:var(--muted);"><h2>NO HAY MENÚ DISPONIBLE</h2><p>DISPONIBLE DESPUÉS DE LAS 08:30 AM.</p></div>`;
         return;
       }
 
