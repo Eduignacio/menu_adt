@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>MENÚ DIGITAL | ADT</title>
   <!-- Fuente Raleway de alto impacto -->
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #161c2d;           /* Fondo profundo */
@@ -46,6 +47,9 @@
       position: fixed; inset: 0; background: rgba(0,0,0,0.7); 
       display: none; z-index: 1000; backdrop-filter: blur(4px); 
     }
+
+    body.sidebar-open .sidebar { transform: translateX(0); }
+    body.sidebar-open .sidebar-overlay { display: block; }
 
     body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
 
@@ -153,8 +157,6 @@
 
     @media (max-width: 900px) {
       .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
-      body.sidebar-open .sidebar { transform: translateX(0); }
-      body.sidebar-open .sidebar-overlay { display: block; }
       .brand-adt { font-size: 60px; }
     }
   </style>
@@ -191,7 +193,7 @@
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
       <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">MENÚ DIGITAL ADT</div>
-      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.4;">ADMIN</a>
+      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.6;">ADMIN</a>
     </div>
 
     <div class="container" id="menusContainer">
@@ -199,6 +201,7 @@
     </div>
   </main>
 
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
@@ -210,62 +213,110 @@
     // Fecha local Chile
     function getTodayString() {
       const now = new Date();
-      return now.toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
+      return now.toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0]; // YYYY-MM-DD
     }
-
     function fmtDate(iso) {
       const [y, m, d] = iso.split("-");
       return `${d} / ${m} / ${y}`;
     }
 
     async function handleVisitors() {
-      if (!sessionStorage.getItem('adt_v')) {
-        await sb.rpc('increment_visitors');
-        sessionStorage.setItem('adt_v', '1');
+      try {
+        if (!sessionStorage.getItem('adt_v')) {
+          await sb.rpc('increment_visitors');
+          sessionStorage.setItem('adt_v', '1');
+        }
+        const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+        if (data) document.getElementById('visitorCount').innerText = data.count;
+      } catch (e) {
+        console.error('Visitor stats error:', e);
       }
-      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-      if (data) document.getElementById('visitorCount').innerText = data.count;
     }
 
-    async function init() {
-      handleVisitors();
-      const container = document.getElementById('menusContainer');
+    async function fetchMenusForToday() {
       const today = getTodayString();
       document.getElementById('dateDisplay').innerText = fmtDate(today);
 
-      const { data: menus, error } = await sb
+      // Intento A: filtro exacto por DATE (ideal si menus.menu_date es DATE)
+      let { data: menus, error } = await sb
         .from('menus')
-        .select(`id, name, menu_menu_items ( menu_items (*) )`)
+        .select(`id, name, menu_date, created_at, menu_menu_items ( menu_items (id, name, category, description) )`)
         .eq('menu_date', today)
         .order('created_at', { ascending: true });
 
+      // Fallback B: si no hay menús, intenta rango horario (por si la columna fuese TIMESTAMP/TIMESTAMPTZ)
       if (error || !menus || menus.length === 0) {
+        const start = `${today}T00:00:00`;
+        const end   = `${today}T23:59:59`;
+        try {
+          const res2 = await sb
+            .from('menus')
+            .select(`id, name, menu_date, created_at, menu_menu_items ( menu_items (*) )`)
+            .gte('menu_date', start)
+            .lte('menu_date', end)
+            .order('created_at', { ascending: true });
+          menus = res2.data || [];
+        } catch (e2) {
+          console.error('Fallback range query error:', e2);
+          menus = [];
+        }
+      }
+
+      return menus;
+    }
+
+    function renderMenus(menus) {
+      const container = document.getElementById('menusContainer');
+      if (!menus || menus.length === 0) {
         container.innerHTML = `
-            <div style="text-align:center; padding:100px 20px; color:var(--muted);">
-                <h2 style="font-size:18px; color:var(--text);">PRÓXIMAMENTE</h2>
-                <p style="text-transform:none; font-size:12px;">El menú para hoy aún no ha sido publicado.</p>
-            </div>`;
+          <div style="text-align:center; padding:100px 20px; color:var(--muted);">
+            <h2 style="font-size:18px; color:var(--text);">PRÓXIMAMENTE</h2>
+            <p style="text-transform:none; font-size:12px;">El menú para hoy aún no ha sido publicado.</p>
+          </div>`;
         return;
       }
 
       container.innerHTML = "";
       menus.forEach(m => {
-        const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
-        const grouped = items.reduce((acc, it) => {
-          (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it);
-          return acc;
-        }, {});
-        
+        const items = (m.menu_menu_items || []).map(rel => rel.menu_items).filter(Boolean);
         let html = `<div class="menu-card"><div class="menu-badge">${m.name}</div>`;
-        Object.keys(grouped).sort().forEach(cat => {
+
+        if (!items.length) {
+          html += `<div class="item-row"><div class="item-name">Sin ítems asociados</div></div>`;
+        } else {
+          const grouped = items.reduce((acc, it) => {
+            (acc[it.category || "VARIOS"] = acc[it.category || "VARIOS"] || []).push(it);
+            return acc;
+          }, {});
+          Object.keys(grouped).sort().forEach(cat => {
             html += `<div class="category-title">${cat}</div>`;
             grouped[cat].forEach(it => {
-                html += `<div class="item-row"><div class="item-name">${it.name}</div>${it.description ? `<div class="item-desc">${it.description}</div>` : ""}</div>`;
+              html += `<div class="item-row">
+                        <div class="item-name">${it.name}</div>
+                        ${it.description ? `<div class="item-desc">${it.description}</div>` : ""}
+                       </div>`;
             });
-        });
+          });
+        }
+
         html += `</div>`;
         container.insertAdjacentHTML('beforeend', html);
       });
+    }
+
+    async function init() {
+      handleVisitors();
+      try {
+        const menus = await fetchMenusForToday();
+        renderMenus(menus);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('menusContainer').innerHTML = `
+          <div style="text-align:center; padding:100px 20px; color:var(--muted);">
+            <h2 style="font-size:18px; color:var(--text);">ERROR</h2>
+            <p style="text-transform:none; font-size:12px;">No se pudo cargar el menú. Intenta nuevamente.</p>
+          </div>`;
+      }
     }
 
     init();
