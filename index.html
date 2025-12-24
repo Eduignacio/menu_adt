@@ -6,114 +6,32 @@
   <title>MENÚ DIGITAL | ADT</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;900&display=swap">
   <style>
-    :root {
-      --bg: #161c2d; --card: #2d3250; --border: #424769; --muted: #676f9d; --accent: #f9b17a; --text: #ffffff;
-      --sidebar-width: 300px; --danger: #ef4444;
-      --pad: clamp(12px, 2.8vw, 24px); --radius: 18px;
-    }
-
-    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Raleway', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
-
-    /* ACCESO */
-    #accessOverlay {
-      position: fixed; inset: 0; background: var(--bg);
-      display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
-    }
-    .access-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 24px;
-      padding: 40px; width: 100%; max-width: 400px; text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-    .brand-big { font-size: 60px; font-weight: 900; letter-spacing: -4px; color: white; margin-bottom: 20px; display: block; line-height: 0.8; }
-    .access-card input {
-      width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05); color: #fff; text-transform: none !important; 
-      font-size: 16px; font-weight: 700; margin-bottom: 20px; outline: none;
-    }
-    .btn-access { width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 12px; font-weight: 900; color: var(--bg); cursor: pointer; transition: 0.2s; }
-    .btn-access:hover { transform: scale(1.02); }
-
-    /* SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background: var(--card); color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease, margin-left 0.3s ease; z-index: 1001; border-right: 1px solid var(--border); }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; backdrop-filter: blur(4px); }
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-    body.sidebar-open .sidebar-overlay { display: block; }
-
-    .sidebar-header { padding: 50px 20px 30px; text-align: center; }
-    .date-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border-top: 4px solid var(--accent); text-align: center; margin: 0 20px; }
-    .date-box span { display: block; font-size: 10px; color: var(--muted); margin-bottom: 5px; font-weight: 800; }
-    .date-box b { font-size: 18px; color: var(--accent); }
-
-    /* MAIN */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-    .top-nav { padding: 15px 25px; background: rgba(22,28,45,0.8); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); }
-    .btn-menu { background: var(--accent); color: var(--bg); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(249,177,122,0.3); }
-
-    .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 20px; }
-    .menu-card { background: var(--card); border-radius: 30px; padding: 40px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin-bottom: 30px; animation: slideUp 0.5s ease-out; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    .menu-badge { display: inline-block; background: var(--accent); color: var(--bg); padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 900; margin-bottom: 25px; }
-    .category-title { font-size: 11px; font-weight: 900; color: var(--accent); margin: 30px 0 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; letter-spacing: 2px; }
-    .item-name { font-size: 19px; font-weight: 800; color: #fff; line-height: 1.3; }
-    .item-desc { font-size: 12px; color: var(--muted); text-transform: none; margin-top: 6px; }
-
-    .visitor-box { margin-top: auto; padding: 30px 20px; text-align: center; border-top: 1px solid var(--border); }
-    .visitor-box span { display: block; font-size: 9px; color: var(--muted); font-weight: 800; }
-    .visitor-box b { font-size: 16px; color: var(--accent); }
-
+    :root { --bg: #161c2d; --card: #2d3250; --border: #424769; --accent: #f9b17a; --text: #ffffff; }
+    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Raleway', sans-serif; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: white; display: flex; align-items: center; justify-content: center; }
+    #accessOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .access-card { background: var(--card); padding: 40px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .access-card input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; text-transform: none !important; font-size: 16px; margin-bottom: 20px; outline: none; }
+    .btn-access { width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 12px; font-weight: 900; color: var(--bg); cursor: pointer; }
+    #mainContent { width: 100%; max-width: 800px; padding: 40px 20px; opacity: 0; transition: 0.5s; display: none; }
     .hidden { display: none !important; }
-
-    @media (max-width: 900px) {
-      .sidebar { position: fixed; height: 100vh; transform: translateX(-100%); }
-      body.sidebar-open .sidebar { transform: translateX(0); }
-    }
   </style>
 </head>
-<body id="bodyTag">
+<body>
 
-  <!-- ACCESO -->
   <div id="accessOverlay">
     <div class="access-card">
-      <span class="brand-big">ADT</span>
-      <p style="font-size: 10px; color: var(--muted); margin-bottom: 25px; font-weight: 800;">INGRESA TU USUARIO</p>
-      <input id="userInput" type="email" placeholder="ejemplo@correo.com">
+      <h1 style="font-size:60px; letter-spacing:-4px; margin-bottom:20px;">ADT</h1>
+      <p style="font-size: 10px; color: #94a3b8; margin-bottom: 25px;">INGRESA TU USUARIO</p>
+      <input id="userInput" type="email" placeholder="correo@ejemplo.com">
       <button class="btn-access" onclick="verify()">ACCEDER AL MENÚ</button>
-      <p id="accessErr" style="color: var(--danger); font-size: 11px; margin-top: 15px; display: none; text-transform: none;">USUARIO NO AUTORIZADO</p>
+      <p id="err" style="color:#ef4444; font-size:11px; margin-top:15px; display:none; text-transform:none;">USUARIO NO AUTORIZADO</p>
     </div>
   </div>
 
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <span class="brand-big" style="font-size: 72px;">ADT</span>
-      <div class="date-box">
-        <span>MENÚ PARA HOY</span>
-        <b id="dateDisplay">...</b>
-      </div>
-    </div>
-    <div class="visitor-box">
-        <span>VISITAS TOTALES</span>
-        <b id="vCount">0</b>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main-area">
-    <div class="top-nav">
-      <button class="btn-menu" onclick="toggleSidebar()">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      </button>
-      <div style="font-weight: 900; color: var(--muted); font-size: 11px; letter-spacing: 1px;">CARTILLA DIGITAL</div>
-      <a href="admin.html" style="font-size: 9px; color: var(--accent); text-decoration: none; font-weight: 800; opacity: 0.5;">ADM</a>
-    </div>
-
-    <div class="container" id="menusContainer">
-      <div style="text-align:center; padding:100px 20px; color:var(--muted); font-weight:800;">CARGANDO...</div>
-    </div>
+  <main id="mainContent">
+      <div id="dateDisplay" style="text-align:center; font-weight:900; color:var(--accent); margin-bottom:30px; font-size: 20px;">...</div>
+      <div id="menusContainer"></div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -121,10 +39,7 @@
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co", S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    function toggleSidebar() { document.getElementById('bodyTag').classList.toggle('sidebar-open'); }
-
-    // Verificar si ya accedió antes
-    const saved = localStorage.getItem('adt_v_ok');
+    const saved = localStorage.getItem('adt_session');
     if (saved) { checkDB(saved); }
 
     async function verify() {
@@ -136,62 +51,47 @@
     async function checkDB(email) {
       const { data } = await sb.from('user_permissions').select('can_access_index').eq('email', email).maybeSingle();
       if (data && data.can_access_index) {
-        localStorage.setItem('adt_v_ok', email);
+        localStorage.setItem('adt_session', email);
         accessOverlay.classList.add('hidden');
-        init();
+        mainContent.style.display = "block";
+        setTimeout(() => mainContent.style.opacity = "1", 50);
+        loadMenus();
       } else {
-        localStorage.removeItem('adt_v_ok');
-        accessErr.style.display = "block";
+        localStorage.removeItem('adt_session');
+        err.style.display = "block";
       }
     }
 
-    async function init() {
-      // 1. Contador de visitas
-      if (!sessionStorage.getItem('adt_visited')) {
-        await sb.rpc('increment_visitors');
-        sessionStorage.setItem('adt_visited', '1');
-      }
-      const { data: stats } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-      if (stats) vCount.innerText = stats.count;
-
-      // 2. Fecha Chile
+    async function loadMenus() {
       const today = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
       const [y, m, d] = today.split("-");
       dateDisplay.innerText = `${d} / ${m} / ${y}`;
 
-      // 3. Menús de hoy
+      if (!sessionStorage.getItem('v_inc')) { await sb.rpc('increment_visitors'); sessionStorage.setItem('v_inc','1'); }
+
       const { data: menus } = await sb.from('menus').select(`id, name, menu_menu_items(menu_items(*))`).eq('menu_date', today);
-      const container = document.getElementById('menusContainer');
-      
       if (!menus || menus.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:100px 20px; color:var(--muted); font-weight:800;">EL MENÚ AÚN NO ESTÁ DISPONIBLE</div>';
+        menusContainer.innerHTML = '<div style="text-align:center; padding:50px;">EL MENÚ AÚN NO ESTÁ DISPONIBLE</div>';
         return;
       }
 
-      container.innerHTML = "";
-      menus.forEach(m => {
-        const items = m.menu_menu_items.map(r => r.menu_items).filter(Boolean);
+      menusContainer.innerHTML = menus.map(m => {
+        const items = m.menu_menu_items.map(rel => rel.menu_items).filter(Boolean);
         const grouped = items.reduce((acc, i) => { 
             const cat = (i.category || "VARIOS").trim().toUpperCase();
-            (acc[cat] = acc[cat] || []).push(i); 
-            return acc; 
+            (acc[cat] = acc[cat] || []).push(i); return acc; 
         }, {});
         
-        let html = `<div class="menu-card"><div class="menu-badge">${m.name}</div>`;
+        let body = `<div style="background:var(--card); padding:40px; border-radius:30px; border:1px solid var(--border); margin-bottom:30px;"><h2 style="color:var(--accent); font-size:24px; border-left:4px solid var(--accent); padding-left:15px; margin-bottom:25px;">${m.name}</h2>`;
         Object.keys(grouped).sort().forEach(cat => {
-            // No mostrar el título si es la categoría "MANUAL"
-            if (cat !== 'MANUAL') {
-                html += `<div class="category-title">${cat}</div>`;
-            }
+            if(cat !== 'MANUAL') body += `<div style="color:#94a3b8; font-size:11px; margin:30px 0 10px; border-bottom:1px solid var(--border); padding-bottom:5px;">${cat}</div>`;
             grouped[cat].forEach(it => {
-                html += `<div style="margin-bottom:20px;"><div class="item-name">${it.name}</div>${it.description ? `<div class="item-desc">${it.description}</div>` : ""}</div>`;
+                body += `<div style="margin-bottom:20px;"><div style="font-size:18px; font-weight:700;">${it.name}</div><div style="font-size:12px; color:#676f9d; text-transform:none;">${it.description || ''}</div></div>`;
             });
         });
-        container.insertAdjacentHTML('beforeend', html + '</div>');
-      });
+        return body + '</div>';
+      }).join('');
     }
-
-    function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
   </script>
 </body>
 </html>
