@@ -1,105 +1,451 @@
-async function loginViewer(){
-  loginErr.style.display = "none";
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MENÚ DEL DÍA</title>
 
-  const u = (viewerUser.value || "").trim().toUpperCase();
-  if(!u) return showErr("INGRESA USUARIO");
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  const { data, error } = await sb
-    .from('viewer_users')
-    .select('id, username, approved')
-    .eq('username', u)
-    .limit(1);
-
-  if(error) return showErr("ERROR: " + error.message);
-
-  // ✅ CASO 1: NO EXISTE -> CREAR SOLICITUD PENDIENTE Y ESCUCHAR APROBACIÓN
-  if(!data || !data.length){
-    await createAccessRequest(u);
-    subscribeToApproval(u); // escucha INSERT/UPDATE en viewer_users
-    return showErr("USUARIO NO REGISTRADO. SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
-  }
-
-  const viewer = data[0];
-
-  // ✅ CASO 2: EXISTE PERO NO APROBADO -> SOLICITUD + ESPERAR
-  if(viewer.approved !== true){
-    await createAccessRequest(u, viewer.id);
-    subscribeToApproval(u);
-    return showErr("ACCESO PENDIENTE DE APROBACIÓN ⏳");
-  }
-
-  // ✅ CASO 3: EXISTE Y APROBADO -> ENTRA
-  localStorage.setItem("viewer_user", viewer.username);
-  localStorage.setItem("viewer_user_id", viewer.id);
-
-  loginOverlay.style.display = "none";
-  whoTxt.innerText = "USUARIO: " + viewer.username;
-
-  loadMenusForDate(getToday());
-}
-
-async function createAccessRequest(username, viewerUserId=null){
-  // Evita duplicar solicitudes pendientes
-  const { data: existing, error: exErr } = await sb
-    .from('viewer_access_requests')
-    .select('id, status')
-    .eq('username', username)
-    .eq('status', 'pending')
-    .limit(1);
-
-  if(exErr){
-    console.warn(exErr);
-    return;
-  }
-
-  if(existing && existing.length) return;
-
-  const payload = { username, status: 'pending' };
-  if(viewerUserId) payload.viewer_user_id = viewerUserId;
-
-  const { error } = await sb.from('viewer_access_requests').insert([payload]);
-  if(error) console.warn(error);
-}
-
-function subscribeToApproval(username){
-  // escucha tanto INSERT como UPDATE para cuando el admin cree o apruebe
-  try{
-    if(window.approveChannel){
-      sb.removeChannel(window.approveChannel);
-      window.approveChannel = null;
+  <style>
+    :root{
+      --bg:#0b1222;
+      --card:#0f172a;
+      --soft:#111c33;
+      --accent:#6366f1;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --border:#1f2a44;
     }
-  }catch(_){}
 
-  window.approveChannel = sb.channel('viewer-approval-' + username)
-    .on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'viewer_users',
-      filter: `username=eq.${username}`
-    }, (payload) => {
-      const row = payload?.new || {};
-      if(row.approved === true){
-        localStorage.setItem("viewer_user", row.username);
-        localStorage.setItem("viewer_user_id", row.id);
+    *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
+
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#050815,#0b1222);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:16px;
+      padding:16px 18px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:linear-gradient(90deg, rgba(99,102,241,.20), rgba(15,23,42,.70));
+    }
+
+    .brand{ font-weight:900; letter-spacing:1px; }
+    .who{ font-size:12px; color:var(--muted); }
+
+    .btn{
+      border:none; cursor:pointer; font-weight:900;
+      border-radius:12px; padding:10px 14px;
+    }
+    .btn-logout{
+      background:#1f2a44; color:var(--text);
+      border:1px solid #2b3b63;
+    }
+
+    .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
+
+    .menu-card{
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      background:rgba(15,23,42,.92);
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    }
+
+    .menu-head{
+      padding:16px 18px;
+      background:linear-gradient(90deg, rgba(99,102,241,.30), rgba(16,185,129,.12));
+      border-bottom:1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+
+    .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; }
+    .menu-date{ font-size:12px; color:var(--muted); }
+
+    .items{ padding:16px 18px; display:grid; gap:10px; }
+
+    .item{
+      background:rgba(17,28,51,.65);
+      border:1px solid rgba(31,42,68,.9);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .item b{ display:block; font-size:13px; }
+    .item small{ color:var(--muted); font-weight:700; }
+
+    /* LOGIN */
+    #loginOverlay{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(5,8,21,.86);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+      padding: 18px;
+    }
+
+    .login-card{
+      width:420px; max-width:95vw;
+      background:rgba(15,23,42,.96);
+      border:1px solid rgba(31,42,68,.9);
+      border-radius:20px;
+      padding:22px;
+      box-shadow: 0 30px 70px rgba(0,0,0,.55);
+    }
+
+    .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
+
+    .login-card label{
+      font-size:11px; color:var(--muted);
+      font-weight:800; letter-spacing:.8px;
+      display:block; margin-bottom:8px;
+    }
+
+    .login-card input{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(31,42,68,.9);
+      background:rgba(17,28,51,.65);
+      color:var(--text);
+      font-weight:900;
+      letter-spacing:1px;
+      outline:none;
+      text-transform:uppercase;
+    }
+
+    .login-card button{
+      width:100%;
+      margin-top:14px;
+      background:var(--accent);
+      color:white;
+      padding:14px;
+      border-radius:14px;
+    }
+
+    #loginErr{
+      margin-top:10px;
+      color:#fb7185;
+      font-size:12px;
+      font-weight:800;
+      display:none;
+    }
+
+    .hint{ margin-top:10px; font-size:11px; color:var(--muted); }
+
+    .req-box{
+      margin-top:14px;
+      padding:12px;
+      border-radius:14px;
+      border:1px dashed rgba(99,102,241,.45);
+      background: rgba(99,102,241,.08);
+    }
+    .req-title{ font-weight:900; font-size:12px; margin-bottom:8px; letter-spacing:.6px; }
+    .req-sub{ font-size:11px; color:var(--muted); margin-bottom:10px; text-transform:none; }
+    .req-btn{ background:#1f2a44; border:1px solid #2b3b63; color:var(--text); }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginOverlay">
+    <div class="login-card">
+      <h2>VER MENÚ</h2>
+
+      <label>USUARIO</label>
+      <input id="viewerUser" placeholder="EJ: GATO">
+
+      <button class="btn" onclick="loginViewer()">ENTRAR</button>
+
+      <div id="loginErr"></div>
+
+      <!-- CAJA DE SOLICITUD -->
+      <div class="req-box" id="reqBox" style="display:none;">
+        <div class="req-title">¿QUIERES ACCESO AL MENÚ DIGITAL?</div>
+        <div class="req-sub">Si tu usuario no está registrado, puedes enviar una solicitud para que el admin lo apruebe.</div>
+        <button class="btn req-btn" onclick="requestAccess()">ENVIAR SOLICITUD</button>
+      </div>
+
+      <div class="hint">* Acceso solo con usuario (sin contraseña).</div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="brand">MENÚ DEL DÍA</div>
+        <div class="who" id="whoTxt">NO LOGUEADO</div>
+      </div>
+      <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
+    </div>
+
+    <div class="grid" id="menusGrid"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* =========================
+       SUPABASE
+    ========================= */
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const sb = window.supabase.createClient(S_URL, S_KEY);
+
+    let lastTypedUser = "";
+    let approveChannel = null;
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function getToday(){
+      const d = new Date();
+      return d.getFullYear() + "-" +
+             String(d.getMonth()+1).padStart(2,'0') + "-" +
+             String(d.getDate()).padStart(2,'0');
+    }
+
+    function showErr(msg){
+      loginErr.style.display = "block";
+      loginErr.innerText = msg;
+    }
+
+    function hideErr(){
+      loginErr.style.display = "none";
+      loginErr.innerText = "";
+    }
+
+    function normUser(){
+      return (viewerUser.value || "").trim().toUpperCase();
+    }
+
+    /* Mostrar botón de solicitud cuando se escribe algo */
+    viewerUser.addEventListener('input', () => {
+      lastTypedUser = normUser();
+      reqBox.style.display = lastTypedUser ? "block" : "none";
+      hideErr();
+    });
+
+    /* =========================
+       SOLICITAR ACCESO (SIN LOGIN)
+    ========================= */
+    async function requestAccess(){
+      hideErr();
+
+      const u = normUser();
+      if(!u) return showErr("INGRESA USUARIO");
+
+      // Inserta solicitud pending (sin duplicar)
+      await createAccessRequest(u, null);
+
+      // Escucha aprobación
+      subscribeToApproval(u);
+
+      showErr("SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
+    }
+
+    /* =========================
+       LOGIN VIEWER
+    ========================= */
+    async function loginViewer(){
+      hideErr();
+
+      const u = normUser();
+      if(!u) return showErr("INGRESA USUARIO");
+
+      lastTypedUser = u;
+
+      const { data, error } = await sb
+        .from('viewer_users')
+        .select('id, username, approved')
+        .eq('username', u)
+        .limit(1);
+
+      if(error) return showErr("ERROR: " + error.message);
+
+      // NO EXISTE -> permite solicitar
+      if(!data || !data.length){
+        reqBox.style.display = "block";
+        await createAccessRequest(u, null);
+        subscribeToApproval(u);
+        return showErr("USUARIO NO REGISTRADO. SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
+      }
+
+      const viewer = data[0];
+
+      // EXISTE PERO NO APROBADO
+      if(viewer.approved !== true){
+        reqBox.style.display = "block";
+        await createAccessRequest(u, viewer.id);
+        subscribeToApproval(u);
+        return showErr("ACCESO PENDIENTE DE APROBACIÓN ⏳");
+      }
+
+      // OK
+      localStorage.setItem("viewer_user", viewer.username);
+      localStorage.setItem("viewer_user_id", viewer.id);
+
+      loginOverlay.style.display = "none";
+      whoTxt.innerText = "USUARIO: " + viewer.username;
+
+      loadMenusForDate(getToday());
+    }
+
+    async function createAccessRequest(username, viewerUserId=null){
+      // evita duplicar solicitudes pending
+      const { data: existing, error: exErr } = await sb
+        .from('viewer_access_requests')
+        .select('id, status')
+        .eq('username', username)
+        .eq('status', 'pending')
+        .limit(1);
+
+      if(exErr){
+        console.warn(exErr);
+        return;
+      }
+      if(existing && existing.length) return;
+
+      const payload = { username, status: 'pending' };
+      if(viewerUserId) payload.viewer_user_id = viewerUserId;
+
+      const { error } = await sb.from('viewer_access_requests').insert([payload]);
+      if(error) console.warn(error);
+    }
+
+    function subscribeToApproval(username){
+      // resetea canal anterior
+      try{
+        if(approveChannel){
+          sb.removeChannel(approveChannel);
+          approveChannel = null;
+        }
+      }catch(_){}
+
+      approveChannel = sb.channel('viewer-approval-' + username)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'viewer_users',
+          filter: `username=eq.${username}`
+        }, (payload) => {
+          const row = payload?.new || {};
+          if(row.approved === true){
+            localStorage.setItem("viewer_user", row.username);
+            localStorage.setItem("viewer_user_id", row.id);
+            loginOverlay.style.display = "none";
+            whoTxt.innerText = "USUARIO: " + row.username;
+            loadMenusForDate(getToday());
+          }
+        })
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'viewer_users',
+          filter: `username=eq.${username}`
+        }, (payload) => {
+          const row = payload?.new || {};
+          if(row.approved === true){
+            localStorage.setItem("viewer_user", row.username);
+            localStorage.setItem("viewer_user_id", row.id);
+            loginOverlay.style.display = "none";
+            whoTxt.innerText = "USUARIO: " + row.username;
+            loadMenusForDate(getToday());
+          }
+        })
+        .subscribe();
+    }
+
+    function checkViewerSession(){
+      const u = localStorage.getItem("viewer_user");
+      if(u){
         loginOverlay.style.display = "none";
-        whoTxt.innerText = "USUARIO: " + row.username;
+        whoTxt.innerText = "USUARIO: " + u;
         loadMenusForDate(getToday());
       }
-    })
-    .on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'viewer_users',
-      filter: `username=eq.${username}`
-    }, (payload) => {
-      const row = payload?.new || {};
-      if(row.approved === true){
-        localStorage.setItem("viewer_user", row.username);
-        localStorage.setItem("viewer_user_id", row.id);
-        loginOverlay.style.display = "none";
-        whoTxt.innerText = "USUARIO: " + row.username;
-        loadMenusForDate(getToday());
+    }
+
+    function logoutViewer(){
+      localStorage.clear();
+      location.reload();
+    }
+
+    /* =========================
+       CARGA MENÚS DEL DÍA
+    ========================= */
+    async function loadMenusForDate(dateStr){
+      menusGrid.innerHTML = "";
+
+      const { data, error } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .eq('menu_date', dateStr)
+        .order('id', { ascending:true });
+
+      if(error){
+        menusGrid.innerHTML = `
+          <div class="menu-card">
+            <div class="items">
+              <b>ERROR</b>
+              <small>${error.message}</small>
+            </div>
+          </div>`;
+        return;
       }
-    })
-    .subscribe();
-}
+
+      const menus = data || [];
+
+      if(!menus.length){
+        menusGrid.innerHTML = `
+          <div class="menu-card">
+            <div class="menu-head">
+              <div class="menu-title">SIN MENÚ PUBLICADO</div>
+              <div class="menu-date">${dateStr}</div>
+            </div>
+            <div class="items">
+              <div class="item">
+                <b>HOY NO HAY MENÚ</b>
+                <small>CONSULTA MÁS TARDE</small>
+              </div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      menusGrid.innerHTML = menus.map(m => {
+        const items = (m.menu_menu_items || [])
+          .map(rel => rel.menu_items)
+          .filter(Boolean);
+
+        const itemsHtml = items.length
+          ? items.map(i => `
+              <div class="item">
+                <b>${(i.name||'').toUpperCase()}</b>
+                <small>${(i.category||'').toUpperCase()}</small>
+              </div>
+            `).join('')
+          : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
+
+        return `
+          <div class="menu-card">
+            <div class="menu-head">
+              <div class="menu-title">${(m.name||'MENÚ').toUpperCase()}</div>
+              <div class="menu-date">${m.menu_date}</div>
+            </div>
+            <div class="items">${itemsHtml}</div>
+          </div>`;
+      }).join('');
+    }
+
+    checkViewerSession();
+  </script>
+</body>
+</html>
