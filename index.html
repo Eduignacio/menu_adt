@@ -4,94 +4,235 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MENÚ DEL DÍA</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0b1222; --card:#0f172a; --soft:#111c33; --accent:#6366f1;
-      --text:#e2e8f0; --muted:#94a3b8; --border:#1f2a44;
+      --bg:#0b1222;
+      --card:#0f172a;
+      --soft:#111c33;
+      --accent:#6366f1;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --border:#1f2a44;
     }
-    *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
-    body{ margin:0; background:linear-gradient(180deg,#050815,#0b1222); color:var(--text); min-height:100vh; }
-    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+
+    *{
+      box-sizing:border-box;
+      font-family:Inter,system-ui,sans-serif;
+    }
+
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#050815,#0b1222);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px;
+    }
+
+    /* TOP */
     .top{
-      display:flex; justify-content:space-between; align-items:center; gap:16px;
-      padding:16px 18px; border:1px solid var(--border); border-radius:18px;
-      background:linear-gradient(90deg,rgba(99,102,241,.20),rgba(15,23,42,.70));
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:16px 18px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:linear-gradient(
+        90deg,
+        rgba(99,102,241,.20),
+        rgba(15,23,42,.70)
+      );
     }
-    .brand{ font-weight:900; letter-spacing:1px; }
-    .who{ font-size:12px; color:var(--muted); }
-    .btn{ border:none; cursor:pointer; font-weight:900; border-radius:12px; padding:10px 14px; }
-    .btn-logout{ background:#1f2a44; color:var(--text); border:1px solid #2b3b63; }
-    .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:1px;
+    }
+
+    .who{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      border-radius:12px;
+      padding:10px 14px;
+    }
+
+    .btn-logout{
+      background:#1f2a44;
+      color:var(--text);
+      border:1px solid #2b3b63;
+    }
+
+    /* MENUS */
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
     .menu-card{
-      border:1px solid var(--border); border-radius:18px; overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
       background:rgba(15,23,42,.92);
       box-shadow: 0 18px 40px rgba(0,0,0,.35);
     }
+
     .menu-head{
       padding:16px 18px;
-      background:linear-gradient(90deg,rgba(99,102,241,.30),rgba(16,185,129,.12));
+      background:linear-gradient(
+        90deg,
+        rgba(99,102,241,.30),
+        rgba(16,185,129,.12)
+      );
       border-bottom:1px solid var(--border);
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
     }
-    .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; }
-    .menu-date{ font-size:12px; color:var(--muted); }
-    .items{ padding:16px 18px; display:grid; gap:10px; }
+
+    .menu-title{
+      font-weight:900;
+      font-size:14px;
+      letter-spacing:.8px;
+    }
+
+    .menu-date{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .items{
+      padding:16px 18px;
+      display:grid;
+      gap:10px;
+    }
+
     .item{
       background:rgba(17,28,51,.65);
       border:1px solid rgba(31,42,68,.9);
       border-radius:14px;
-      padding:12px 12px;
+      padding:12px;
     }
-    .item b{ display:block; font-size:13px; }
-    .item small{ color:var(--muted); font-weight:700; }
 
-    /* LOGIN OVERLAY */
+    .item b{
+      display:block;
+      font-size:13px;
+    }
+
+    .item small{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    /* LOGIN */
     #loginOverlay{
-      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-      background:rgba(5,8,21,.86); backdrop-filter: blur(6px);
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(5,8,21,.86);
+      backdrop-filter: blur(6px);
       z-index:9999;
     }
+
     .login-card{
-      width:360px; max-width:92vw;
+      width:360px;
+      max-width:92vw;
       background:rgba(15,23,42,.96);
       border:1px solid rgba(31,42,68,.9);
       border-radius:20px;
       padding:22px;
       box-shadow: 0 30px 70px rgba(0,0,0,.55);
     }
-    .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
-    .login-card label{ font-size:11px; color:var(--muted); font-weight:800; letter-spacing:.8px; display:block; margin-bottom:8px; }
+
+    .login-card h2{
+      margin:0 0 14px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
+
+    .login-card label{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.8px;
+      display:block;
+      margin-bottom:8px;
+    }
+
     .login-card input{
-      width:100%; padding:14px; border-radius:14px;
+      width:100%;
+      padding:14px;
+      border-radius:14px;
       border:1px solid rgba(31,42,68,.9);
       background:rgba(17,28,51,.65);
-      color:var(--text); font-weight:900; letter-spacing:1px;
+      color:var(--text);
+      font-weight:900;
+      letter-spacing:1px;
       outline:none;
       text-transform:uppercase;
     }
+
     .login-card button{
-      width:100%; margin-top:14px;
-      background:var(--accent); color:white;
-      padding:14px; border-radius:14px;
+      width:100%;
+      margin-top:14px;
+      background:var(--accent);
+      color:white;
+      padding:14px;
+      border-radius:14px;
     }
-    #loginErr{ margin-top:10px; color:#fb7185; font-size:12px; font-weight:800; display:none; }
-    .hint{ margin-top:10px; font-size:11px; color:var(--muted); }
+
+    #loginErr{
+      margin-top:10px;
+      color:#fb7185;
+      font-size:12px;
+      font-weight:800;
+      display:none;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:11px;
+      color:var(--muted);
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
       <h2>VER MENÚ</h2>
+
       <label>USUARIO</label>
       <input id="viewerUser" placeholder="EJ: GATO">
+
       <button class="btn" onclick="loginViewer()">ENTRAR</button>
+
       <div id="loginErr"></div>
       <div class="hint">* Acceso solo con usuario (sin contraseña).</div>
     </div>
   </div>
 
+  <!-- APP -->
   <div class="wrap">
     <div class="top">
       <div>
@@ -106,19 +247,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // =========================
-    // CONFIG SUPABASE
-    // =========================
+    /* =========================
+       SUPABASE
+    ========================= */
     const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    // =========================
-    // HELPERS
-    // =========================
-    function getToday() {
+    /* =========================
+       HELPERS
+    ========================= */
+    function getToday(){
       const d = new Date();
-      return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+      return d.getFullYear() + "-" +
+             String(d.getMonth()+1).padStart(2,'0') + "-" +
+             String(d.getDate()).padStart(2,'0');
     }
 
     function showErr(msg){
@@ -126,11 +269,12 @@
       loginErr.innerText = msg;
     }
 
-    // =========================
-    // LOGIN VIEWER (solo usuario)
-    // =========================
+    /* =========================
+       LOGIN VIEWER
+    ========================= */
     async function loginViewer(){
       loginErr.style.display = "none";
+
       const u = (viewerUser.value || "").trim().toUpperCase();
       if(!u) return showErr("INGRESA USUARIO");
 
@@ -148,6 +292,7 @@
 
       loginOverlay.style.display = "none";
       whoTxt.innerText = "USUARIO: " + data[0].username;
+
       loadMenusForDate(getToday());
     }
 
@@ -161,14 +306,13 @@
     }
 
     function logoutViewer(){
-      localStorage.removeItem("viewer_user");
-      localStorage.removeItem("viewer_user_id");
+      localStorage.clear();
       location.reload();
     }
 
-    // =========================
-    // CARGA MENÚS DEL DÍA (TODOS)
-    // =========================
+    /* =========================
+       CARGA MENÚS DEL DÍA
+    ========================= */
     async function loadMenusForDate(dateStr){
       menusGrid.innerHTML = "";
 
@@ -176,14 +320,21 @@
         .from('menus')
         .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
         .eq('menu_date', dateStr)
-        .order('id', { ascending: true });
+        .order('id', { ascending:true });
 
       if(error){
-        menusGrid.innerHTML = `<div class="menu-card"><div class="items"><b>ERROR:</b> <small>${error.message}</small></div></div>`;
+        menusGrid.innerHTML = `
+          <div class="menu-card">
+            <div class="items">
+              <b>ERROR</b>
+              <small>${error.message}</small>
+            </div>
+          </div>`;
         return;
       }
 
       const menus = data || [];
+
       if(!menus.length){
         menusGrid.innerHTML = `
           <div class="menu-card">
@@ -192,7 +343,10 @@
               <div class="menu-date">${dateStr}</div>
             </div>
             <div class="items">
-              <div class="item"><b>HOY NO HAY MENÚ</b><small>CONSULTA MÁS TARDE</small></div>
+              <div class="item">
+                <b>HOY NO HAY MENÚ</b>
+                <small>CONSULTA MÁS TARDE</small>
+              </div>
             </div>
           </div>`;
         return;
@@ -219,8 +373,7 @@
               <div class="menu-date">${m.menu_date}</div>
             </div>
             <div class="items">${itemsHtml}</div>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
