@@ -68,7 +68,7 @@
     table { width: 100%; border-collapse: collapse; }
     td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 12px; font-weight: 700; vertical-align: top; }
 
-    /* ===== ACCESOS UI PRO ===== */
+    /* ===== ACCESOS UI PRO (NO CAMBIAR ESTÉTICA) ===== */
     .access-card{
       border: 1px solid rgba(99,102,241,.18);
       box-shadow: 0 18px 40px rgba(2,6,23,.08);
@@ -354,7 +354,7 @@
                   </div>
 
                   <div class="actions">
-                    <button class="btn btn-primary" onclick="saveViewer()">GUARDAR USUARIO</button>
+                    <button class="btn btn-primary" id="btnSaveViewer" onclick="saveViewer()">GUARDAR USUARIO</button>
                     <button class="btn btn-ghost" id="btnCancelViewer" onclick="resetViewerForm()" style="display:none;">CANCELAR</button>
                   </div>
 
@@ -393,6 +393,9 @@
 
     let adminsCache = [];
     let viewersCache2 = [];
+
+    // FIX: estado tabla viewer_users
+    let viewerTableReady = null; // null = no verificado; true/false luego
 
     // =======================
     // AUTH
@@ -762,7 +765,7 @@
       aIdx.checked = on;
     }
 
-    // ADMINS (Auth + user_permissions)
+    // ADMINS
     async function loadAdmins(){
       const { data } = await sb.from('user_permissions').select('*').order('email');
       adminsCache = data || [];
@@ -788,7 +791,7 @@
       const u = adminsCache.find(x => (x.email || '').toLowerCase() === (email || '').toLowerCase());
       if(!u) return;
 
-      editAdmId.value = u.email; // usamos email como ID lógico
+      editAdmId.value = u.email;
       aEmail.value = u.email;
       aCat.checked = !!u.can_manage_catalog;
       aUsr.checked = !!u.can_manage_users;
@@ -822,7 +825,6 @@
         can_access_index: !!aIdx.checked
       };
 
-      // Crear admin (Auth) SOLO si es nuevo
       if(!editAdmId.value){
         if(!aPass.value) return alert("FALTA PASSWORD");
         const { error: signErr } = await sb.auth.signUp({ email, password: aPass.value });
@@ -842,24 +844,93 @@
     async function delAdmin(idOrEmail){
       if(!confirm("¿QUITAR ADMIN?")) return;
 
-      // Intentar borrar por id (si existe)
       let delRes = await sb.from('user_permissions').delete().eq('id', idOrEmail);
-
-      // Fallback: borrar por email
       if(delRes?.error){
         delRes = await sb.from('user_permissions').delete().eq('email', String(idOrEmail).toLowerCase());
       }
-
       if(delRes?.error) return alert("ERROR BORRANDO: " + delRes.error.message);
       loadAdmins();
     }
 
-    // VIEWERS (solo username) CRUD en tabla viewer_users
-    async function loadViewers(){
-      const { data, error } = await sb.from('viewer_users').select('*').order('username');
-      if(error){ console.error(error); return; }
-      viewersCache2 = data || [];
+    // =======================
+    // VIEWERS (FIX DEL ERROR)
+    // =======================
+    function isMissingTableError(err){
+      const msg = String(err?.message || err || '').toLowerCase();
+      return msg.includes("could not find the table") || msg.includes("schema cache") || msg.includes("viewer_users");
+    }
 
+    function renderViewerMissingTable(){
+      viewerTableBody.innerHTML = `
+        <tr>
+          <td style="text-transform:none;">
+            <b style="text-transform:none; color:#ef4444;">NO EXISTE LA TABLA viewer_users</b><br><br>
+            <span style="text-transform:none; color:#64748b; font-size:11px;">
+              Crea la tabla en Supabase (SQL Editor) y luego recarga la página.<br>
+              Si ya la creaste, ve a <b>Supabase → API</b> y pulsa <b>Reload schema</b>.
+            </span><br><br>
+            <span style="text-transform:none; color:#0f172a; font-size:11px;">
+              SQL:
+            </span>
+            <div style="margin-top:8px; background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:10px; font-size:10px; text-transform:none; white-space:pre-wrap;">
+create table if not exists public.viewer_users (
+  id bigserial primary key,
+  username text not null unique,
+  created_at timestamptz not null default now()
+);
+alter table public.viewer_users enable row level security;
+drop policy if exists "viewer_users_auth_all" on public.viewer_users;
+create policy "viewer_users_auth_all"
+on public.viewer_users
+for all
+to authenticated
+using (true)
+with check (true);
+            </div>
+          </td>
+        </tr>
+      `;
+      // deshabilita guardado si no hay tabla
+      const btn = document.getElementById('btnSaveViewer');
+      if(btn) btn.disabled = true;
+    }
+
+    async function detectViewerTable(){
+      if(viewerTableReady !== null) return viewerTableReady;
+      const { error } = await sb.from('viewer_users').select('id').limit(1);
+      if(error){
+        viewerTableReady = false;
+        return false;
+      }
+      viewerTableReady = true;
+      return true;
+    }
+
+    async function loadViewers(){
+      // re-habilita botón si corresponde
+      const btn = document.getElementById('btnSaveViewer');
+      if(btn) btn.disabled = false;
+
+      // verificación (evita “schema cache” rompiendo todo)
+      const ok = await detectViewerTable();
+      if(!ok){
+        renderViewerMissingTable();
+        return;
+      }
+
+      const { data, error } = await sb.from('viewer_users').select('*').order('username');
+      if(error){
+        if(isMissingTableError(error)){
+          viewerTableReady = false;
+          renderViewerMissingTable();
+          return;
+        }
+        console.error(error);
+        viewerTableBody.innerHTML = `<tr><td style="text-transform:none; color:#ef4444;">ERROR CARGANDO: ${String(error.message||error)}</td></tr>`;
+        return;
+      }
+
+      viewersCache2 = data || [];
       viewerTableBody.innerHTML = viewersCache2.map(v => `
         <tr>
           <td>
@@ -877,6 +948,10 @@
     }
 
     function editViewer(id){
+      if(viewerTableReady === false){
+        alert("NO EXISTE LA TABLA viewer_users EN SUPABASE.");
+        return;
+      }
       const v = viewersCache2.find(x => x.id === id);
       if(!v) return;
       editViewerId.value = v.id;
@@ -891,15 +966,36 @@
     }
 
     async function saveViewer(){
+      const ok = await detectViewerTable();
+      if(!ok){
+        renderViewerMissingTable();
+        alert("ERROR CREANDO: NO EXISTE LA TABLA viewer_users (O EL SCHEMA CACHE NO ESTÁ ACTUALIZADO).");
+        return;
+      }
+
       const username = (vUser.value || '').trim().toUpperCase();
       if(!username) return alert("FALTA USUARIO");
 
       if(editViewerId.value){
         const { error } = await sb.from('viewer_users').update({ username }).eq('id', editViewerId.value);
-        if(error) return alert("ERROR ACTUALIZANDO: " + error.message);
+        if(error){
+          if(isMissingTableError(error)){
+            viewerTableReady = false;
+            renderViewerMissingTable();
+            return alert("ERROR: LA TABLA viewer_users NO ESTÁ DISPONIBLE (SCHEMA CACHE).");
+          }
+          return alert("ERROR ACTUALIZANDO: " + error.message);
+        }
       } else {
         const { error } = await sb.from('viewer_users').insert([{ username }]);
-        if(error) return alert("ERROR CREANDO: " + error.message);
+        if(error){
+          if(isMissingTableError(error)){
+            viewerTableReady = false;
+            renderViewerMissingTable();
+            return alert("ERROR: LA TABLA viewer_users NO ESTÁ DISPONIBLE (SCHEMA CACHE).");
+          }
+          return alert("ERROR CREANDO: " + error.message);
+        }
       }
 
       alert("USUARIO DE VISUALIZACIÓN GUARDADO ✅");
@@ -908,9 +1004,23 @@
     }
 
     async function delViewer(id){
+      const ok = await detectViewerTable();
+      if(!ok){
+        renderViewerMissingTable();
+        alert("NO SE PUEDE BORRAR: NO EXISTE viewer_users.");
+        return;
+      }
+
       if(!confirm("¿BORRAR USUARIO?")) return;
       const { error } = await sb.from('viewer_users').delete().eq('id', id);
-      if(error) return alert("ERROR BORRANDO: " + error.message);
+      if(error){
+        if(isMissingTableError(error)){
+          viewerTableReady = false;
+          renderViewerMissingTable();
+          return alert("ERROR: viewer_users NO DISPONIBLE (SCHEMA CACHE).");
+        }
+        return alert("ERROR BORRANDO: " + error.message);
+      }
       loadViewers();
     }
 
