@@ -254,6 +254,9 @@
     const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
+    // Realtime channel (para entrar automáticamente cuando aprueben)
+    let approveChannel = null;
+
     /* =========================
        HELPERS
     ========================= */
@@ -269,8 +272,62 @@
       loginErr.innerText = msg;
     }
 
+    async function ensureApprovalRequest(viewerUserId, username){
+      // Crea solicitud PENDIENTE si no existe una pendiente
+      // (si la tabla no existe o hay RLS, mostramos mensaje igual)
+      try{
+        const { data: existing, error: exErr } = await sb
+          .from('viewer_access_requests')
+          .select('id, status')
+          .eq('viewer_user_id', viewerUserId)
+          .in('status', ['pending'])
+          .limit(1);
+
+        if(exErr) throw exErr;
+
+        if(!existing || !existing.length){
+          const { error: insErr } = await sb
+            .from('viewer_access_requests')
+            .insert([{ viewer_user_id: viewerUserId, username, status: 'pending' }]);
+          if(insErr) throw insErr;
+        }
+      }catch(e){
+        // No rompemos el flujo: igual queda "pendiente"
+        console.warn("No se pudo crear solicitud:", e?.message || e);
+      }
+    }
+
+    function subscribeToApproval(username){
+      // Evita duplicar canal
+      if(approveChannel){
+        try{ sb.removeChannel(approveChannel); }catch(_){}
+        approveChannel = null;
+      }
+
+      approveChannel = sb.channel('viewer-approval-' + username)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'viewer_users',
+          filter: `username=eq.${username}`
+        }, (payload) => {
+          const newRow = payload?.new || {};
+          if(newRow.approved === true){
+            // Auto-login
+            localStorage.setItem("viewer_user", username);
+            localStorage.setItem("viewer_user_id", newRow.id);
+
+            loginOverlay.style.display = "none";
+            whoTxt.innerText = "USUARIO: " + username;
+
+            loadMenusForDate(getToday());
+          }
+        })
+        .subscribe();
+    }
+
     /* =========================
-       LOGIN VIEWER
+       LOGIN VIEWER (con aprobación)
     ========================= */
     async function loginViewer(){
       loginErr.style.display = "none";
@@ -280,28 +337,57 @@
 
       const { data, error } = await sb
         .from('viewer_users')
-        .select('id, username')
+        .select('id, username, approved')
         .eq('username', u)
         .limit(1);
 
       if(error) return showErr("ERROR: " + error.message);
       if(!data || !data.length) return showErr("USUARIO NO AUTORIZADO");
 
-      localStorage.setItem("viewer_user", data[0].username);
-      localStorage.setItem("viewer_user_id", data[0].id);
+      const viewer = data[0];
+
+      // Si NO está aprobado -> crear solicitud y quedarse esperando
+      if(viewer.approved !== true){
+        await ensureApprovalRequest(viewer.id, viewer.username);
+        subscribeToApproval(viewer.username);
+        return showErr("ACCESO PENDIENTE DE APROBACIÓN (YA SE ENVIÓ SOLICITUD)");
+      }
+
+      // Aprobado -> entra normal
+      localStorage.setItem("viewer_user", viewer.username);
+      localStorage.setItem("viewer_user_id", viewer.id);
 
       loginOverlay.style.display = "none";
-      whoTxt.innerText = "USUARIO: " + data[0].username;
+      whoTxt.innerText = "USUARIO: " + viewer.username;
 
       loadMenusForDate(getToday());
     }
 
-    function checkViewerSession(){
+    async function checkViewerSession(){
       const u = localStorage.getItem("viewer_user");
-      if(u){
-        loginOverlay.style.display = "none";
-        whoTxt.innerText = "USUARIO: " + u;
-        loadMenusForDate(getToday());
+      const id = localStorage.getItem("viewer_user_id");
+
+      if(u && id){
+        // Verifica que siga aprobado
+        try{
+          const { data, error } = await sb
+            .from('viewer_users')
+            .select('id, username, approved')
+            .eq('id', Number(id))
+            .limit(1);
+
+          if(error || !data || !data.length || data[0].approved !== true){
+            // Si lo bloquearon, afuera
+            localStorage.clear();
+            return;
+          }
+
+          loginOverlay.style.display = "none";
+          whoTxt.innerText = "USUARIO: " + u;
+          loadMenusForDate(getToday());
+        }catch(e){
+          console.warn(e);
+        }
       }
     }
 
