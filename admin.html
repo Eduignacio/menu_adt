@@ -13,7 +13,7 @@
     }
     * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
-    
+
     #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .login-card { background: white; padding: 40px; border-radius: 24px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
     .login-card input { text-transform: none !important; width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
@@ -28,10 +28,9 @@
     .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid #1e293b; }
     .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; }
     .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
-    
+
     #pickerSection { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
     .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
-    .search-cat { padding: 10px; background: #0b1222; }
     .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; text-transform: none !important; }
 
     .cat-accordion { margin-bottom: 6px; }
@@ -55,6 +54,7 @@
     .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .btn-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
     .tab-btn { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-weight: 800; font-size: 11px; cursor: pointer; }
     .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -66,6 +66,7 @@
     td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 12px; font-weight: 700; }
   </style>
 </head>
+
 <body id="mainBody">
 
   <div id="loginOverlay">
@@ -87,11 +88,14 @@
       <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
       <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
     </div>
+
     <div id="pickerSection" class="catalog-scroll">
-        <div class="nav-group-title" style="padding-left: 5px;">SELECCIÓN RÁPIDA</div>
-        <input type="text" id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()" style="width:100%; background:#1e293b; border:none; color:white; padding:10px; border-radius:8px; margin-bottom:10px; font-size:10px; text-transform: none;">
-        <div id="catalogList"></div>
+      <div class="nav-group-title" style="padding-left: 5px;">SELECCIÓN RÁPIDA</div>
+      <input type="text" id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"
+        style="width:100%; background:#1e293b; border:none; color:white; padding:10px; border-radius:8px; margin-bottom:10px; font-size:10px; text-transform: none;">
+      <div id="catalogList"></div>
     </div>
+
     <div class="admin-bottom" style="margin-top:auto; border-top:1px solid #1e293b; padding-bottom: 20px;">
       <div class="nav-group-title">ADMINISTRADOR</div>
       <div class="sidebar-nav">
@@ -104,7 +108,9 @@
   <main class="main-area">
     <header class="top-bar">
       <div style="display: flex; align-items: center;">
-        <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-hidden')"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+        <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-hidden')">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
         <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
       </div>
       <div style="display: flex; align-items: center; gap: 15px;">
@@ -116,68 +122,96 @@
 
     <div class="view-port" id="appMain">
       <div class="container">
-        
+
+        <!-- BUILDER -->
         <div id="viewBuilder">
           <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date"></div>
-              <div><label>NOMBRE AUTOMÁTICO</label><div style="font-size:20px; font-weight:900; color:var(--accent); margin-top:8px;">MENÚ DEL DÍA</div></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+              <div>
+                <label>FECHA DEL MENÚ</label>
+                <input id="menuDate" type="date">
+              </div>
+
+              <div>
+                <label>NOMBRE DEL MENÚ (EJ: ALMUERZO / CENA / EVENTO)</label>
+                <input id="menuName" type="text" value="MENÚ DEL DÍA">
+                <div style="font-size:10px; margin-top:8px; color:var(--muted); text-transform:none;">
+                  Puedes publicar varios menús el mismo día. Si ya existe el mismo nombre, se guarda como (2), (3), etc.
+                </div>
+              </div>
             </div>
-            
+
             <div class="tab-nav" style="display:flex; gap:10px; margin:20px 0;">
-                <button class="tab-btn active" id="tabC" onclick="setBuilderMode('cat')">📂 CATÁLOGO</button>
-                <button class="tab-btn" id="tabM" onclick="setBuilderMode('man')">✍️ MANUAL</button>
+              <button class="tab-btn active" id="tabC" onclick="setBuilderMode('cat')">📂 CATÁLOGO</button>
+              <button class="tab-btn" id="tabM" onclick="setBuilderMode('man')">✍️ MANUAL</button>
             </div>
 
             <div id="manArea" class="hidden">
-                <label>ESCRIBIR PLATO PERSONALIZADO</label>
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <input id="mIn" style="flex:1;"><button class="btn btn-primary" onclick="addMan()">AÑADIR</button>
-                </div>
+              <label>ESCRIBIR PLATO PERSONALIZADO</label>
+              <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <input id="mIn" style="flex:1;">
+                <button class="btn btn-primary" onclick="addMan()">AÑADIR</button>
+              </div>
             </div>
 
-            <button class="btn btn-primary" id="btnPublish" style="width: 100%; margin-top: 20px; padding: 18px; justify-content: center;" onclick="publishMenu()">PUBLICAR MENÚ AHORA</button>
+            <button class="btn btn-primary" id="btnPublish"
+              style="width:100%; margin-top:20px; padding:18px; justify-content:center;"
+              onclick="publishMenu()">PUBLICAR MENÚ AHORA</button>
+
             <div id="draftList" style="margin-top: 25px;"></div>
             <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px;">SELECCIONA PLATOS A LA IZQUIERDA</div>
           </div>
         </div>
 
-        <div id="viewHistory" class="hidden"><div style="display:flex;justify-content:flex-end;margin-bottom:15px;"><button class="btn btn-danger" onclick="delAllMenus()">🗑️ BORRAR HISTORIAL</button></div><div class="card"><table><tbody id="historyTable"></tbody></table></div></div>
-        
-        <div id="viewCatalog" class="hidden">
-            <div class="card" style="border-top: 4px solid var(--accent);">
-                <h3 id="catFormTitle" style="margin-top:0; font-size:13px; color: var(--accent);">GESTIÓN DEL CATÁLOGO</h3>
-                <div class="grid-form" style="margin-bottom: 15px;">
-                    <input type="hidden" id="editCatId">
-                    <div><label>CAT.</label><input id="cCat"></div>
-                    <div><label>ACOMP.</label><input id="cAcomp"></div>
-                    <div><label>OPC 1</label><input id="cO1"></div>
-                    <div><label>OPC 2</label><input id="cO2"></div>
-                    <div><label>OPC 3</label><input id="cO3"></div>
-                    <div><label>OPC 4</label><input id="cO4"></div>
-                    <div style="display:flex;justify-content:flex-end;gap:5px;grid-column:1/-1;"><button class="btn btn-ghost hidden" id="btnCancelCat" onclick="resetCatForm()">✕</button><button class="btn btn-primary" onclick="saveFood()">GUARDAR</button></div>
-                </div>
-            </div>
-            <div class="table-wrap"><table><tbody id="catTable"></tbody></table></div>
+        <!-- HISTORY -->
+        <div id="viewHistory" class="hidden">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+            <button class="btn btn-danger" onclick="delAllMenus()">🗑️ BORRAR HISTORIAL</button>
+          </div>
+          <div class="card">
+            <table><tbody id="historyTable"></tbody></table>
+          </div>
         </div>
 
-        <div id="viewUsers" class="hidden">
-            <div class="card" style="border-top: 4px solid var(--sidebar);">
-                <h3 id="uFormTitle" style="margin:0 0 15px; font-size:13px;">GESTIÓN ACCESOS</h3>
-                <div class="grid-form">
-                    <input type="hidden" id="editUsrId">
-                    <div><label>EMAIL / USUARIO</label><input id="uEmail" type="text" style="text-transform:none;"></div>
-                    <div><label id="uPassLabel">PASSWORD (PARA ADMINS)</label><input id="uPass" type="password" style="text-transform:none;"></div>
-                    <div style="grid-column: 1 / -1; display:flex; gap:15px; align-items:center;">
-                        <label style="margin:0;"><input type="checkbox" id="pCat"> ADM. CATÁLOGO</label>
-                        <label style="margin:0;"><input type="checkbox" id="pUsr"> ADM. USUARIOS</label>
-                        <label style="margin:0;"><input type="checkbox" id="pIdx"> ACCESO INDEX</label>
-                        <button class="btn btn-primary" onclick="saveUsr()" style="margin-left:auto;">GUARDAR</button>
-                        <button class="btn btn-ghost hidden" id="btnCancelUsr" onclick="resetUsrForm()">X</button>
-                    </div>
-                </div>
+        <!-- CATALOG -->
+        <div id="viewCatalog" class="hidden">
+          <div class="card" style="border-top: 4px solid var(--accent);">
+            <h3 id="catFormTitle" style="margin-top:0; font-size:13px; color: var(--accent);">GESTIÓN DEL CATÁLOGO</h3>
+            <div class="grid-form" style="margin-bottom: 15px;">
+              <input type="hidden" id="editCatId">
+              <div><label>CAT.</label><input id="cCat"></div>
+              <div><label>ACOMP.</label><input id="cAcomp"></div>
+              <div><label>OPC 1</label><input id="cO1"></div>
+              <div><label>OPC 2</label><input id="cO2"></div>
+              <div><label>OPC 3</label><input id="cO3"></div>
+              <div><label>OPC 4</label><input id="cO4"></div>
+              <div style="display:flex; justify-content:flex-end; gap:5px; grid-column:1/-1;">
+                <button class="btn hidden" id="btnCancelCat" onclick="resetCatForm()">✕</button>
+                <button class="btn btn-primary" onclick="saveFood()">GUARDAR</button>
+              </div>
             </div>
-            <div class="table-wrap"><table><tbody id="usrTableBody"></tbody></table></div>
+          </div>
+          <div class="table-wrap"><table><tbody id="catTable"></tbody></table></div>
+        </div>
+
+        <!-- USERS -->
+        <div id="viewUsers" class="hidden">
+          <div class="card" style="border-top: 4px solid var(--sidebar);">
+            <h3 id="uFormTitle" style="margin:0 0 15px; font-size:13px;">GESTIÓN ACCESOS</h3>
+            <div class="grid-form">
+              <input type="hidden" id="editUsrId">
+              <div><label>EMAIL / USUARIO</label><input id="uEmail" type="text" style="text-transform:none;"></div>
+              <div><label id="uPassLabel">PASSWORD (PARA ADMINS)</label><input id="uPass" type="password" style="text-transform:none;"></div>
+              <div style="grid-column: 1 / -1; display:flex; gap:15px; align-items:center;">
+                <label style="margin:0;"><input type="checkbox" id="pCat"> ADM. CATÁLOGO</label>
+                <label style="margin:0;"><input type="checkbox" id="pUsr"> ADM. USUARIOS</label>
+                <label style="margin:0;"><input type="checkbox" id="pIdx"> ACCESO INDEX</label>
+                <button class="btn btn-primary" onclick="saveUsr()" style="margin-left:auto;">GUARDAR</button>
+                <button class="btn hidden" id="btnCancelUsr" onclick="resetUsrForm()">X</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap"><table><tbody id="usrTableBody"></tbody></table></div>
         </div>
 
       </div>
@@ -186,146 +220,455 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co", S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
+    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    let userPerms = { cat: false, usr: false, idx: false }, draft = [], catalogCache = [], historyCache = [], usersCache = [];
+    let userPerms = { cat: false, usr: false, idx: false },
+        draft = [], catalogCache = [], historyCache = [], usersCache = [];
 
     async function check() {
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
         const email = session.user.email.toLowerCase();
         userBadge.innerText = email;
-        if (email === "eduardoignacio.g.h@gmail.com" || email === "gzrojas.mi@gmail.com") { userPerms.cat = true; userPerms.usr = true; userPerms.idx = true; }
-        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        if (db) { 
-            userPerms.cat = db.can_manage_catalog || userPerms.cat; 
-            userPerms.usr = db.can_manage_users || userPerms.usr; 
-            userPerms.idx = db.can_access_index || userPerms.idx;
+
+        if (email === "eduardoignacio.g.h@gmail.com" || email === "gzrojas.mi@gmail.com") {
+          userPerms.cat = true; userPerms.usr = true; userPerms.idx = true;
         }
-        loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
+
+        const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
+        if (db) {
+          userPerms.cat = db.can_manage_catalog || userPerms.cat;
+          userPerms.usr = db.can_manage_users || userPerms.usr;
+          userPerms.idx = db.can_access_index || userPerms.idx;
+        }
+
+        loginOverlay.classList.add('hidden');
+        appMain.classList.remove('hidden');
+
         if (userPerms.cat) navC.classList.remove('hidden');
         if (userPerms.usr) navU.classList.remove('hidden');
-        loadCatalog(); getStats();
+
+        loadCatalog();
+        getStats();
       }
     }
 
     async function handleLogin() {
-      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
+      const { error } = await sb.auth.signInWithPassword({
+        email: lEmail.value.trim().toLowerCase(),
+        password: lPass.value
+      });
       if (error) alert("ERROR"); else location.reload();
     }
+
     function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
-    async function getStats() { const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single(); if(data) vCount.innerText = data.count; }
+
+    async function getStats() {
+      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
+      if (data) vCount.innerText = data.count;
+    }
 
     function switchView(v) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
       pickerSection.classList.toggle('hidden', v !== 'builder');
-      const btnMap = {builder:'navB', history:'navH', catalog:'navC', users:'navU'};
+
+      const btnMap = { builder: 'navB', history: 'navH', catalog: 'navC', users: 'navU' };
       document.getElementById(btnMap[v]).classList.add('active');
       document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
+
       if (v === 'users') loadUsrTable();
       if (v === 'catalog') loadCatTable();
       if (v === 'history') loadHistory();
     }
 
     // --- CONSTRUCTOR ---
-    function setBuilderMode(m) { tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man'); manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man'); }
-    function addMan() { if(!mIn.value) return; draft.push({ name: mIn.value.toUpperCase(), category: 'MANUAL', description: 'ENTRADA MANUAL' }); mIn.value=""; renderD(); }
-    
+    function setBuilderMode(m) {
+      tabC.classList.toggle('active', m === 'cat');
+      tabM.classList.toggle('active', m === 'man');
+      manArea.classList.toggle('hidden', m === 'cat');
+      pickerSection.classList.toggle('hidden', m === 'man');
+    }
+
+    function addMan() {
+      if (!mIn.value) return;
+      draft.push({ name: mIn.value.toUpperCase(), category: 'MANUAL', description: 'ENTRADA MANUAL' });
+      mIn.value = "";
+      renderD();
+    }
+
+    // Genera nombre único para el mismo día: "ALMUERZO", "ALMUERZO (2)", "ALMUERZO (3)"
+    async function ensureUniqueMenuName(date, baseName) {
+      const cleanBase = (baseName || "MENÚ DEL DÍA").trim().toUpperCase();
+      const { data, error } = await sb
+        .from('menus')
+        .select('name')
+        .eq('menu_date', date);
+
+      if (error) return cleanBase; // si falla la consulta, seguimos igual
+
+      const existing = new Set((data || []).map(x => (x.name || '').toUpperCase()));
+      if (!existing.has(cleanBase)) return cleanBase;
+
+      let n = 2;
+      while (existing.has(`${cleanBase} (${n})`)) n++;
+      return `${cleanBase} (${n})`;
+    }
+
+    // Busca o crea item (sin constraints) para no llenar de duplicados si se repite exacto
+    async function getOrCreateMenuItem(p) {
+      const name = (p.name || '').toUpperCase();
+      const category = (p.category || '').toUpperCase();
+      const description = (p.description || '').toUpperCase();
+
+      // Intentar reutilizar si existe EXACTO
+      const { data: found, error: fErr } = await sb
+        .from('menu_items')
+        .select('id')
+        .eq('name', name)
+        .eq('category', category)
+        .eq('description', description)
+        .limit(1);
+
+      if (!fErr && found && found.length) return found[0].id;
+
+      // Si no existe, insert
+      const { data: created, error: cErr } = await sb
+        .from('menu_items')
+        .insert([{ name, category, description }])
+        .select('id')
+        .single();
+
+      if (cErr) throw new Error(cErr.message);
+      return created.id;
+    }
+
     async function publishMenu() {
       const btn = document.getElementById('btnPublish');
       const date = menuDate.value;
-      if(!date || !draft.length) return alert("FALTA FECHA O PLATOS");
-      
-      btn.innerText = "PROCESANDO..."; btn.disabled = true;
+      if (!date || !draft.length) return alert("FALTA FECHA O PLATOS");
 
-      // 1. Crear Menú
-      const { data: m, error: mErr } = await sb.from('menus').insert([{ name: "MENÚ DEL DÍA", menu_date: date }]).select().single();
-      if(mErr) { alert("ERROR AL CREAR MENÚ: " + mErr.message); btn.innerText = "PUBLICAR MENÚ AHORA"; btn.disabled = false; return; }
+      btn.innerText = "PROCESANDO...";
+      btn.disabled = true;
 
-      // 2. Procesar cada plato
-      for(const p of draft) {
-        try {
-            // Guardamos el plato en el historial (upsert por nombre y categoría si existe)
-            const { data: item, error: iErr } = await sb.from('menu_items')
-              .insert([{ name: p.name, category: p.category, description: p.description }])
-              .select().single();
+      try {
+        // 1) Crear SIEMPRE un menú nuevo (permitiendo múltiples por día)
+        //    Si tienes uq_menus_date_name, esto crea nombre único automáticamente
+        const baseName = (document.getElementById('menuName').value || "MENÚ DEL DÍA");
+        const finalName = await ensureUniqueMenuName(date, baseName);
 
-            if (item) {
-                await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
-            }
-        } catch (e) {
-            console.error("Error vinculando plato:", e);
+        const { data: m, error: mErr } = await sb
+          .from('menus')
+          .insert([{ name: finalName.toUpperCase(), menu_date: date }])
+          .select()
+          .single();
+
+        if (mErr) throw new Error("ERROR CREANDO MENÚ: " + mErr.message);
+
+        // 2) Vincular todos los platos
+        for (const p of draft) {
+          try {
+            const itemId = await getOrCreateMenuItem(p);
+
+            const { error: relErr } = await sb
+              .from('menu_menu_items')
+              .insert([{ menu_id: m.id, menu_item_id: itemId }]);
+
+            if (relErr) console.error("Error vinculando plato:", relErr.message);
+          } catch (e) {
+            console.error("Error procesando plato:", e);
+          }
         }
+
+        alert(`¡MENÚ PUBLICADO CON ÉXITO! ✅\n${finalName.toUpperCase()} - ${date}`);
+        draft = [];
+        renderD();
+      } catch (e) {
+        alert(String(e.message || e));
+      } finally {
+        btn.innerText = "PUBLICAR MENÚ AHORA";
+        btn.disabled = false;
       }
-      
-      alert("¡MENÚ PUBLICADO CON ÉXITO! ✅"); 
-      draft = []; renderD();
-      btn.innerText = "PUBLICAR MENÚ AHORA"; btn.disabled = false;
     }
 
     // --- CATALOGO ---
     async function loadCatalog() {
       const { data } = await sb.from('food_catalog').select('*').order('categoria');
-      catalogCache = data || []; renderCatalog(catalogCache);
+      catalogCache = data || [];
+      renderCatalog(catalogCache);
     }
+
     function renderCatalog(items) {
       const grouped = items.reduce((acc, i) => { (acc[i.categoria] = acc[i.categoria] || []).push(i); return acc; }, {});
       catalogList.innerHTML = Object.keys(grouped).map(cat => `
-        <div class="cat-accordion"><button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')"><span>${cat}</span> <span>▼</span></button>
-          <div class="cat-content">${grouped[cat].map(i => `<div class="food-card"><b>${i.acompanamiento}</b>
-              <div class="btn-grid-4">
-                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo}','${cat}')">${i.pollo || '-'}</button>
-                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo}','${cat}')">${i.cerdo || '-'}</button>
-                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja}','${cat}')">${i.carne_roja || '-'}</button>
-                <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.opcion_4}','${cat}')">${i.opcion_4 || '-'}</button>
-              </div></div>`).join('')}</div></div>`).join('');
+        <div class="cat-accordion">
+          <button class="cat-trigger" onclick="this.parentElement.classList.toggle('active')">
+            <span>${cat}</span> <span>▼</span>
+          </button>
+          <div class="cat-content">
+            ${grouped[cat].map(i => `
+              <div class="food-card">
+                <b>${i.acompanamiento}</b>
+                <div class="btn-grid-4">
+                  <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.pollo}','${cat}')">${i.pollo || '-'}</button>
+                  <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.cerdo}','${cat}')">${i.cerdo || '-'}</button>
+                  <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.carne_roja}','${cat}')">${i.carne_roja || '-'}</button>
+                  <button class="btn-quick" onclick="addD('${i.acompanamiento.replace(/'/g,"\\'")}','${i.opcion_4}','${cat}')">${i.opcion_4 || '-'}</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
     }
-    function addD(a, p, c) { if(!p || p === '-' || p === 'null') return; draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c, description: `BASE: ${a} | PREP: ${p}` }); renderD(); }
-    function renderD() { draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:var(--accent)">${p.category}</small></div><div style="display:flex; gap:5px;"><button class="btn btn-warning" onclick="eD(${i})">✏️</button><button class="btn btn-primary" onclick="draft.push({...draft[${i}]});renderD()">👯</button><button class="btn btn-danger" onclick="draft.splice(${i},1);renderD()">X</button></div></div>`).join(''); emptyMsg.classList.toggle('hidden', draft.length > 0); }
-    function eD(i) { const n = prompt("EDITAR:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
-    function filterCatalog() { const q = catSearch.value.toUpperCase(); renderCatalog(catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q))); if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active')); }
-    async function loadCatTable() { const { data } = await sb.from('food_catalog').select('*').order('categoria'); catalogCache = data || []; catTable.innerHTML = catalogCache.map(i => `<tr><td><b>${i.categoria}</b></td><td>${i.acompanamiento}</td><td style="text-align:right;"><button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button> <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button> <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button></td></tr>`).join(''); }
-    function editCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cO1.value = i.pollo; cO2.value = i.cerdo; cO3.value = i.carne_roja; cO4.value = i.opcion_4; btnCancelCat.classList.remove('hidden'); }
-    function dupCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = i.acompanamiento + " (COPIA)"; cO1.value = i.pollo; cO2.value = i.cerdo; cO3.value = i.carne_roja; cO4.value = i.opcion_4; btnCancelCat.classList.remove('hidden'); }
-    function resetCatForm() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cO1.value=""; cO2.value=""; cO3.value=""; cO4.value=""; btnCancelCat.classList.add('hidden'); }
-    async function saveFood() { const p = { categoria:cCat.value.toUpperCase(), acompanamiento:cAcomp.value.toUpperCase(), pollo:cO1.value.toUpperCase(), cerdo:cO2.value.toUpperCase(), carne_roja:cO3.value.toUpperCase(), opcion_4:cO4.value.toUpperCase() }; if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value); else await sb.from('food_catalog').insert([p]); resetCatForm(); loadCatTable(); loadCatalog(); }
-    async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalog(); } }
+
+    function addD(a, p, c) {
+      if (!p || p === '-' || p === 'null') return;
+      draft.push({
+        name: `${a} + ${p}`.toUpperCase(),
+        category: c,
+        description: `BASE: ${a} | PREP: ${p}`
+      });
+      renderD();
+    }
+
+    function renderD() {
+      draftList.innerHTML = draft.map((p, i) => `
+        <div class="draft-item">
+          <div>
+            <b>${p.name}</b><br>
+            <small style="color:var(--accent)">${p.category}</small>
+          </div>
+          <div style="display:flex; gap:5px;">
+            <button class="btn btn-warning" onclick="eD(${i})">✏️</button>
+            <button class="btn btn-primary" onclick="draft.push({...draft[${i}]});renderD()">👯</button>
+            <button class="btn btn-danger" onclick="draft.splice(${i},1);renderD()">X</button>
+          </div>
+        </div>
+      `).join('');
+      emptyMsg.classList.toggle('hidden', draft.length > 0);
+    }
+
+    function eD(i) { const n = prompt("EDITAR:", draft[i].name); if (n) { draft[i].name = n.toUpperCase(); renderD(); } }
+
+    function filterCatalog() {
+      const q = catSearch.value.toUpperCase();
+      renderCatalog(catalogCache.filter(f => (f.acompanamiento || '').includes(q) || (f.categoria || '').includes(q)));
+      if (q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active'));
+    }
+
+    async function loadCatTable() {
+      const { data } = await sb.from('food_catalog').select('*').order('categoria');
+      catalogCache = data || [];
+      catTable.innerHTML = catalogCache.map(i => `
+        <tr>
+          <td><b>${i.categoria}</b></td>
+          <td>${i.acompanamiento}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button>
+            <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button>
+            <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function editCat(id) {
+      const i = catalogCache.find(x => x.id === id);
+      editCatId.value = i.id;
+      cCat.value = i.categoria;
+      cAcomp.value = i.acompanamiento;
+      cO1.value = i.pollo;
+      cO2.value = i.cerdo;
+      cO3.value = i.carne_roja;
+      cO4.value = i.opcion_4;
+      btnCancelCat.classList.remove('hidden');
+    }
+
+    function dupCat(id) {
+      const i = catalogCache.find(x => x.id === id);
+      editCatId.value = "";
+      cCat.value = i.categoria;
+      cAcomp.value = i.acompanamiento + " (COPIA)";
+      cO1.value = i.pollo;
+      cO2.value = i.cerdo;
+      cO3.value = i.carne_roja;
+      cO4.value = i.opcion_4;
+      btnCancelCat.classList.remove('hidden');
+    }
+
+    function resetCatForm() {
+      editCatId.value = "";
+      cCat.value = "";
+      cAcomp.value = "";
+      cO1.value = "";
+      cO2.value = "";
+      cO3.value = "";
+      cO4.value = "";
+      btnCancelCat.classList.add('hidden');
+    }
+
+    async function saveFood() {
+      const p = {
+        categoria: (cCat.value || '').toUpperCase(),
+        acompanamiento: (cAcomp.value || '').toUpperCase(),
+        pollo: (cO1.value || '').toUpperCase(),
+        cerdo: (cO2.value || '').toUpperCase(),
+        carne_roja: (cO3.value || '').toUpperCase(),
+        opcion_4: (cO4.value || '').toUpperCase()
+      };
+      if (editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value);
+      else await sb.from('food_catalog').insert([p]);
+      resetCatForm(); loadCatTable(); loadCatalog();
+    }
+
+    async function delCat(id) {
+      if (confirm("¿BORRAR?")) {
+        await sb.from('food_catalog').delete().eq('id', id);
+        loadCatTable(); loadCatalog();
+      }
+    }
+
+    // --- HISTORIAL ---
     async function loadHistory() {
       const container = document.getElementById('historyTable');
-      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').order('menu_date', {ascending:false});
+      const { data } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .order('menu_date', { ascending: false });
+
       historyCache = data || [];
+
       container.innerHTML = historyCache.map(m => {
-        const pts = m.menu_menu_items.map(rel => rel.menu_items ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
-        return `<tr><td style="width:120px;"><b>${m.menu_date}</b></td><td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px;">${pts}</div></td><td style="text-align:right;"><button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button> <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`;
+        const pts = (m.menu_menu_items || []).map(rel =>
+          rel.menu_items
+            ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>`
+            : ''
+        ).join('');
+
+        return `
+          <tr>
+            <td style="width:140px;"><b>${m.menu_date}</b><br><span style="font-size:10px; color:#64748b;">${(m.name||'').toUpperCase()}</span></td>
+            <td>
+              <b>${(m.name||'').toUpperCase()}</b>
+              <br>
+              <div style="background:#f8fafc; padding:10px; border-radius:12px;">${pts}</div>
+            </td>
+            <td style="text-align:right;">
+              <button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button>
+              <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button>
+            </td>
+          </tr>
+        `;
       }).join('');
     }
-    function reUseMenu(id) { const m = historyCache.find(x => x.id === id); draft = m.menu_menu_items.map(rel => ({ name: rel.menu_items.name, category: rel.menu_items.category, description: rel.menu_items.description })); switchView('builder'); renderD(); alert("MENÚ CARGADO ✅"); }
-    async function delMenu(id) { if(confirm("¿BORRAR?")) { await sb.from('menu_menu_items').delete().eq('menu_id', id); await sb.from('menus').delete().eq('id', id); loadHistory(); } }
-    async function delAllMenus() { if(confirm("¿BORRAR TODO?")) { await sb.from('menu_menu_items').delete().neq('id',0); await sb.from('menus').delete().neq('id',0); loadHistory(); } }
 
+    function reUseMenu(id) {
+      const m = historyCache.find(x => x.id === id);
+      draft = (m.menu_menu_items || []).map(rel => ({
+        name: rel.menu_items.name,
+        category: rel.menu_items.category,
+        description: rel.menu_items.description
+      }));
+      menuDate.value = m.menu_date;
+      document.getElementById('menuName').value = (m.name || "MENÚ DEL DÍA").toUpperCase();
+      switchView('builder');
+      renderD();
+      alert("MENÚ CARGADO ✅");
+    }
+
+    async function delMenu(id) {
+      if (confirm("¿BORRAR?")) {
+        await sb.from('menu_menu_items').delete().eq('menu_id', id);
+        await sb.from('menus').delete().eq('id', id);
+        loadHistory();
+      }
+    }
+
+    async function delAllMenus() {
+      if (confirm("¿BORRAR TODO?")) {
+        await sb.from('menu_menu_items').delete().neq('id', 0);
+        await sb.from('menus').delete().neq('id', 0);
+        loadHistory();
+      }
+    }
+
+    // --- USERS ---
     async function loadUsrTable() {
       const { data } = await sb.from('user_permissions').select('*').order('email');
       usersCache = data || [];
-      usrTableBody.innerHTML = usersCache.map(u => `<tr><td style="text-transform:none;">${u.email}</td><td><span class="badge ${u.can_manage_catalog?'on':'off'}">CAT</span><span class="badge ${u.can_manage_users?'on':'off'}">USR</span><span class="badge ${u.can_access_index?'on':'off'}">IDX</span></td><td style="text-align:right;"><button class="btn btn-warning" onclick="editUsr(${u.id})">✏️</button> <button class="btn btn-danger" onclick="delUsr(${u.id})">X</button></td></tr>`).join('');
+      usrTableBody.innerHTML = usersCache.map(u => `
+        <tr>
+          <td style="text-transform:none;">${u.email}</td>
+          <td style="font-size:10px; color:#64748b;">
+            ${u.can_manage_catalog ? 'CAT ✅ ' : 'CAT ❌ '}
+            ${u.can_manage_users ? 'USR ✅ ' : 'USR ❌ '}
+            ${u.can_access_index ? 'IDX ✅ ' : 'IDX ❌ '}
+          </td>
+          <td style="text-align:right;">
+            <button class="btn btn-warning" onclick="editUsr(${u.id})">✏️</button>
+            <button class="btn btn-danger" onclick="delUsr(${u.id})">X</button>
+          </td>
+        </tr>
+      `).join('');
     }
-    function editUsr(id) { const u = usersCache.find(x => x.id === id); editUsrId.value = u.id; uEmail.value = u.email; pCat.checked = u.can_manage_catalog; pUsr.checked = u.can_manage_users; pIdx.checked = u.can_access_index; uPassLabel.classList.add('hidden'); uPass.classList.add('hidden'); btnCancelUsr.classList.remove('hidden'); }
-    function resetUsrForm() { editUsrId.value=""; uEmail.value=""; uPass.value=""; pCat.checked=false; pUsr.checked=false; pIdx.checked=false; uPassLabel.classList.remove('hidden'); uPass.classList.remove('hidden'); btnCancelUsr.classList.add('hidden'); }
-    async function saveUsr() {
-        const e = uEmail.value.trim().toLowerCase();
-        if(!editUsrId.value) await sb.auth.signUp({ email: e, password: uPass.value });
-        await sb.from('user_permissions').upsert({ email: e, can_manage_catalog: pCat.checked, can_manage_users: pUsr.checked, can_access_index: pIdx.checked });
-        resetUsrForm(); loadUsrTable(); alert("GUARDADO");
-    }
-    async function delUsr(id) { if(confirm("¿QUITAR?")) { await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); } }
 
-    document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
-    
-    function getToday() {
-        const d = new Date();
-        return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+    function editUsr(id) {
+      const u = usersCache.find(x => x.id === id);
+      editUsrId.value = u.id;
+      uEmail.value = u.email;
+      pCat.checked = u.can_manage_catalog;
+      pUsr.checked = u.can_manage_users;
+      pIdx.checked = u.can_access_index;
+      uPassLabel.classList.add('hidden');
+      uPass.classList.add('hidden');
+      btnCancelUsr.classList.remove('hidden');
     }
+
+    function resetUsrForm() {
+      editUsrId.value = "";
+      uEmail.value = "";
+      uPass.value = "";
+      pCat.checked = false;
+      pUsr.checked = false;
+      pIdx.checked = false;
+      uPassLabel.classList.remove('hidden');
+      uPass.classList.remove('hidden');
+      btnCancelUsr.classList.add('hidden');
+    }
+
+    async function saveUsr() {
+      const e = uEmail.value.trim().toLowerCase();
+      if (!editUsrId.value) await sb.auth.signUp({ email: e, password: uPass.value });
+      await sb.from('user_permissions').upsert({
+        email: e,
+        can_manage_catalog: pCat.checked,
+        can_manage_users: pUsr.checked,
+        can_access_index: pIdx.checked
+      });
+      resetUsrForm(); loadUsrTable(); alert("GUARDADO");
+    }
+
+    async function delUsr(id) {
+      if (confirm("¿QUITAR?")) {
+        await sb.from('user_permissions').delete().eq('id', id);
+        loadUsrTable();
+      }
+    }
+
+    document.addEventListener('input', e => {
+      if (e.target.tagName === 'INPUT' && !['email','password','date'].includes(e.target.type)) {
+        e.target.value = e.target.value.toUpperCase();
+      }
+    });
+
+    function getToday() {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+    }
+
     document.getElementById('menuDate').value = getToday();
     check();
   </script>
