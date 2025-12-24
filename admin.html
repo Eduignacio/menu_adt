@@ -7,17 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
-    /* ======================================================
-       THEME SYSTEM (LIGHT / DARK)
-       - No cambia funcionalidad
-       - Solo estética + variables
-    ====================================================== */
     :root{
       --radius: 14px;
       --radius-lg: 20px;
       --transition: .25s ease;
 
-      /* LIGHT */
       --bg: #f4f6fb;
       --card: #ffffff;
       --sidebar: #0f172a;
@@ -57,9 +51,6 @@
       --shadow-strong: 0 40px 90px rgba(0,0,0,.65);
     }
 
-    /* ======================================================
-       BASE
-    ====================================================== */
     *{
       box-sizing: border-box;
       text-transform: uppercase;
@@ -77,9 +68,6 @@
     }
     .hidden{ display:none !important; }
 
-    /* ======================================================
-       LOGIN
-    ====================================================== */
     #loginOverlay{
       position: fixed;
       inset: 0;
@@ -131,9 +119,6 @@
       box-shadow: 0 0 0 4px rgba(99,102,241,.15);
     }
 
-    /* ======================================================
-       SIDEBAR + OVERLAY
-    ====================================================== */
     .sidebar{
       width: var(--sidebar-width);
       background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
@@ -218,7 +203,6 @@
     }
     .catalog-scroll{ flex:1; overflow-y:auto; padding:10px; }
 
-    /* buscador catálogo */
     #catSearch{
       width:100%;
       background: rgba(255,255,255,.08);
@@ -237,7 +221,6 @@
       box-shadow: 0 0 0 4px rgba(129,140,248,.18);
     }
 
-    /* acordeón catálogo */
     .cat-accordion{ margin-bottom: 8px; }
     .cat-trigger{
       width:100%;
@@ -290,9 +273,6 @@
       transform: translateY(-1px);
     }
 
-    /* ======================================================
-       MAIN AREA + TOP BAR
-    ====================================================== */
     .main-area{ flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
     .top-bar{
       padding: 14px 24px;
@@ -328,9 +308,6 @@
     }
     .container{ max-width: 1100px; margin: 0 auto; width: 100%; }
 
-    /* ======================================================
-       CARDS + FORMS
-    ====================================================== */
     .card{
       background: var(--card);
       padding: 26px;
@@ -364,9 +341,6 @@
       display:block;
     }
 
-    /* ======================================================
-       BUTTONS
-    ====================================================== */
     .btn{
       padding: 12px 18px;
       border-radius: 14px;
@@ -401,9 +375,6 @@
       border: 1px solid var(--border);
     }
 
-    /* ======================================================
-       TAB NAV
-    ====================================================== */
     .tab-nav{ display:flex; gap: 10px; margin-bottom: 18px; }
     .tab-btn{
       flex:1;
@@ -423,9 +394,6 @@
       border-color: transparent;
     }
 
-    /* ======================================================
-       DRAFT
-    ====================================================== */
     .draft-item{
       background: rgba(99,102,241,.06);
       border: 1px solid var(--border);
@@ -437,9 +405,6 @@
       align-items:center;
     }
 
-    /* ======================================================
-       TABLES
-    ====================================================== */
     .table-wrap{
       overflow-x:auto;
       background: var(--card);
@@ -456,9 +421,6 @@
       color: var(--text);
     }
 
-    /* ======================================================
-       ACCESOS (mantengo tus clases, solo estética más limpia)
-    ====================================================== */
     .access-card{
       border: 1px solid rgba(99,102,241,.18);
       box-shadow: 0 18px 40px rgba(2,6,23,.08);
@@ -547,9 +509,6 @@
     .pill.on{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); color:#10b981; }
     .pill.off{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); color:#ef4444; }
 
-    /* ======================================================
-       THEME BUTTON
-    ====================================================== */
     .theme-btn{
       border-radius: 999px;
       padding: 8px 12px;
@@ -620,9 +579,7 @@
         <div style="font-size:10px; font-weight:900; color:var(--accent);">VISITAS: <span id="vCount">0</span></div>
         <span id="userBadge" style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
 
-        <!-- Toggle modo oscuro -->
         <button class="theme-btn" onclick="toggleTheme()">🌙 / ☀️</button>
-
         <button class="btn btn-ghost" style="padding: 10px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
       </div>
     </header>
@@ -770,16 +727,14 @@
                   <div style="font-size:10px; color:var(--muted); text-transform:none; margin-top:10px;">
                     * Acceso solo con usuario (INGRESAR JCI) para la sesión de visualización.
                   </div>
+                  <div style="font-size:10px; color:var(--muted); text-transform:none; margin-top:8px;">
+                    * Ahora requiere aprobación: al crear queda PENDIENTE hasta que lo APRUEBES.
+                  </div>
                 </div>
 
                 <div class="access-box">
                   <div class="box-title">USUARIOS DE VISUALIZACIÓN</div>
                   <div class="table-wrap"><table><tbody id="viewerTableBody"></tbody></table></div>
-
-                  <!-- NUEVO: SOLICITUDES PENDIENTES -->
-                  <div style="height:14px;"></div>
-                  <div class="box-title">SOLICITUDES MENÚ DIGITAL (PENDIENTES)</div>
-                  <div class="table-wrap"><table><tbody id="requestsTableBody"></tbody></table></div>
                 </div>
               </div>
             </div>
@@ -804,9 +759,6 @@
     let draft = [], catalogCache = [], historyCache = [];
     let adminsCache = [], viewersCache = [];
 
-    // NUEVO
-    let requestsCache = [];
-
     // =========================
     // AUTH
     // =========================
@@ -817,7 +769,6 @@
       const email = session.user.email.toLowerCase();
       userBadge.innerText = email;
 
-      // SUPER ADMINS
       if (email === "eduardoignacio.g.h@gmail.com" || email === "gzrojas.mi@gmail.com") {
         userPerms.cat = true; userPerms.usr = true; userPerms.idx = true;
       }
@@ -1131,7 +1082,7 @@
     }
 
     // =========================
-    // GESTIÓN ACCESOS (2 APARTADOS)
+    // GESTIÓN ACCESOS
     // =========================
     function setAccessTab(t){
       tabAdmins.classList.toggle('active', t === 'admins');
@@ -1139,7 +1090,7 @@
       adminsPanel.classList.toggle('hidden', t !== 'admins');
       viewersPanel.classList.toggle('hidden', t !== 'viewers');
       if (t === 'admins') loadAdmins();
-      if (t === 'viewers') { loadViewers(); loadRequests(); } // NUEVO
+      if (t === 'viewers') loadViewers();
     }
 
     // ---- ADMINS
@@ -1218,9 +1169,9 @@
       loadAdmins();
     }
 
-    // ---- VIEWERS (viewer_users)
+    // ---- VIEWERS (viewer_users) + APROBACIÓN
     async function loadViewers(){
-      const { data, error } = await sb.from('viewer_users').select('*').order('username');
+      const { data, error } = await sb.from('viewer_users').select('id, username, approved').order('username');
       if(error) return alert("ERROR CARGANDO VIEWERS: " + error.message);
 
       viewersCache = data || [];
@@ -1228,16 +1179,40 @@
         <tr>
           <td style="padding:14px;">
             <b>${v.username}</b><br>
-            <small style="text-transform:none; color:var(--muted);">ID: ${v.id}</small>
+            <small style="text-transform:none; color:var(--muted);">ID: ${v.id}</small><br>
+            <span class="pill ${v.approved ? 'on' : 'off'}">${v.approved ? 'APROBADO ✅' : 'PENDIENTE ⏳'}</span>
           </td>
-          <td style="padding:14px; width:220px;">
+          <td style="padding:14px; width:260px;">
             <div class="row-actions">
               <button class="btn btn-warning" onclick="editViewer(${v.id})">✏️ EDITAR</button>
+              <button class="btn ${v.approved ? 'btn-warning' : 'btn-primary'}" onclick="toggleViewerApproval(${v.id}, ${v.approved ? 'true' : 'false'})">
+                ${v.approved ? 'BLOQUEAR' : 'APROBAR'}
+              </button>
               <button class="btn btn-danger" onclick="delViewer(${v.id})">🗑️</button>
             </div>
           </td>
         </tr>
       `).join('');
+    }
+
+    async function toggleViewerApproval(id, approvedNow){
+      const next = !approvedNow;
+      const msg = next ? "¿APROBAR ESTE USUARIO?" : "¿BLOQUEAR ESTE USUARIO?";
+      if(!confirm(msg)) return;
+
+      const { error } = await sb.from('viewer_users').update({ approved: next }).eq('id', id);
+      if(error) return alert("ERROR ACTUALIZANDO: " + error.message);
+
+      // Si existe la tabla de solicitudes, marcamos como approved/rejected la pendiente más reciente
+      try{
+        const status = next ? 'approved' : 'rejected';
+        await sb.from('viewer_access_requests')
+          .update({ status })
+          .eq('viewer_user_id', id)
+          .eq('status', 'pending');
+      }catch(e){ /* opcional */ }
+
+      loadViewers();
     }
 
     function editViewer(id){
@@ -1262,7 +1237,8 @@
         const { error } = await sb.from('viewer_users').update({ username }).eq('id', editViewerId.value);
         if(error) return alert("ERROR ACTUALIZANDO: " + error.message);
       } else {
-        const { error } = await sb.from('viewer_users').insert([{ username }]);
+        // NUEVO: por defecto queda PENDIENTE (approved=false)
+        const { error } = await sb.from('viewer_users').insert([{ username, approved: false }]);
         if(error) return alert("ERROR CREANDO: " + error.message);
       }
 
@@ -1275,120 +1251,6 @@
       const { error } = await sb.from('viewer_users').delete().eq('id', id);
       if(error) return alert("ERROR BORRANDO: " + error.message);
       loadViewers();
-    }
-
-    // =========================
-    // NUEVO: SOLICITUDES MENÚ DIGITAL (viewer_requests)
-    // =========================
-    async function loadRequests(){
-      const { data, error } = await sb
-        .from("viewer_requests")
-        .select("*")
-        .eq("status", "PENDING")
-        .order("created_at", { ascending: false });
-
-      if(error){
-        requestsTableBody.innerHTML = `<tr><td style="padding:14px;"><b>ERROR:</b> ${error.message}</td></tr>`;
-        return;
-      }
-
-      requestsCache = data || [];
-
-      if(!requestsCache.length){
-        requestsTableBody.innerHTML = `<tr><td style="padding:14px; color:var(--muted); text-transform:none;">SIN SOLICITUDES PENDIENTES ✅</td></tr>`;
-        return;
-      }
-
-      requestsTableBody.innerHTML = requestsCache.map(r => `
-        <tr>
-          <td style="padding:14px;">
-            <b>${(r.global_id||'').toUpperCase()}</b><br>
-            <small style="text-transform:none; color:var(--muted); font-weight:800;">
-              Usuario sugerido: ${(r.requested_username||'—')}
-              <br>
-              ${new Date(r.created_at).toLocaleString()}
-            </small>
-          </td>
-          <td style="padding:14px; width:260px;">
-            <div class="row-actions">
-              <button class="btn btn-primary" onclick="approveRequest(${r.id})">✅ ACEPTAR</button>
-              <button class="btn btn-danger" onclick="rejectRequest(${r.id})">⛔ RECHAZAR</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    async function ensureViewerUser(username){
-      const u = (username || "").trim().toUpperCase();
-      if(!u) throw new Error("USERNAME VACÍO");
-
-      const { data: found, error: fErr } = await sb
-        .from("viewer_users")
-        .select("id, username")
-        .eq("username", u)
-        .limit(1);
-
-      if(fErr) throw new Error(fErr.message);
-      if(found && found.length) return found[0];
-
-      const { data: created, error: cErr } = await sb
-        .from("viewer_users")
-        .insert([{ username: u }])
-        .select("id, username")
-        .single();
-
-      if(cErr) throw new Error(cErr.message);
-      return created;
-    }
-
-    async function approveRequest(reqId){
-      const r = requestsCache.find(x => x.id === reqId);
-      if(!r) return;
-
-      const username = ((r.requested_username || r.global_id) || "").trim().toUpperCase();
-      if(!username) return alert("SOLICITUD INVÁLIDA: NO HAY USERNAME");
-
-      try{
-        await ensureViewerUser(username);
-
-        const { data: { session } } = await sb.auth.getSession();
-        const reviewer = session?.user?.email || "admin";
-
-        const { error: upErr } = await sb
-          .from("viewer_requests")
-          .update({ status: "APPROVED", reviewed_at: new Date().toISOString(), reviewed_by: reviewer })
-          .eq("id", reqId);
-
-        if(upErr) return alert("ERROR APROBANDO: " + upErr.message);
-
-        alert("✅ SOLICITUD APROBADA. USUARIO HABILITADO: " + username);
-        loadRequests();
-        loadViewers();
-      }catch(e){
-        alert("ERROR: " + (e?.message || e));
-      }
-    }
-
-    async function rejectRequest(reqId){
-      if(!confirm("¿RECHAZAR SOLICITUD?")) return;
-
-      try{
-        const { data: { session } } = await sb.auth.getSession();
-        const reviewer = session?.user?.email || "admin";
-
-        const { error } = await sb
-          .from("viewer_requests")
-          .update({ status: "REJECTED", reviewed_at: new Date().toISOString(), reviewed_by: reviewer })
-          .eq("id", reqId);
-
-        if(error) return alert("ERROR RECHAZANDO: " + error.message);
-
-        alert("⛔ SOLICITUD RECHAZADA");
-        loadRequests();
-      }catch(e){
-        alert("ERROR: " + (e?.message || e));
-      }
     }
 
     // =========================
@@ -1406,9 +1268,6 @@
     }
     menuDate.value = getToday();
 
-    // =========================
-    // THEME (solo UI)
-    // =========================
     function applyTheme() {
       const t = localStorage.getItem("theme") || "light";
       document.body.classList.toggle("dark", t === "dark");
