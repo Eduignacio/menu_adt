@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-  <title>ADT - ADMIN SISTEMA PRO</title>
+  <title>CASINO - ADMIN SISTEMA PRO</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -147,7 +147,7 @@
 
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 30px;">ADT ADMIN PRO</h2>
+      <h2 style="text-align: center; margin: 0 0 30px;">CASINO ADMIN PRO</h2>
       <label>EMAIL</label><input id="lEmail" type="email">
       <label>PASSWORD</label><input id="lPass" type="password">
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 16px;" onclick="handleLogin()">ENTRAR</button>
@@ -162,7 +162,7 @@
 
     <div class="nav-group-title">GESTIÓN MENÚS</div>
     <div class="sidebar-nav">
-      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
+      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 INGREAR MENUS</button>
       <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
     </div>
 
@@ -188,7 +188,7 @@
         <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-hidden')">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
+        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 INGRESAR MENUS</h1>
       </div>
       <div style="display: flex; align-items: center; gap: 15px;">
         <div style="font-size:10px; font-weight:900; color:var(--accent);">VISITAS: <span id="vCount">0</span></div>
@@ -285,7 +285,7 @@
 
             <div class="access-tabs">
               <button class="access-tab active" id="tabAdmins" onclick="setAccessTab('admins')">👑 ADMINS</button>
-              <button class="access-tab" id="tabViewers" onclick="setAccessTab('viewers')">👀 USUARIOS (VISUALIZACIÓN)</button>
+              <button class="access-tab" id="tabViewers" onclick="setAccessTab('viewers')">👀 USUARIOS (VISUALIZACIÓN DE MENUS)</button>
             </div>
 
             <!-- ADMINS -->
@@ -306,7 +306,7 @@
                   <div class="perm-grid">
                     <label class="perm"><input type="checkbox" id="aCat"> ADM. CATÁLOGO</label>
                     <label class="perm"><input type="checkbox" id="aUsr"> ADM. USUARIOS</label>
-                    <label class="perm"><input type="checkbox" id="aIdx"> ACCESO INDEX</label>
+                    <label class="perm"><input type="checkbox" id="aIdx"> VISUALIZACION MENUS</label>
                   </div>
 
                   <div class="actions">
@@ -338,7 +338,7 @@
                   </div>
 
                   <div style="font-size:10px; color:var(--muted); text-transform:none; margin-top:10px;">
-                    * Acceso solo con usuario (sin email/contraseña) para la sesión de visualización.
+                    * Acceso solo con usuario (INGRESAR JCI) para la sesión de visualización.
                   </div>
                 </div>
 
