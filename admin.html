@@ -733,6 +733,11 @@
                 </div>
 
                 <div class="access-box">
+                  <div class="box-title">SOLICITUDES PENDIENTES (APROBACIÓN)</div>
+                  <div class="table-wrap"><table><tbody id="viewerReqTableBody"></tbody></table></div>
+
+                  <div style="height:14px;"></div>
+
                   <div class="box-title">USUARIOS DE VISUALIZACIÓN</div>
                   <div class="table-wrap"><table><tbody id="viewerTableBody"></tbody></table></div>
                 </div>
@@ -758,6 +763,7 @@
     let userPerms = { cat: false, usr: false, idx: false };
     let draft = [], catalogCache = [], historyCache = [];
     let adminsCache = [], viewersCache = [];
+    let viewerReqCache = [];
 
     // =========================
     // AUTH
@@ -1090,7 +1096,7 @@
       adminsPanel.classList.toggle('hidden', t !== 'admins');
       viewersPanel.classList.toggle('hidden', t !== 'viewers');
       if (t === 'admins') loadAdmins();
-      if (t === 'viewers') loadViewers();
+      if (t === 'viewers') { loadViewerRequests(); loadViewers(); }
     }
 
     // ---- ADMINS
@@ -1169,6 +1175,134 @@
       loadAdmins();
     }
 
+    // ---- SOLICITUDES (viewer_access_requests)
+    async function loadViewerRequests(){
+      // Solo pendientes (aprobación)
+      const { data, error } = await sb
+        .from('viewer_access_requests')
+        .select('id, username, status, viewer_user_id, created_at')
+        .eq('status', 'pending')
+        .order('created_at', { ascending:false });
+
+      if(error){
+        // Si la tabla no existe o hay RLS, dejamos el panel sin romper el admin
+        viewerReqTableBody.innerHTML = `
+          <tr>
+            <td>
+              <b>NO SE PUDO CARGAR</b><br>
+              <small style="text-transform:none; color:var(--muted);">${error.message}</small>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      viewerReqCache = data || [];
+
+      if(!viewerReqCache.length){
+        viewerReqTableBody.innerHTML = `
+          <tr>
+            <td>
+              <b>SIN SOLICITUDES</b><br>
+              <small style="text-transform:none; color:var(--muted);">NO HAY PENDIENTES</small>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      viewerReqTableBody.innerHTML = viewerReqCache.map(r => `
+        <tr>
+          <td style="padding:14px;">
+            <b>${(r.username||'').toUpperCase()}</b><br>
+            <small style="text-transform:none; color:var(--muted);">REQ: ${r.id}${r.viewer_user_id ? ` | USER_ID: ${r.viewer_user_id}` : ''}</small><br>
+            <span class="pill off">PENDIENTE ⏳</span>
+          </td>
+          <td style="padding:14px; width:260px;">
+            <div class="row-actions">
+              <button class="btn btn-primary" onclick="approveViewerRequest(${r.id})">APROBAR</button>
+              <button class="btn btn-danger" onclick="rejectViewerRequest(${r.id})">RECHAZAR</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function approveViewerRequest(requestId){
+      const req = viewerReqCache.find(x => x.id === requestId);
+      if(!req) return;
+      if(!confirm("¿APROBAR SOLICITUD?")) return;
+
+      const username = (req.username || '').trim().toUpperCase();
+      if(!username) return alert("SOLICITUD SIN USUARIO");
+
+      try{
+        let viewerId = req.viewer_user_id || null;
+
+        // 1) Si viene viewer_user_id, aprobamos ese
+        if(viewerId){
+          const { error: upErr } = await sb.from('viewer_users').update({ approved: true, username }).eq('id', viewerId);
+          if(upErr) throw new Error(upErr.message);
+        }else{
+          // 2) Si no viene, buscamos si existe por username
+          const { data: found, error: fErr } = await sb
+            .from('viewer_users')
+            .select('id')
+            .eq('username', username)
+            .limit(1);
+
+          if(fErr) throw new Error(fErr.message);
+
+          if(found && found.length){
+            viewerId = found[0].id;
+            const { error: upErr2 } = await sb.from('viewer_users').update({ approved: true }).eq('id', viewerId);
+            if(upErr2) throw new Error(upErr2.message);
+          }else{
+            // 3) Si no existe, lo creamos aprobado
+            const { data: created, error: cErr } = await sb
+              .from('viewer_users')
+              .insert([{ username, approved: true }])
+              .select('id')
+              .single();
+
+            if(cErr) throw new Error(cErr.message);
+            viewerId = created.id;
+          }
+        }
+
+        // 4) Marcamos request como approved y guardamos viewer_user_id
+        const { error: rErr } = await sb
+          .from('viewer_access_requests')
+          .update({ status: 'approved', viewer_user_id: viewerId })
+          .eq('id', requestId);
+
+        if(rErr) throw new Error(rErr.message);
+
+        loadViewerRequests(); loadViewers();
+      }catch(e){
+        alert("ERROR APROBANDO: " + (e.message || String(e)));
+      }
+    }
+
+    async function rejectViewerRequest(requestId){
+      const req = viewerReqCache.find(x => x.id === requestId);
+      if(!req) return;
+      if(!confirm("¿RECHAZAR SOLICITUD?")) return;
+
+      try{
+        const { error } = await sb
+          .from('viewer_access_requests')
+          .update({ status: 'rejected' })
+          .eq('id', requestId);
+
+        if(error) throw new Error(error.message);
+
+        loadViewerRequests(); loadViewers();
+      }catch(e){
+        alert("ERROR RECHAZANDO: " + (e.message || String(e)));
+      }
+    }
+
     // ---- VIEWERS (viewer_users) + APROBACIÓN
     async function loadViewers(){
       const { data, error } = await sb.from('viewer_users').select('id, username, approved').order('username');
@@ -1212,7 +1346,7 @@
           .eq('status', 'pending');
       }catch(e){ /* opcional */ }
 
-      loadViewers();
+      loadViewerRequests(); loadViewers();
     }
 
     function editViewer(id){
@@ -1243,14 +1377,14 @@
       }
 
       alert("USUARIO GUARDADO ✅");
-      resetViewerForm(); loadViewers();
+      resetViewerForm(); loadViewerRequests(); loadViewers();
     }
 
     async function delViewer(id){
       if(!confirm("¿BORRAR USUARIO?")) return;
       const { error } = await sb.from('viewer_users').delete().eq('id', id);
       if(error) return alert("ERROR BORRANDO: " + error.message);
-      loadViewers();
+      loadViewerRequests(); loadViewers();
     }
 
     // =========================
