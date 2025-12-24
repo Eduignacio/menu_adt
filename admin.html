@@ -195,23 +195,23 @@
         </div>
 
         <!-- USERS -->
-        <div id="viewUsers" class="hidden">
-          <div class="card" style="border-top: 4px solid var(--sidebar);">
-            <h3 id="uFormTitle" style="margin:0 0 15px; font-size:13px;">GESTIÓN ACCESOS</h3>
-            <div class="grid-form">
-              <input type="hidden" id="editUsrId">
-              <div><label>EMAIL / USUARIO</label><input id="uEmail" type="text" style="text-transform:none;"></div>
-              <div><label id="uPassLabel">PASSWORD (PARA ADMINS)</label><input id="uPass" type="password" style="text-transform:none;"></div>
-              <div style="grid-column: 1 / -1; display:flex; gap:15px; align-items:center;">
-                <label style="margin:0;"><input type="checkbox" id="pCat"> ADM. CATÁLOGO</label>
-                <label style="margin:0;"><input type="checkbox" id="pUsr"> ADM. USUARIOS</label>
-                <label style="margin:0;"><input type="checkbox" id="pIdx"> ACCESO INDEX</label>
-                <button class="btn btn-primary" onclick="saveUsr()" style="margin-left:auto;">GUARDAR</button>
-                <button class="btn hidden" id="btnCancelUsr" onclick="resetUsrForm()">X</button>
-              </div>
+                <div id="viewUsers" class="hidden">
+            <div class="card" style="border-top: 4px solid var(--sidebar);">
+                <h3 id="uFormTitle" style="margin:0 0 15px; font-size:13px;">GESTIÓN ACCESOS</h3>
+                <div class="grid-form">
+                    <input type="hidden" id="editUsrId">
+                    <div><label>EMAIL / USUARIO</label><input id="uEmail" type="text" style="text-transform:none;"></div>
+                    <div><label id="uPassLabel">PASSWORD (PARA ADMINS)</label><input id="uPass" type="password" style="text-transform:none;"></div>
+                    <div style="grid-column: 1 / -1; display:flex; gap:15px; align-items:center;">
+                        <label style="margin:0;"><input type="checkbox" id="pCat"> ADM. CATÁLOGO</label>
+                        <label style="margin:0;"><input type="checkbox" id="pUsr"> ADM. USUARIOS</label>
+                        <label style="margin:0;"><input type="checkbox" id="pIdx"> ACCESO INDEX</label>
+                        <button class="btn btn-primary" onclick="saveUsr()" style="margin-left:auto;">GUARDAR</button>
+                        <button class="btn btn-ghost hidden" id="btnCancelUsr" onclick="resetUsrForm()">X</button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="table-wrap"><table><tbody id="usrTableBody"></tbody></table></div>
+            <div class="table-wrap"><table><tbody id="usrTableBody"></tbody></table></div>
         </div>
 
       </div>
@@ -220,65 +220,44 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co", S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
-    let userPerms = { cat: false, usr: false, idx: false },
-        draft = [], catalogCache = [], historyCache = [], usersCache = [];
+    let userPerms = { cat: false, usr: false, idx: false }, draft = [], catalogCache = [], historyCache = [], usersCache = [];
 
     async function check() {
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
         const email = session.user.email.toLowerCase();
         userBadge.innerText = email;
-
-        if (email === "eduardoignacio.g.h@gmail.com" || email === "gzrojas.mi@gmail.com") {
-          userPerms.cat = true; userPerms.usr = true; userPerms.idx = true;
-        }
-
+        if (email === "eduardoignacio.g.h@gmail.com" || email === "gzrojas.mi@gmail.com") { userPerms.cat = true; userPerms.usr = true; userPerms.idx = true; }
         const { data: db } = await sb.from('user_permissions').select('*').eq('email', email).maybeSingle();
-        if (db) {
-          userPerms.cat = db.can_manage_catalog || userPerms.cat;
-          userPerms.usr = db.can_manage_users || userPerms.usr;
-          userPerms.idx = db.can_access_index || userPerms.idx;
+        if (db) { 
+            userPerms.cat = db.can_manage_catalog || userPerms.cat; 
+            userPerms.usr = db.can_manage_users || userPerms.usr; 
+            userPerms.idx = db.can_access_index || userPerms.idx;
         }
-
-        loginOverlay.classList.add('hidden');
-        appMain.classList.remove('hidden');
-
+        loginOverlay.classList.add('hidden'); appMain.classList.remove('hidden');
         if (userPerms.cat) navC.classList.remove('hidden');
         if (userPerms.usr) navU.classList.remove('hidden');
-
-        loadCatalog();
-        getStats();
+        loadCatalog(); getStats();
       }
     }
 
     async function handleLogin() {
-      const { error } = await sb.auth.signInWithPassword({
-        email: lEmail.value.trim().toLowerCase(),
-        password: lPass.value
-      });
+      const { error } = await sb.auth.signInWithPassword({ email: lEmail.value.trim().toLowerCase(), password: lPass.value });
       if (error) alert("ERROR"); else location.reload();
     }
-
     function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
-
-    async function getStats() {
-      const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single();
-      if (data) vCount.innerText = data.count;
-    }
+    async function getStats() { const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).single(); if(data) vCount.innerText = data.count; }
 
     function switchView(v) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.view-port .container > div').forEach(d => d.classList.add('hidden'));
       pickerSection.classList.toggle('hidden', v !== 'builder');
-
-      const btnMap = { builder: 'navB', history: 'navH', catalog: 'navC', users: 'navU' };
+      const btnMap = {builder:'navB', history:'navH', catalog:'navC', users:'navU'};
       document.getElementById(btnMap[v]).classList.add('active');
       document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.remove('hidden');
-
       if (v === 'users') loadUsrTable();
       if (v === 'catalog') loadCatTable();
       if (v === 'history') loadHistory();
