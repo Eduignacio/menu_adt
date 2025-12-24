@@ -775,6 +775,11 @@
                 <div class="access-box">
                   <div class="box-title">USUARIOS DE VISUALIZACIÓN</div>
                   <div class="table-wrap"><table><tbody id="viewerTableBody"></tbody></table></div>
+
+                  <!-- NUEVO: SOLICITUDES PENDIENTES -->
+                  <div style="height:14px;"></div>
+                  <div class="box-title">SOLICITUDES MENÚ DIGITAL (PENDIENTES)</div>
+                  <div class="table-wrap"><table><tbody id="requestsTableBody"></tbody></table></div>
                 </div>
               </div>
             </div>
@@ -798,6 +803,9 @@
     let userPerms = { cat: false, usr: false, idx: false };
     let draft = [], catalogCache = [], historyCache = [];
     let adminsCache = [], viewersCache = [];
+
+    // NUEVO
+    let requestsCache = [];
 
     // =========================
     // AUTH
@@ -1131,7 +1139,7 @@
       adminsPanel.classList.toggle('hidden', t !== 'admins');
       viewersPanel.classList.toggle('hidden', t !== 'viewers');
       if (t === 'admins') loadAdmins();
-      if (t === 'viewers') loadViewers();
+      if (t === 'viewers') { loadViewers(); loadRequests(); } // NUEVO
     }
 
     // ---- ADMINS
@@ -1267,6 +1275,120 @@
       const { error } = await sb.from('viewer_users').delete().eq('id', id);
       if(error) return alert("ERROR BORRANDO: " + error.message);
       loadViewers();
+    }
+
+    // =========================
+    // NUEVO: SOLICITUDES MENÚ DIGITAL (viewer_requests)
+    // =========================
+    async function loadRequests(){
+      const { data, error } = await sb
+        .from("viewer_requests")
+        .select("*")
+        .eq("status", "PENDING")
+        .order("created_at", { ascending: false });
+
+      if(error){
+        requestsTableBody.innerHTML = `<tr><td style="padding:14px;"><b>ERROR:</b> ${error.message}</td></tr>`;
+        return;
+      }
+
+      requestsCache = data || [];
+
+      if(!requestsCache.length){
+        requestsTableBody.innerHTML = `<tr><td style="padding:14px; color:var(--muted); text-transform:none;">SIN SOLICITUDES PENDIENTES ✅</td></tr>`;
+        return;
+      }
+
+      requestsTableBody.innerHTML = requestsCache.map(r => `
+        <tr>
+          <td style="padding:14px;">
+            <b>${(r.global_id||'').toUpperCase()}</b><br>
+            <small style="text-transform:none; color:var(--muted); font-weight:800;">
+              Usuario sugerido: ${(r.requested_username||'—')}
+              <br>
+              ${new Date(r.created_at).toLocaleString()}
+            </small>
+          </td>
+          <td style="padding:14px; width:260px;">
+            <div class="row-actions">
+              <button class="btn btn-primary" onclick="approveRequest(${r.id})">✅ ACEPTAR</button>
+              <button class="btn btn-danger" onclick="rejectRequest(${r.id})">⛔ RECHAZAR</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function ensureViewerUser(username){
+      const u = (username || "").trim().toUpperCase();
+      if(!u) throw new Error("USERNAME VACÍO");
+
+      const { data: found, error: fErr } = await sb
+        .from("viewer_users")
+        .select("id, username")
+        .eq("username", u)
+        .limit(1);
+
+      if(fErr) throw new Error(fErr.message);
+      if(found && found.length) return found[0];
+
+      const { data: created, error: cErr } = await sb
+        .from("viewer_users")
+        .insert([{ username: u }])
+        .select("id, username")
+        .single();
+
+      if(cErr) throw new Error(cErr.message);
+      return created;
+    }
+
+    async function approveRequest(reqId){
+      const r = requestsCache.find(x => x.id === reqId);
+      if(!r) return;
+
+      const username = ((r.requested_username || r.global_id) || "").trim().toUpperCase();
+      if(!username) return alert("SOLICITUD INVÁLIDA: NO HAY USERNAME");
+
+      try{
+        await ensureViewerUser(username);
+
+        const { data: { session } } = await sb.auth.getSession();
+        const reviewer = session?.user?.email || "admin";
+
+        const { error: upErr } = await sb
+          .from("viewer_requests")
+          .update({ status: "APPROVED", reviewed_at: new Date().toISOString(), reviewed_by: reviewer })
+          .eq("id", reqId);
+
+        if(upErr) return alert("ERROR APROBANDO: " + upErr.message);
+
+        alert("✅ SOLICITUD APROBADA. USUARIO HABILITADO: " + username);
+        loadRequests();
+        loadViewers();
+      }catch(e){
+        alert("ERROR: " + (e?.message || e));
+      }
+    }
+
+    async function rejectRequest(reqId){
+      if(!confirm("¿RECHAZAR SOLICITUD?")) return;
+
+      try{
+        const { data: { session } } = await sb.auth.getSession();
+        const reviewer = session?.user?.email || "admin";
+
+        const { error } = await sb
+          .from("viewer_requests")
+          .update({ status: "REJECTED", reviewed_at: new Date().toISOString(), reviewed_by: reviewer })
+          .eq("id", reqId);
+
+        if(error) return alert("ERROR RECHAZANDO: " + error.message);
+
+        alert("⛔ SOLICITUD RECHAZADA");
+        loadRequests();
+      }catch(e){
+        alert("ERROR: " + (e?.message || e));
+      }
     }
 
     // =========================
