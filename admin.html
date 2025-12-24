@@ -5,75 +5,469 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
   <title>CASINO - ADMIN SISTEMA PRO</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --sidebar: #0f172a; --accent: #6366f1; --accent-hover: #4f46e5; --bg: #f1f5f9; --card: #ffffff;
-      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --radius: 12px;
-      --danger: #ef4444; --warning: #f59e0b; --success: #10b981; --sidebar-width: 320px;
+    /* ======================================================
+       THEME SYSTEM (LIGHT / DARK)
+       - No cambia funcionalidad
+       - Solo estética + variables
+    ====================================================== */
+    :root{
+      --radius: 14px;
+      --radius-lg: 20px;
+      --transition: .25s ease;
+
+      /* LIGHT */
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --sidebar: #0f172a;
+      --sidebar-soft: #111c33;
+
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+
+      --shadow: 0 12px 30px rgba(2,6,23,.08);
+      --shadow-strong: 0 40px 80px rgba(0,0,0,.45);
+
+      --sidebar-width: 320px;
     }
-    * { box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; transition: all 0.3s ease; }
 
-    #loginOverlay { position: fixed; inset: 0; background: var(--sidebar); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .login-card { background: white; padding: 40px; border-radius: 24px; width: 360px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-    .login-card input { text-transform: none !important; width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+    body.dark{
+      --bg: #0b1222;
+      --card: #0f172a;
+      --sidebar: #020617;
+      --sidebar-soft: #0b1222;
 
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar); color: white; display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; transition: 0.3s ease; z-index: 1000; border-right: 1px solid #1e293b; }
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 999; }
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-    .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid #1e293b; text-align: center; background: #020617; }
-    .sidebar-brand h2 { margin: 0; font-size: 14px; color: var(--accent); letter-spacing: 2px; }
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: #1f2a44;
 
-    .nav-group-title { font-size: 9px; color: #475569; padding: 15px 15px 5px; font-weight: 900; letter-spacing: 1px; }
-    .sidebar-nav { padding: 10px; display: flex; flex-direction: column; gap: 5px; border-bottom: 1px solid #1e293b; }
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align: left; cursor: pointer; font-weight: 800; border-radius: 8px; font-size: 11px; }
-    .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
+      --accent: #818cf8;
+      --accent-hover: #6366f1;
 
-    #pickerSection { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; background: #0f172a; }
-    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; font-size: 10px; outline: none; text-transform: none !important; }
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --shadow-strong: 0 40px 90px rgba(0,0,0,.65);
+    }
 
-    .cat-accordion { margin-bottom: 6px; }
-    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; cursor: pointer; font-size: 11px; font-weight: 800; border-radius: 6px; display: flex; justify-content: space-between; }
-    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
-    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
-    .food-card { background: #1e293b; padding: 10px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; margin: 0 5px; }
-    .food-card b { display: block; font-size: 11px; margin-bottom: 8px; color: #94a3b8; }
-    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .btn-quick { font-size: 8px; padding: 9px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 4px; margin-top: 4px; font-weight: 800; }
+    /* ======================================================
+       BASE
+    ====================================================== */
+    *{
+      box-sizing: border-box;
+      text-transform: uppercase;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body{
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg), rgba(0,0,0,0) 55%);
+      color: var(--text);
+      overflow: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
+    .hidden{ display:none !important; }
 
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .btn-toggle { background: var(--sidebar); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; margin-right: 15px; }
-    .view-port { flex: 1; overflow-y: auto; padding: 25px; scroll-behavior: smooth; }
-    .container { max-width: 1100px; margin: 0 auto; width: 100%; }
+    /* ======================================================
+       LOGIN
+    ====================================================== */
+    #loginOverlay{
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, var(--sidebar), #020617);
+      z-index: 99999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
+    }
+    .login-card{
+      background: var(--card);
+      padding: 38px;
+      border-radius: var(--radius-lg);
+      width: 360px;
+      max-width: 92vw;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-strong);
+    }
+    .login-card h2{
+      text-align:center;
+      margin: 0 0 26px;
+      letter-spacing: 1px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .login-card label{
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display:block;
+    }
+    .login-card input{
+      text-transform:none !important;
+      width:100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 18px;
+      font-weight: 700;
+      background: transparent;
+      color: var(--text);
+      outline:none;
+      transition: border var(--transition), box-shadow var(--transition);
+    }
+    .login-card input:focus{
+      border-color: rgba(99,102,241,.55);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.15);
+    }
 
-    .card { background: white; padding: 25px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 800; font-size: 13px; background: #fcfcfc; }
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
-    .btn-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-    .btn-ghost { background: rgba(15,23,42,.06); color: #0f172a; border: 1px solid rgba(15,23,42,.12); }
+    /* ======================================================
+       SIDEBAR + OVERLAY
+    ====================================================== */
+    .sidebar{
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
+      color: white;
+      display:flex;
+      flex-direction:column;
+      flex-shrink:0;
+      height: 100vh;
+      transition: .3s ease;
+      z-index: 1000;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index: 999;
+    }
+    body.sidebar-hidden .sidebar{
+      margin-left: calc(var(--sidebar-width) * -1);
+    }
+    .sidebar-brand{
+      padding: 22px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      text-align:center;
+      background: rgba(2,6,23,.55);
+      backdrop-filter: blur(10px);
+    }
+    .sidebar-brand h2{
+      margin:0;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      font-weight: 900;
+    }
+    .nav-group-title{
+      font-size: 9px;
+      color: #94a3b8;
+      padding: 16px 14px 6px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .sidebar-nav{
+      padding: 10px;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav-btn{
+      width: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      text-align:left;
+      cursor:pointer;
+      font-weight: 900;
+      border-radius: 12px;
+      font-size: 11px;
+      transition: var(--transition);
+    }
+    .nav-btn:hover{
+      background: rgba(255,255,255,.07);
+      color: white;
+    }
+    .nav-btn.active{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      border-left: none;
+      box-shadow: 0 10px 22px rgba(99,102,241,.25);
+    }
 
-    .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-    .tab-btn { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; font-weight: 800; font-size: 11px; cursor: pointer; }
-    .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    #pickerSection{
+      flex: 1;
+      overflow-y:auto;
+      padding: 10px;
+      background: rgba(2,6,23,.18);
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .catalog-scroll{ flex:1; overflow-y:auto; padding:10px; }
 
-    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .hidden { display: none !important; }
-    .table-wrap { overflow-x: auto; background: white; border-radius: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; }
-    td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 12px; font-weight: 700; vertical-align: top; }
+    /* buscador catálogo */
+    #catSearch{
+      width:100%;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 10px;
+      outline:none;
+      text-transform:none;
+      transition: var(--transition);
+    }
+    #catSearch:focus{
+      border-color: rgba(129,140,248,.6);
+      box-shadow: 0 0 0 4px rgba(129,140,248,.18);
+    }
 
-    /* === GESTIÓN ACCESOS (MISMA ESTÉTICA QUE YA VENÍAS USANDO) === */
+    /* acordeón catálogo */
+    .cat-accordion{ margin-bottom: 8px; }
+    .cat-trigger{
+      width:100%;
+      padding: 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      text-align:left;
+      cursor:pointer;
+      font-size: 11px;
+      font-weight: 900;
+      border-radius: 12px;
+      display:flex;
+      justify-content:space-between;
+      transition: var(--transition);
+    }
+    .cat-trigger:hover{ background: rgba(255,255,255,.12); }
+    .cat-content{ max-height: 0; overflow:hidden; transition: .3s ease-out; }
+    .cat-accordion.active .cat-content{ max-height: 1500px; padding: 10px 0; }
+
+    .food-card{
+      background: rgba(255,255,255,.06);
+      padding: 10px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,.08);
+      margin: 0 5px 10px;
+    }
+    .food-card b{
+      display:block;
+      font-size: 11px;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+    .btn-grid-4{ display:grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .btn-quick{
+      font-size: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      cursor:pointer;
+      border-radius: 10px;
+      margin-top: 4px;
+      font-weight: 900;
+      transition: var(--transition);
+    }
+    .btn-quick:hover{
+      background: rgba(255,255,255,.16);
+      transform: translateY(-1px);
+    }
+
+    /* ======================================================
+       MAIN AREA + TOP BAR
+    ====================================================== */
+    .main-area{ flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
+    .top-bar{
+      padding: 14px 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      transition: background var(--transition), border var(--transition);
+    }
+    .btn-toggle{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      border:none;
+      margin-right: 14px;
+      box-shadow: 0 10px 22px rgba(99,102,241,.22);
+      transition: var(--transition);
+    }
+    .btn-toggle:hover{ transform: translateY(-1px); }
+
+    .view-port{
+      flex:1;
+      overflow-y:auto;
+      padding: 26px;
+      scroll-behavior:smooth;
+    }
+    .container{ max-width: 1100px; margin: 0 auto; width: 100%; }
+
+    /* ======================================================
+       CARDS + FORMS
+    ====================================================== */
+    .card{
+      background: var(--card);
+      padding: 26px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 26px;
+      transition: background var(--transition), border var(--transition), box-shadow var(--transition);
+    }
+    input, select{
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 13px;
+      background: transparent;
+      color: var(--text);
+      outline:none;
+      transition: var(--transition);
+    }
+    input:focus, select:focus{
+      border-color: rgba(99,102,241,.55);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+    }
+    label{
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display:block;
+    }
+
+    /* ======================================================
+       BUTTONS
+    ====================================================== */
+    .btn{
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 11px;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      box-shadow: 0 10px 22px rgba(99,102,241,.20);
+    }
+    .btn-primary:hover{ transform: translateY(-1px); }
+    .btn-danger{
+      background: rgba(239,68,68,.14);
+      color: var(--danger);
+      border: 1px solid rgba(239,68,68,.20);
+    }
+    .btn-warning{
+      background: rgba(245,158,11,.16);
+      color: #b45309;
+      border: 1px solid rgba(245,158,11,.24);
+    }
+    .btn-ghost{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ======================================================
+       TAB NAV
+    ====================================================== */
+    .tab-nav{ display:flex; gap: 10px; margin-bottom: 18px; }
+    .tab-btn{
+      flex:1;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(148,163,184,.10);
+      font-weight: 900;
+      font-size: 11px;
+      cursor:pointer;
+      transition: var(--transition);
+      color: var(--text);
+    }
+    .tab-btn.active{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      border-color: transparent;
+    }
+
+    /* ======================================================
+       DRAFT
+    ====================================================== */
+    .draft-item{
+      background: rgba(99,102,241,.06);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* ======================================================
+       TABLES
+    ====================================================== */
+    .table-wrap{
+      overflow-x:auto;
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    table{ width:100%; border-collapse: collapse; }
+    td{
+      padding: 14px;
+      border-bottom: 1px solid rgba(148,163,184,.15);
+      font-size: 12px;
+      font-weight: 800;
+      vertical-align: top;
+      color: var(--text);
+    }
+
+    /* ======================================================
+       ACCESOS (mantengo tus clases, solo estética más limpia)
+    ====================================================== */
     .access-card{
       border: 1px solid rgba(99,102,241,.18);
       box-shadow: 0 18px 40px rgba(2,6,23,.08);
       background: linear-gradient(180deg, rgba(99,102,241,.06), rgba(255,255,255,1) 55%);
     }
+    body.dark .access-card{
+      background: linear-gradient(180deg, rgba(129,140,248,.08), rgba(15,23,42,1) 55%);
+    }
+
     .access-head{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding: 14px 16px; border-radius: 16px;
@@ -81,8 +475,8 @@
       border: 1px solid rgba(99,102,241,.20);
       margin-bottom: 14px;
     }
-    .access-title{ margin:0; font-size:14px; font-weight:900; letter-spacing:.8px; color:#0f172a; }
-    .access-sub{ font-size:11px; color:#475569; font-weight:700; margin-top:4px; text-transform:none; }
+    .access-title{ margin:0; font-size:14px; font-weight:900; letter-spacing:.8px; color: var(--text); }
+    .access-sub{ font-size:11px; color: var(--muted); font-weight:700; margin-top:4px; text-transform:none; }
 
     .access-chip{
       font-size: 10px; font-weight: 900; letter-spacing: 1px;
@@ -92,11 +486,12 @@
     }
     .access-tabs{ display:flex; gap:10px; margin: 10px 0 16px; }
     .access-tab{
-      flex:1; padding: 12px; border-radius: 12px;
+      flex:1; padding: 12px; border-radius: 14px;
       border: 1px solid rgba(99,102,241,.22);
-      background: rgba(248,250,252,.9);
+      background: rgba(148,163,184,.10);
       font-weight: 900; font-size: 11px; cursor:pointer;
-      transition:.18s ease;
+      transition: var(--transition);
+      color: var(--text);
     }
     .access-tab.active{
       background: linear-gradient(90deg, rgba(99,102,241,1), rgba(16,185,129,1));
@@ -104,16 +499,23 @@
     }
     .access-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
     @media (max-width: 980px){ .access-grid{ grid-template-columns: 1fr; } }
+
     .access-box{
-      background: rgba(255,255,255,.9);
+      background: rgba(255,255,255,.92);
       border: 1px solid rgba(226,232,240,.9);
       border-radius: 16px;
       padding: 16px;
       box-shadow: 0 12px 28px rgba(2,6,23,.06);
     }
+    body.dark .access-box{
+      background: rgba(2,6,23,.18);
+      border-color: rgba(31,42,68,.9);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+    }
+
     .box-title{
       font-size: 10px; font-weight: 900; letter-spacing: 1px;
-      color: #4f46e5; margin-bottom: 12px;
+      color: var(--accent); margin-bottom: 12px;
     }
     .perm-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top:10px; }
     .perm{
@@ -124,22 +526,46 @@
       background: rgba(99,102,241,.06);
       font-weight: 900;
       font-size: 10px;
+      color: var(--text);
     }
     .perm input{ width: 16px; height: 16px; }
+
     .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top: 14px; }
     .row-actions{ display:flex; gap:8px; justify-content:flex-end; }
+
     .pill{
       display:inline-flex; align-items:center; gap:6px;
       padding: 6px 10px; border-radius: 999px;
       font-size: 10px; font-weight: 900;
       border: 1px solid rgba(226,232,240,.9);
-      background: rgba(248,250,252,.9);
-      color:#334155;
+      background: rgba(148,163,184,.10);
+      color: var(--text);
       margin-right: 6px;
       margin-top: 6px;
+      text-transform:none;
     }
-    .pill.on{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); color:#065f46; }
-    .pill.off{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); color:#7f1d1d; }
+    .pill.on{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); color:#10b981; }
+    .pill.off{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); color:#ef4444; }
+
+    /* ======================================================
+       THEME BUTTON
+    ====================================================== */
+    .theme-btn{
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.18);
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform:none;
+    }
+    .theme-btn:hover{
+      background: rgba(99,102,241,.18);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 
@@ -147,7 +573,7 @@
 
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align: center; margin: 0 0 30px;">CASINO ADMIN PRO</h2>
+      <h2>CASINO ADMIN PRO</h2>
       <label>EMAIL</label><input id="lEmail" type="email">
       <label>PASSWORD</label><input id="lPass" type="password">
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 16px;" onclick="handleLogin()">ENTRAR</button>
@@ -168,12 +594,11 @@
 
     <div id="pickerSection" class="catalog-scroll">
       <div class="nav-group-title" style="padding-left: 5px;">SELECCIÓN RÁPIDA</div>
-      <input type="text" id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"
-        style="width:100%; background:#1e293b; border:none; color:white; padding:10px; border-radius:8px; margin-bottom:10px; font-size:10px; text-transform: none;">
+      <input type="text" id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()">
       <div id="catalogList"></div>
     </div>
 
-    <div class="admin-bottom" style="margin-top:auto; border-top:1px solid #1e293b; padding-bottom: 20px;">
+    <div class="admin-bottom" style="margin-top:auto; border-top:1px solid rgba(255,255,255,.06); padding-bottom: 20px;">
       <div class="nav-group-title">ADMINISTRADOR</div>
       <div class="sidebar-nav">
         <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
@@ -186,14 +611,19 @@
     <header class="top-bar">
       <div style="display: flex; align-items: center;">
         <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-hidden')">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);"> GESTION ADMINISTRADOR DE MENUS</h1>
+        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 900; color: var(--muted);">GESTION ADMINISTRADOR DE MENUS</h1>
       </div>
-      <div style="display: flex; align-items: center; gap: 15px;">
+
+      <div style="display: flex; align-items: center; gap: 12px;">
         <div style="font-size:10px; font-weight:900; color:var(--accent);">VISITAS: <span id="vCount">0</span></div>
         <span id="userBadge" style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
-        <button class="btn" style="background:#e2e8f0; padding: 8px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
+
+        <!-- Toggle modo oscuro -->
+        <button class="theme-btn" onclick="toggleTheme()">🌙 / ☀️</button>
+
+        <button class="btn btn-ghost" style="padding: 10px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
       </div>
     </header>
 
@@ -653,18 +1083,18 @@
 
       container.innerHTML = historyCache.map(m => {
         const pts = (m.menu_menu_items || []).map(rel =>
-          rel.menu_items ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : ''
+          rel.menu_items ? `<span style="display:block; font-size:10px; color:var(--muted); text-transform:none;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : ''
         ).join('');
 
         return `
           <tr>
             <td style="width:160px;">
               <b>${m.menu_date}</b><br>
-              <span style="font-size:10px; color:#64748b;">${(m.name||'').toUpperCase()}</span>
+              <span style="font-size:10px; color:var(--muted); text-transform:none;">${(m.name||'').toUpperCase()}</span>
             </td>
             <td>
               <b>${(m.name||'').toUpperCase()}</b>
-              <div style="background:#f8fafc; padding:10px; border-radius:12px; margin-top:8px;">${pts}</div>
+              <div style="background: rgba(148,163,184,.10); padding:10px; border-radius:14px; margin-top:8px; border:1px solid var(--border);">${pts}</div>
             </td>
             <td style="text-align:right; width:260px;">
               <button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button>
@@ -704,7 +1134,7 @@
       if (t === 'viewers') loadViewers();
     }
 
-    // ---- ADMINS (user_permissions + auth signUp al crear)
+    // ---- ADMINS
     async function loadAdmins(){
       const { data } = await sb.from('user_permissions').select('*').order('email');
       adminsCache = data || [];
@@ -758,7 +1188,6 @@
         can_access_index: !!aIdx.checked
       };
 
-      // si es nuevo admin -> crear auth usuario
       if(!editAdmEmail.value){
         if(!aPass.value) return alert("FALTA PASSWORD");
         const { error: signErr } = await sb.auth.signUp({ email, password: aPass.value });
@@ -781,7 +1210,7 @@
       loadAdmins();
     }
 
-    // ---- VIEWERS (viewer_users CRUD)
+    // ---- VIEWERS (viewer_users)
     async function loadViewers(){
       const { data, error } = await sb.from('viewer_users').select('*').order('username');
       if(error) return alert("ERROR CARGANDO VIEWERS: " + error.message);
@@ -791,7 +1220,7 @@
         <tr>
           <td style="padding:14px;">
             <b>${v.username}</b><br>
-            <small style="text-transform:none;">ID: ${v.id}</small>
+            <small style="text-transform:none; color:var(--muted);">ID: ${v.id}</small>
           </td>
           <td style="padding:14px; width:220px;">
             <div class="row-actions">
@@ -854,6 +1283,21 @@
       return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
     }
     menuDate.value = getToday();
+
+    // =========================
+    // THEME (solo UI)
+    // =========================
+    function applyTheme() {
+      const t = localStorage.getItem("theme") || "light";
+      document.body.classList.toggle("dark", t === "dark");
+    }
+    function toggleTheme() {
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "light" : "dark");
+      applyTheme();
+    }
+    applyTheme();
+
     check();
   </script>
 </body>
