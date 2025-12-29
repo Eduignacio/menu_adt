@@ -1,5 +1,6 @@
+
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark"> <!-- NUEVO: atributo data-theme por defecto -->
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -8,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
+    /* =========================
+       PALETA (DARK / LIGHT)
+       ========================= */
     :root{
       --bg:#0b1222;
       --card:#0f172a;
@@ -16,13 +20,40 @@
       --text:#e2e8f0;
       --muted:#94a3b8;
       --border:#1f2a44;
+      --shadow: rgba(0,0,0,.35);
+      --accent-mix-1: rgba(99,102,241,.20);
+      --accent-mix-2: rgba(99,102,241,.30);
+      --success-mix: rgba(16,185,129,.12);
+      --login-bg: rgba(5,8,21,.86);
+      --login-card-bg: rgba(15,23,42,.96);
+      --input-bg: rgba(17,28,51,.65);
+      --input-border: rgba(31,42,68,.9);
+    }
+
+    /* NUEVO: Tema claro */
+    :root[data-theme="light"]{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --soft:#f1f5f9;
+      --accent:#4f46e5;
+      --text:#0f172a;
+      --muted:#475569;
+      --border:#e2e8f0;
+      --shadow: rgba(0,0,0,.10);
+      --accent-mix-1: rgba(79,70,229,.10);
+      --accent-mix-2: rgba(79,70,229,.15);
+      --success-mix: rgba(16,185,129,.10);
+      --login-bg: rgba(240,244,255,.86);
+      --login-card-bg:#ffffff;
+      --input-bg:#f8fafc;
+      --input-border:#e2e8f0;
     }
 
     *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
 
     body{
       margin:0;
-      background:linear-gradient(180deg,#050815,#0b1222);
+      background:linear-gradient(180deg, var(--bg), var(--bg));
       color:var(--text);
       min-height:100vh;
     }
@@ -34,11 +65,15 @@
       padding:16px 18px;
       border:1px solid var(--border);
       border-radius:18px;
-      background:linear-gradient(90deg, rgba(99,102,241,.20), rgba(15,23,42,.70));
+      background:linear-gradient(90deg, var(--accent-mix-1), rgba(15,23,42,.00));
     }
 
     .brand{ font-weight:900; letter-spacing:1px; }
     .who{ font-size:12px; color:var(--muted); }
+
+    .actions{
+      display:flex; gap:8px; align-items:center;
+    }
 
     .btn{
       border:none; cursor:pointer; font-weight:900;
@@ -49,19 +84,26 @@
       border:1px solid #2b3b63;
     }
 
+    /* NUEVO: botón de tema que se adapta al modo */
+    .btn-theme{
+      background:var(--soft); 
+      border:1px solid var(--border);
+      color:var(--text);
+    }
+
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
 
     .menu-card{
       border:1px solid var(--border);
       border-radius:18px;
       overflow:hidden;
-      background:rgba(15,23,42,.92);
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      background:var(--card);
+      box-shadow: 0 18px 40px var(--shadow);
     }
 
     .menu-head{
       padding:16px 18px;
-      background:linear-gradient(90deg, rgba(99,102,241,.30), rgba(16,185,129,.12));
+      background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
       border-bottom:1px solid var(--border);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
@@ -72,8 +114,8 @@
     .items{ padding:16px 18px; display:grid; gap:10px; }
 
     .item{
-      background:rgba(17,28,51,.65);
-      border:1px solid rgba(31,42,68,.9);
+      background:var(--soft);
+      border:1px solid var(--border);
       border-radius:14px;
       padding:12px;
     }
@@ -85,7 +127,7 @@
     #loginOverlay{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
-      background:rgba(5,8,21,.86);
+      background:var(--login-bg);
       backdrop-filter: blur(6px);
       z-index:9999;
       padding: 18px;
@@ -93,11 +135,11 @@
 
     .login-card{
       width:420px; max-width:95vw;
-      background:rgba(15,23,42,.96);
-      border:1px solid rgba(31,42,68,.9);
+      background:var(--login-card-bg);
+      border:1px solid var(--input-border);
       border-radius:20px;
       padding:22px;
-      box-shadow: 0 30px 70px rgba(0,0,0,.55);
+      box-shadow: 0 30px 70px var(--shadow);
     }
 
     .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
@@ -112,8 +154,8 @@
       width:100%;
       padding:14px;
       border-radius:14px;
-      border:1px solid rgba(31,42,68,.9);
-      background:rgba(17,28,51,.65);
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
       color:var(--text);
       font-weight:900;
       letter-spacing:1px;
@@ -149,7 +191,11 @@
     }
     .req-title{ font-weight:900; font-size:12px; margin-bottom:8px; letter-spacing:.6px; }
     .req-sub{ font-size:11px; color:var(--muted); margin-bottom:10px; text-transform:none; }
-    .req-btn{ background:#1f2a44; border:1px solid #2b3b63; color:var(--text); }
+
+    /* 🔒 NUEVO: ocultar SOLO el botón "ENVIAR SOLICITUD" sin eliminarlo */
+    .req-btn{ 
+      display:none; /* oculta visualmente el botón, la función requestAccess() sigue existiendo */
+    }
   </style>
 </head>
 
@@ -185,7 +231,12 @@
         <div class="brand">MENÚ DEL DÍA</div>
         <div class="who" id="whoTxt">NO LOGUEADO</div>
       </div>
-      <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
+
+      <!-- NUEVO: acciones (tema + salir) -->
+      <div class="actions">
+        <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()">MODO: OSCURO</button>
+        <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
+      </div>
     </div>
 
     <div class="grid" id="menusGrid"></div>
@@ -202,6 +253,32 @@
 
     let lastTypedUser = "";
     let approveChannel = null;
+
+    /* =========================
+       TEMA OSCURO / CLARO
+    ========================= */
+    const THEME_KEY = "menu_theme"; // dark | light
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById("themeToggleBtn");
+
+    function applyTheme(theme){
+      const t = (theme === "light") ? "light" : "dark";
+      htmlEl.setAttribute("data-theme", t);
+      localStorage.setItem(THEME_KEY, t);
+      // Texto del botón
+      themeBtn.textContent = (t === "light") ? "MODO: CLARO" : "MODO: OSCURO";
+    }
+
+    function toggleTheme(){
+      const current = htmlEl.getAttribute("data-theme") || "dark";
+      applyTheme(current === "dark" ? "light" : "dark");
+    }
+
+    // Al cargar, aplicar tema guardado
+    (function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY) || "dark";
+      applyTheme(saved);
+    })();
 
     /* =========================
        HELPERS
@@ -227,7 +304,8 @@
       return (viewerUser.value || "").trim().toUpperCase();
     }
 
-    /* Mostrar botón de solicitud cuando se escribe algo */
+    /* Mostrar botón de solicitud cuando se escribe algo
+       (La caja puede mostrarse, pero el botón permanece oculto por CSS) */
     viewerUser.addEventListener('input', () => {
       lastTypedUser = normUser();
       reqBox.style.display = lastTypedUser ? "block" : "none";
@@ -236,7 +314,7 @@
 
     /* =========================
        SOLICITAR ACCESO (SIN LOGIN)
-    ========================= */
+       ========================= */
     async function requestAccess(){
       hideErr();
 
@@ -254,7 +332,7 @@
 
     /* =========================
        LOGIN VIEWER
-    ========================= */
+       ========================= */
     async function loginViewer(){
       hideErr();
 
@@ -271,7 +349,7 @@
 
       if(error) return showErr("ERROR: " + error.message);
 
-      // NO EXISTE -> permite solicitar
+      // NO EXISTE -> permite solicitar (botón está oculto, funcionalidad se mantiene)
       if(!data || !data.length){
         reqBox.style.display = "block";
         await createAccessRequest(u, null);
@@ -380,7 +458,7 @@
 
     /* =========================
        CARGA MENÚS DEL DÍA
-    ========================= */
+       ========================= */
     async function loadMenusForDate(dateStr){
       menusGrid.innerHTML = "";
 
@@ -449,3 +527,4 @@
   </script>
 </body>
 </html>
+``
