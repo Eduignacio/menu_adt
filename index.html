@@ -558,7 +558,7 @@
         function toggle(){
           const isCollapsed = card.classList.toggle('collapsed');
           head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-          if(chip) chip.textContent = isCollapsed ? 'MINIMIZAR' : 'EXPANDIR';
+          if(chip) chip.textContent = isCollapsed ? 'EXPANDIR' : 'MINIMIZAR';
         }
 
         head.addEventListener('click', toggle);
