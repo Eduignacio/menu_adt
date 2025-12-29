@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="es" data-theme="dark"> <!-- NUEVO: atributo data-theme por defecto -->
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -11,7 +11,7 @@
   <style>
     /* =========================
        PALETA (DARK / LIGHT)
-       ========================= */
+    ========================= */
     :root{
       --bg:#0b1222;
       --card:#0f172a;
@@ -28,9 +28,9 @@
       --login-card-bg: rgba(15,23,42,.96);
       --input-bg: rgba(17,28,51,.65);
       --input-border: rgba(31,42,68,.9);
+      --chip-bg: rgba(255,255,255,.08);
     }
 
-    /* NUEVO: Tema claro */
     :root[data-theme="light"]{
       --bg:#f6f7fb;
       --card:#ffffff;
@@ -47,6 +47,7 @@
       --login-card-bg:#ffffff;
       --input-bg:#f8fafc;
       --input-border:#e2e8f0;
+      --chip-bg: rgba(15,23,42,.06);
     }
 
     *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
@@ -71,9 +72,7 @@
     .brand{ font-weight:900; letter-spacing:1px; }
     .who{ font-size:12px; color:var(--muted); }
 
-    .actions{
-      display:flex; gap:8px; align-items:center;
-    }
+    .actions{ display:flex; gap:8px; align-items:center; }
 
     .btn{
       border:none; cursor:pointer; font-weight:900;
@@ -84,12 +83,16 @@
       border:1px solid #2b3b63;
     }
 
-    /* NUEVO: botón de tema que se adapta al modo */
+    /* Toggle de tema con emoji */
     .btn-theme{
-      background:var(--soft); 
+      background:var(--soft);
       border:1px solid var(--border);
       color:var(--text);
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
     }
+    .btn-theme .icon{ font-size:16px; }
+    .btn-theme .label{ font-size:12px; color:var(--muted); font-weight:800; }
 
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
 
@@ -106,22 +109,37 @@
       background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
       border-bottom:1px solid var(--border);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
+      cursor:pointer; /* permite click para colapsar/expandir */
+      user-select:none;
     }
 
-    .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; }
+    .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; display:flex; gap:8px; align-items:center; }
     .menu-date{ font-size:12px; color:var(--muted); }
 
-    .items{ padding:16px 18px; display:grid; gap:10px; }
+    /* Indicador de estado (chip) */
+    .chip{
+      padding:2px 8px;
+      border-radius:999px;
+      background:var(--chip-bg);
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
+    }
 
+    .items{ padding:16px 18px; display:grid; gap:10px; transition:max-height .25s ease, opacity .25s ease; }
     .item{
       background:var(--soft);
       border:1px solid var(--border);
       border-radius:14px;
       padding:12px;
     }
-
     .item b{ display:block; font-size:13px; }
     .item small{ color:var(--muted); font-weight:700; }
+
+    /* Estados colapsados */
+    .menu-card.collapsed .items{
+      display:none;            /* simple y eficiente */
+    }
 
     /* LOGIN */
     #loginOverlay{
@@ -143,7 +161,6 @@
     }
 
     .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
-
     .login-card label{
       font-size:11px; color:var(--muted);
       font-weight:800; letter-spacing:.8px;
@@ -192,10 +209,8 @@
     .req-title{ font-weight:900; font-size:12px; margin-bottom:8px; letter-spacing:.6px; }
     .req-sub{ font-size:11px; color:var(--muted); margin-bottom:10px; text-transform:none; }
 
-    /* 🔒 NUEVO: ocultar SOLO el botón "ENVIAR SOLICITUD" sin eliminarlo */
-    .req-btn{ 
-      display:none; /* oculta visualmente el botón, la función requestAccess() sigue existiendo */
-    }
+    /* 🔒 Ocultar solo el botón ENVIAR SOLICITUD (función se mantiene) */
+    .req-btn{ display:none; }
   </style>
 </head>
 
@@ -209,7 +224,7 @@
       <label>INGRESA TU GLOBAL ID</label>
       <input id="viewerUser" placeholder="JCI">
 
-      <button class="btn" onclick="loginViewer()">ENTRAR / ENVIAR SOLICITUD</button>
+      <button class="btn" onclick="loginViewer()">ENTRAR</button>
 
       <div id="loginErr"></div>
 
@@ -232,9 +247,12 @@
         <div class="who" id="whoTxt">NO LOGUEADO</div>
       </div>
 
-      <!-- NUEVO: acciones (tema + salir) -->
+      <!-- Acciones (tema con emoji + salir) -->
       <div class="actions">
-        <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()">MODO: OSCURO</button>
+        <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambiar tema">
+          <span class="icon" id="themeIcon">🌙</span>
+          <span class="label" id="themeLabel">OSC.</span>
+        </button>
         <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
       </div>
     </div>
@@ -255,18 +273,26 @@
     let approveChannel = null;
 
     /* =========================
-       TEMA OSCURO / CLARO
+       TEMA OSCURO / CLARO (🌙/☀️)
     ========================= */
     const THEME_KEY = "menu_theme"; // dark | light
     const htmlEl = document.documentElement;
     const themeBtn = document.getElementById("themeToggleBtn");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeLabel = document.getElementById("themeLabel");
 
     function applyTheme(theme){
       const t = (theme === "light") ? "light" : "dark";
       htmlEl.setAttribute("data-theme", t);
       localStorage.setItem(THEME_KEY, t);
-      // Texto del botón
-      themeBtn.textContent = (t === "light") ? "MODO: CLARO" : "MODO: OSCURO";
+      // Emoji + etiqueta corta
+      if(t === "light"){
+        themeIcon.textContent = "☀️";
+        themeLabel.textContent = "CL.";
+      }else{
+        themeIcon.textContent = "🌙";
+        themeLabel.textContent = "OSC.";
+      }
     }
 
     function toggleTheme(){
@@ -274,7 +300,6 @@
       applyTheme(current === "dark" ? "light" : "dark");
     }
 
-    // Al cargar, aplicar tema guardado
     (function initTheme(){
       const saved = localStorage.getItem(THEME_KEY) || "dark";
       applyTheme(saved);
@@ -304,8 +329,6 @@
       return (viewerUser.value || "").trim().toUpperCase();
     }
 
-    /* Mostrar botón de solicitud cuando se escribe algo
-       (La caja puede mostrarse, pero el botón permanece oculto por CSS) */
     viewerUser.addEventListener('input', () => {
       lastTypedUser = normUser();
       reqBox.style.display = lastTypedUser ? "block" : "none";
@@ -314,17 +337,14 @@
 
     /* =========================
        SOLICITAR ACCESO (SIN LOGIN)
-       ========================= */
+    ========================= */
     async function requestAccess(){
       hideErr();
 
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
 
-      // Inserta solicitud pending (sin duplicar)
       await createAccessRequest(u, null);
-
-      // Escucha aprobación
       subscribeToApproval(u);
 
       showErr("SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
@@ -332,7 +352,7 @@
 
     /* =========================
        LOGIN VIEWER
-       ========================= */
+    ========================= */
     async function loginViewer(){
       hideErr();
 
@@ -349,7 +369,7 @@
 
       if(error) return showErr("ERROR: " + error.message);
 
-      // NO EXISTE -> permite solicitar (botón está oculto, funcionalidad se mantiene)
+      // NO EXISTE -> genera solicitud y escucha aprobación
       if(!data || !data.length){
         reqBox.style.display = "block";
         await createAccessRequest(u, null);
@@ -359,7 +379,6 @@
 
       const viewer = data[0];
 
-      // EXISTE PERO NO APROBADO
       if(viewer.approved !== true){
         reqBox.style.display = "block";
         await createAccessRequest(u, viewer.id);
@@ -378,7 +397,6 @@
     }
 
     async function createAccessRequest(username, viewerUserId=null){
-      // evita duplicar solicitudes pending
       const { data: existing, error: exErr } = await sb
         .from('viewer_access_requests')
         .select('id, status')
@@ -386,10 +404,7 @@
         .eq('status', 'pending')
         .limit(1);
 
-      if(exErr){
-        console.warn(exErr);
-        return;
-      }
+      if(exErr){ console.warn(exErr); return; }
       if(existing && existing.length) return;
 
       const payload = { username, status: 'pending' };
@@ -400,7 +415,6 @@
     }
 
     function subscribeToApproval(username){
-      // resetea canal anterior
       try{
         if(approveChannel){
           sb.removeChannel(approveChannel);
@@ -457,8 +471,8 @@
     }
 
     /* =========================
-       CARGA MENÚS DEL DÍA
-       ========================= */
+       CARGA MENÚS DEL DÍA + COLAPSE
+    ========================= */
     async function loadMenusForDate(dateStr){
       menusGrid.innerHTML = "";
 
@@ -484,8 +498,11 @@
       if(!menus.length){
         menusGrid.innerHTML = `
           <div class="menu-card">
-            <div class="menu-head">
-              <div class="menu-title">SIN MENÚ PUBLICADO</div>
+            <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
+              <div class="menu-title">
+                <span class="chip">COLAPSADO</span>
+                SIN MENÚ PUBLICADO
+              </div>
               <div class="menu-date">${dateStr}</div>
             </div>
             <div class="items">
@@ -495,6 +512,8 @@
               </div>
             </div>
           </div>`;
+        // Activa el colapso en esta tarjeta también
+        attachCollapseHandlers();
         return;
       }
 
@@ -512,15 +531,44 @@
             `).join('')
           : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
 
+        // Por defecto expandido (aria-expanded="true")
         return `
-          <div class="menu-card">
-            <div class="menu-head">
-              <div class="menu-title">${(m.name||'MENÚ').toUpperCase()}</div>
+          <div class="menu-card" data-collapsible="true">
+            <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
+              <div class="menu-title">
+                <span class="chip">EXPANDIDO</span>
+                ${(m.name||'MENÚ').toUpperCase()}
+              </div>
               <div class="menu-date">${m.menu_date}</div>
             </div>
             <div class="items">${itemsHtml}</div>
           </div>`;
       }).join('');
+
+      attachCollapseHandlers();
+    }
+
+    // Añade manejo de colapso/expandir a todas las tarjetas actuales
+    function attachCollapseHandlers(){
+      const cards = document.querySelectorAll('.menu-card[data-collapsible="true"]');
+      cards.forEach(card => {
+        const head = card.querySelector('.menu-head');
+        const chip = head.querySelector('.chip');
+
+        function toggle(){
+          const isCollapsed = card.classList.toggle('collapsed');
+          head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+          if(chip) chip.textContent = isCollapsed ? 'COLAPSADO' : 'EXPANDIDO';
+        }
+
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
     }
 
     checkViewerSession();
