@@ -6,9 +6,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MENÚ DEL DÍA</title>
 
+  <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
 
   <style>
+    /* =========================
+       PALETA (DARK / LIGHT)
+    ========================= */
     :root{
       --bg:#0b1222;
       --card:#0f172a;
@@ -26,6 +30,8 @@
       --input-bg: rgba(17,28,51,.65);
       --input-border: rgba(31,42,68,.9);
       --chip-bg: rgba(255,255,255,.08);
+      --glass-1: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      --pill-bg: rgba(255,255,255,.10);
     }
     :root[data-theme="light"]{
       --bg:#f6f7fb;
@@ -44,93 +50,293 @@
       --input-bg:#f8fafc;
       --input-border:#e2e8f0;
       --chip-bg: rgba(15,23,42,.06);
+      --glass-1: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.01));
+      --pill-bg: rgba(15,23,42,.06);
     }
+
     *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
+
     body{
       margin:0;
       background:linear-gradient(180deg, var(--bg), var(--bg));
       color:var(--text);
       min-height:100vh;
     }
+
     .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
 
     .top{
       display:flex; justify-content:space-between; align-items:center; gap:16px;
-      padding:16px 18px; border:1px solid var(--border); border-radius:18px;
+      padding:16px 18px;
+      border:1px solid var(--border);
+      border-radius:18px;
       background:linear-gradient(90deg, var(--accent-mix-1), rgba(15,23,42,.00));
     }
+
     .brand{ font-weight:900; letter-spacing:1px; }
     .who{ font-size:12px; color:var(--muted); }
+
     .actions{ display:flex; gap:8px; align-items:center; }
 
-    .btn{ border:none; cursor:pointer; font-weight:900; border-radius:12px; padding:10px 14px; }
-    .btn-logout{ background:#1f2a44; color:var(--text); border:1px solid #2b3b63; }
-    .btn-theme{
-      background:var(--soft); border:1px solid var(--border); color:var(--text);
-      display:flex; align-items:center; justify-content:center; width:44px; height:40px; padding:0; font-size:18px;
+    .btn{
+      border:none; cursor:pointer; font-weight:900;
+      border-radius:12px; padding:10px 14px;
+    }
+    .btn-logout{
+      background:#1f2a44; color:var(--text);
+      border:1px solid #2b3b63;
     }
 
-    /* Filtros de fecha */
+    /* Toggle de tema con emoji (solo icono) */
+    .btn-theme{
+      background:var(--soft);
+      border:1px solid var(--border);
+      color:var(--text);
+      display:flex; align-items:center; justify-content:center;
+      width:44px; height:40px; padding:0;
+      font-size:18px;
+    }
+
+    /* =============== */
+    /*  BARRA DE FILTROS (NUEVA ESTÉTICA) */
+    /* =============== */
     .filters{
-      margin-top:14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
     }
     .filters .group{
-      display:flex; gap:8px; align-items:center; background:var(--soft);
-      border:1px solid var(--border); border-radius:12px; padding:8px;
+      display:flex; gap:8px; align-items:center;
+      background:var(--glass-1);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:8px;
+      box-shadow: 0 8px 20px var(--shadow);
     }
-    .filters input[type="date"]{
-      background:var(--card); color:var(--text); border:1px solid var(--border);
-      border-radius:8px; padding:8px; outline:none;
+    .segment{
+      display:flex; gap:6px; align-items:center;
+      padding:4px;
+      background:var(--soft);
+      border:1px solid var(--border);
+      border-radius:12px;
     }
-    .filters .btn-day{ background:var(--card); color:var(--text); border:1px solid var(--border); }
+    .segment .seg-btn{
+      background:transparent;
+      color:var(--text);
+      border:none;
+      padding:8px 12px;
+      border-radius:10px;
+      font-weight:900;
+      letter-spacing:.4px;
+      cursor:pointer;
+      transition: background .15s ease, transform .08s ease;
+    }
+    .segment .seg-btn:hover{ background:var(--pill-bg); }
+    .segment .seg-btn:active{ transform:scale(.98); }
+    .segment .seg-btn.active{
+      background:var(--accent);
+      color:#fff;
+    }
 
+    .picker{
+      display:flex; align-items:center; gap:8px;
+      background:var(--soft);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:6px 8px;
+    }
+    .picker .label{
+      font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.6px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .picker input[type="date"]{
+      background:var(--card);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:8px 10px;
+      outline:none;
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+    .picker .btn-go{
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      padding:8px 12px;
+      font-weight:900;
+      cursor:pointer;
+      display:flex; align-items:center; gap:6px;
+      transition: filter .12s ease, transform .08s ease;
+    }
+    .picker .btn-go:hover{ filter:brightness(1.05); }
+    .picker .btn-go:active{ transform:scale(.98); }
+
+    .showing{
+      display:flex; gap:8px; align-items:center;
+      background:var(--soft);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 12px;
+    }
+    .showing .tag{
+      font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.6px;
+    }
+    .showing .date-pill{
+      background:var(--pill-bg);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      letter-spacing:.6px;
+    }
+
+    /* Accesibilidad: foco visible */
+    .segment .seg-btn:focus,
+    .picker input[type="date"]:focus,
+    .picker .btn-go:focus{
+      outline:2px solid var(--accent);
+      outline-offset:2px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 640px){
+      .filters{ gap:10px; }
+      .filters .group{ width:100%; justify-content:space-between; }
+      .segment{ width:100%; justify-content:space-between; }
+      .picker{ width:100%; justify-content:space-between; }
+      .showing{ width:100%; justify-content:space-between; }
+    }
+
+    /* =========================
+       TARJETAS DE MENÚ
+    ========================= */
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
     .menu-card{
-      border:1px solid var(--border); border-radius:18px; overflow:hidden;
-      background:var(--card); box-shadow: 0 18px 40px var(--shadow);
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      background:var(--card);
+      box-shadow: 0 18px 40px var(--shadow);
     }
     .menu-head{
-      padding:16px 18px; background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
+      padding:16px 18px;
+      background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
       border-bottom:1px solid var(--border);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
-      cursor:pointer; user-select:none;
+      cursor:pointer;
+      user-select:none;
     }
     .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; display:flex; gap:8px; align-items:center; }
     .menu-date{ font-size:12px; color:var(--muted); }
 
-    .chip{ padding:2px 8px; border-radius:999px; background:var(--chip-bg); font-size:11px; font-weight:800; color:var(--muted); }
+    .chip{
+      padding:2px 8px;
+      border-radius:999px;
+      background:var(--chip-bg);
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted);
+    }
 
-    .items{ padding:16px 18px; display:grid; gap:10px; transition:max-height .25s ease, opacity .25s ease; }
-    .item{ background:var(--soft); border:1px solid var(--border); border-radius:14px; padding:12px; }
+    /* Contenido con transición suave */
+    .items{
+      padding:16px 18px;
+      display:grid;
+      gap:10px;
+      opacity:1;
+      max-height:1000px;     /* para animar altura */
+      overflow:hidden;
+      transition: opacity .2s ease, max-height .25s ease;
+    }
+    .item{
+      background:var(--soft);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+    }
     .item b{ display:block; font-size:13px; }
     .item small{ color:var(--muted); font-weight:700; }
 
-    .menu-card.collapsed .items{ display:none; }
-
-    /* LOGIN */
-    #loginOverlay{
-      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-      background:var(--login-bg); backdrop-filter: blur(6px); z-index:9999; padding: 18px;
+    /* Estado colapsado (por defecto) */
+    .menu-card.collapsed .items{
+      opacity:0;
+      max-height:0;
+      pointer-events:none;
     }
+
+    /* =========================
+       LOGIN
+    ========================= */
+    #loginOverlay{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:var(--login-bg);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+      padding: 18px;
+    }
+
     .login-card{
-      width:420px; max-width:95vw; background:var(--login-card-bg);
-      border:1px solid var(--input-border); border-radius:20px; padding:22px;
+      width:420px; max-width:95vw;
+      background:var(--login-card-bg);
+      border:1px solid var(--input-border);
+      border-radius:20px;
+      padding:22px;
       box-shadow: 0 30px 70px var(--shadow);
     }
+
     .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
     .login-card label{ font-size:11px; color:var(--muted); font-weight:800; letter-spacing:.8px; display:block; margin-bottom:8px; }
+
     .login-card input{
-      width:100%; padding:14px; border-radius:14px; border:1px solid var(--input-border);
-      background:var(--input-bg); color:var(--text); font-weight:900; letter-spacing:1px; outline:none; text-transform:uppercase;
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
+      color:var(--text);
+      font-weight:900;
+      letter-spacing:1px;
+      outline:none;
+      text-transform:uppercase;
     }
-    .login-card button{ width:100%; margin-top:14px; background:var(--accent); color:white; padding:14px; border-radius:14px; }
-    #loginErr{ margin-top:10px; color:#fb7185; font-size:12px; font-weight:800; display:none; }
+
+    .login-card button{
+      width:100%;
+      margin-top:14px;
+      background:var(--accent);
+      color:white;
+      padding:14px;
+      border-radius:14px;
+    }
+
+    #loginErr{
+      margin-top:10px;
+      color:#fb7185;
+      font-size:12px;
+      font-weight:800;
+      display:none;
+    }
+
     .hint{ margin-top:10px; font-size:11px; color:var(--muted); }
 
-    .req-box{ margin-top:14px; padding:12px; border-radius:14px; border:1px dashed rgba(99,102,241,.45); background: rgba(99,102,241,.08); }
+    .req-box{
+      margin-top:14px;
+      padding:12px;
+      border-radius:14px;
+      border:1px dashed rgba(99,102,241,.45);
+      background: rgba(99,102,241,.08);
+    }
     .req-title{ font-weight:900; font-size:12px; margin-bottom:8px; letter-spacing:.6px; }
     .req-sub{ font-size:11px; color:var(--muted); margin-bottom:10px; text-transform:none; }
-    .req-btn{ display:none; } /* oculto, funcionalidad intacta */
+
+    /* 🔒 Ocultar solo el botón ENVIAR SOLICITUD (función se mantiene) */
+    .req-btn{ display:none; }
   </style>
 </head>
 
@@ -173,28 +379,38 @@
       </div>
     </div>
 
-    <!-- Filtros de fecha -->
+    <!-- Filtros de fecha (nueva estética) -->
     <div class="filters" id="filtersBox" style="display:none;">
       <div class="group">
-        <button class="btn btn-day" id="btnYesterday">AYER</button>
-        <button class="btn btn-day" id="btnToday">HOY</button>
-        <button class="btn btn-day" id="btnTomorrow">MAÑANA</button>
+        <div class="segment" role="group" aria-label="Cambiar día rápido">
+          <button class="seg-btn" id="btnYesterday">AYER</button>
+          <button class="seg-btn active" id="btnToday">HOY</button>
+          <button class="seg-btn" id="btnTomorrow">MAÑANA</button>
+        </div>
       </div>
+
       <div class="group">
-        <label style="font-size:12px;color:var(--muted);font-weight:800;">ELEGIR FECHA</label>
-        <input type="date" id="datePicker"/>
-        <button class="btn" id="btnGo">VER</button>
+        <div class="picker">
+          <span class="label">🗓️ ELEGIR FECHA</span>
+          <input type="date" id="datePicker"/>
+          <button class="btn-go" id="btnGo"><span>📅</span><span>VER</span></button>
+        </div>
       </div>
+
       <div class="group">
-        <span style="font-size:12px;color:var(--muted);font-weight:800;">Mostrando:</span>
-        <span id="currentDateLabel" style="font-size:12px;font-weight:900;letter-spacing:.6px;"></span>
+        <div class="showing">
+          <span class="tag">Mostrando:</span>
+          <span class="date-pill" id="currentDateLabel"></span>
+        </div>
       </div>
     </div>
 
     <div class="grid" id="menusGrid"></div>
   </div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     /* =========================
        SUPABASE
@@ -398,9 +614,9 @@
         : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
 
       return `
-        <div class="menu-card" data-collapsible="true">
-          <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
-            <div class="menu-title"><span class="chip">EXPANDIR / MINIMIZAR</span> ${(m.name||'MENÚ').toUpperCase()}</div>
+        <div class="menu-card collapsed" data-collapsible="true">
+          <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
+            <div class="menu-title"><span class="chip">EXPANDIR</span> ${(m.name||'MENÚ').toUpperCase()}</div>
             <div class="menu-date">${m.menu_date}</div>
           </div>
           <div class="items">${itemsHtml}</div>
@@ -409,7 +625,7 @@
 
     function emptyCard(dateStr){
       return `
-        <div class="menu-card" data-collapsible="true">
+        <div class="menu-card collapsed" data-collapsible="true">
           <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
             <div class="menu-title"><span class="chip">COLAPSADO</span> SIN MENÚ PUBLICADO</div>
             <div class="menu-date">${dateStr}</div>
@@ -438,7 +654,7 @@
     }
 
     /* =========================
-       DATA FETCH (DATE/TIMESTAMP + fallback sin filtro)
+       DATA FETCH (DATE/TIMESTAMP + "cercano")
     ========================= */
     async function fetchMenusByDateEq(dateStr){
       return await sb
@@ -458,65 +674,108 @@
         .order('menu_date', { ascending:true })
         .order('id', { ascending:true });
     }
-    async function fetchMenusNoFilter(){
-      return await sb
+    async function findNearestMenu(dateStr){
+      const { data, error } = await sb
         .from('menus')
-        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
-        .order('menu_date', { ascending:true })
-        .order('id', { ascending:true })
-        .limit(50);
+        .select('id, name, menu_date')
+        .order('menu_date', { ascending: true })
+        .limit(200);
+      if(error) return {nearest:null, error};
+      const menus = (data || []).map(m => ({ id:m.id, date:m.menu_date, name:m.name }));
+      if(!menus.length) return {nearest:null, error:null};
+      let nearest = null, bestDelta = Infinity;
+      const target = new Date(dateStr + "T00:00:00");
+      menus.forEach(m => {
+        const d = new Date(m.date + "T00:00:00");
+        const delta = Math.abs(d - target);
+        if(delta < bestDelta){ bestDelta = delta; nearest = m; }
+      });
+      return { nearest, error:null };
     }
 
     async function loadMenusForDate(dateStr){
       menusGrid.innerHTML = "";
       document.getElementById('currentDateLabel').textContent = dateStr;
 
-      console.log("=== CARGA MENÚS PARA:", dateStr, "===");
-
       // 1) Intento con eq (DATE)
       let { data, error } = await fetchMenusByDateEq(dateStr);
-      console.log("[EQ DATE] error:", error, "rows:", data?.length || 0);
 
-      // 2) Si no hay datos y no hubo error -> intenta TIMESTAMP rango día UTC
+      // 2) Si vacío y sin error, intento rango (TIMESTAMP)
       if(!error && (!data || data.length === 0)){
         const res2 = await fetchMenusByTimestampRange(dateStr);
         data = res2.data; error = res2.error;
-        console.log("[RANGE TIMESTAMP] error:", error, "rows:", data?.length || 0);
       }
 
-      // 3) Si sigue vacío -> trae sin filtro para auditar
-      if(!error && (!data || data.length === 0)){
-        const res3 = await fetchMenusNoFilter();
-        console.log("[NO FILTER] error:", res3.error, "rows:", res3.data?.length || 0, "sample:", res3.data?.slice(0,3));
-        // Renderiza "no hay" pero muestra en consola si existen menús en otras fechas
+      // 3) Render si hay datos
+      if(!error && data && data.length){
+        menusGrid.innerHTML = data.map(renderMenuCard).join('');
+        attachCollapseHandlers();
+        return;
       }
 
-      if(error){
-        console.error("Supabase error:", error);
+      // 4) Si no hay datos -> buscar el más cercano y avisar
+      const { nearest, error: nearErr } = await findNearestMenu(dateStr);
+
+      if(nearErr){
         menusGrid.innerHTML = `
           <div class="menu-card">
             <div class="items">
               <b>ERROR</b>
-              <small>${error.message}</small>
+              <small>${nearErr.message}</small>
             </div>
           </div>`;
         return;
       }
 
-      const menus = data || [];
-      if(!menus.length){
+      if(!nearest){
         menusGrid.innerHTML = emptyCard(dateStr);
         attachCollapseHandlers();
         return;
       }
 
-      menusGrid.innerHTML = menus.map(renderMenuCard).join('');
+      // Cargar el cercano
+      const { data: onlyNearest, error: errNearestData } = await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .eq('id', nearest.id)
+        .limit(1);
+
+      const notice = `
+        <div class="menu-card" data-collapsible="true">
+          <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
+            <div class="menu-title">
+              <span class="chip">SUGERENCIA</span>
+              SIN MENÚ EN ${dateStr}. MOSTRANDO EL MÁS CERCANO: ${nearest.date}
+            </div>
+            <div class="menu-date">${dateStr}</div>
+          </div>
+          <div class="items">
+            <div class="item">
+              <b>NO HAY PUBLICACIÓN PARA LA FECHA SELECCIONADA</b>
+              <small>REVISA CON ADMIN LA FECHA GUARDADA en “menu_date”.</small>
+            </div>
+          </div>
+        </div>`;
+
+      if(errNearestData || !onlyNearest || !onlyNearest.length){
+        menusGrid.innerHTML = notice;
+        attachCollapseHandlers();
+        return;
+      }
+
+      menusGrid.innerHTML = notice + onlyNearest.map(renderMenuCard).join('');
       attachCollapseHandlers();
     }
 
     /* =========================
-       CONTROLES DE FECHA (ayer/hoy/mañana/date picker)
+       CONTROLES DE FECHA
     ========================= */
+    function setActiveSegment(btnId){
+      document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      const b = document.getElementById(btnId);
+      if(b) b.classList.add('active');
+    }
+
     function initDateControls(){
       const dp = document.getElementById('datePicker');
       const btnY = document.getElementById('btnYesterday');
@@ -527,10 +786,29 @@
       const today = getToday();
       dp.value = today;
 
-      btnY.onclick = () => { const d = addDaysFromStr(dp.value, -1); dp.value = d; loadMenusForDate(d); };
-      btnT.onclick = () => { dp.value = today; loadMenusForDate(today); };
-      btnTm.onclick = () => { const d = addDaysFromStr(dp.value, 1); dp.value = d; loadMenusForDate(d); };
-      btnGo.onclick = () => { const d = dp.value || today; loadMenusForDate(d); };
+      btnY.onclick = () => {
+        const d = addDaysFromStr(dp.value, -1);
+        dp.value = d;
+        loadMenusForDate(d);
+        setActiveSegment('btnYesterday');
+      };
+      btnT.onclick = () => {
+        dp.value = today;
+        loadMenusForDate(today);
+        setActiveSegment('btnToday');
+      };
+      btnTm.onclick = () => {
+        const d = addDaysFromStr(dp.value, 1);
+        dp.value = d;
+        loadMenusForDate(d);
+        setActiveSegment('btnTomorrow');
+      };
+      btnGo.onclick = () => {
+        const d = dp.value || today;
+        loadMenusForDate(d);
+        // Al usar VER, ningún segmento está activo
+        document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      };
     }
 
     // Init
@@ -538,4 +816,3 @@
   </script>
 </body>
 </html>
-``
