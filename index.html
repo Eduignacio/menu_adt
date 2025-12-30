@@ -6,13 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MENÚ DEL DÍA</title>
 
-  <!-- Fuente -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
 
   <style>
-    /* =========================
-       PALETA (DARK / LIGHT)
-    ========================= */
     :root{
       --bg:#0b1222;
       --card:#0f172a;
@@ -31,7 +27,6 @@
       --input-border: rgba(31,42,68,.9);
       --chip-bg: rgba(255,255,255,.08);
     }
-
     :root[data-theme="light"]{
       --bg:#f6f7fb;
       --card:#ffffff;
@@ -50,171 +45,96 @@
       --input-border:#e2e8f0;
       --chip-bg: rgba(15,23,42,.06);
     }
-
     *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
-
     body{
       margin:0;
       background:linear-gradient(180deg, var(--bg), var(--bg));
       color:var(--text);
       min-height:100vh;
     }
-
     .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
 
     .top{
       display:flex; justify-content:space-between; align-items:center; gap:16px;
-      padding:16px 18px;
-      border:1px solid var(--border);
-      border-radius:18px;
+      padding:16px 18px; border:1px solid var(--border); border-radius:18px;
       background:linear-gradient(90deg, var(--accent-mix-1), rgba(15,23,42,.00));
     }
-
     .brand{ font-weight:900; letter-spacing:1px; }
     .who{ font-size:12px; color:var(--muted); }
-
     .actions{ display:flex; gap:8px; align-items:center; }
 
-    .btn{
-      border:none; cursor:pointer; font-weight:900;
-      border-radius:12px; padding:10px 14px;
-    }
-    .btn-logout{
-      background:#1f2a44; color:var(--text);
-      border:1px solid #2b3b63;
+    .btn{ border:none; cursor:pointer; font-weight:900; border-radius:12px; padding:10px 14px; }
+    .btn-logout{ background:#1f2a44; color:var(--text); border:1px solid #2b3b63; }
+    .btn-theme{
+      background:var(--soft); border:1px solid var(--border); color:var(--text);
+      display:flex; align-items:center; justify-content:center; width:44px; height:40px; padding:0; font-size:18px;
     }
 
-    /* Toggle de tema con emoji (solo icono) */
-    .btn-theme{
-      background:var(--soft);
-      border:1px solid var(--border);
-      color:var(--text);
-      display:flex; align-items:center; justify-content:center;
-      width:44px; height:40px; padding:0;
-      font-size:18px;
+    /* Filtros de fecha */
+    .filters{
+      margin-top:14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
     }
+    .filters .group{
+      display:flex; gap:8px; align-items:center; background:var(--soft);
+      border:1px solid var(--border); border-radius:12px; padding:8px;
+    }
+    .filters input[type="date"]{
+      background:var(--card); color:var(--text); border:1px solid var(--border);
+      border-radius:8px; padding:8px; outline:none;
+    }
+    .filters .btn-day{ background:var(--card); color:var(--text); border:1px solid var(--border); }
 
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
-
     .menu-card{
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      background:var(--card);
-      box-shadow: 0 18px 40px var(--shadow);
+      border:1px solid var(--border); border-radius:18px; overflow:hidden;
+      background:var(--card); box-shadow: 0 18px 40px var(--shadow);
     }
-
     .menu-head{
-      padding:16px 18px;
-      background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
+      padding:16px 18px; background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
       border-bottom:1px solid var(--border);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
-      cursor:pointer; /* permite click para colapsar/expandir */
-      user-select:none;
+      cursor:pointer; user-select:none;
     }
-
     .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; display:flex; gap:8px; align-items:center; }
     .menu-date{ font-size:12px; color:var(--muted); }
 
-    .chip{
-      padding:2px 8px;
-      border-radius:999px;
-      background:var(--chip-bg);
-      font-size:11px;
-      font-weight:800;
-      color:var(--muted);
-    }
+    .chip{ padding:2px 8px; border-radius:999px; background:var(--chip-bg); font-size:11px; font-weight:800; color:var(--muted); }
 
     .items{ padding:16px 18px; display:grid; gap:10px; transition:max-height .25s ease, opacity .25s ease; }
-    .item{
-      background:var(--soft);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-    }
+    .item{ background:var(--soft); border:1px solid var(--border); border-radius:14px; padding:12px; }
     .item b{ display:block; font-size:13px; }
     .item small{ color:var(--muted); font-weight:700; }
 
-    /* Estados colapsados */
-    .menu-card.collapsed .items{
-      display:none; /* simple y eficiente */
-    }
+    .menu-card.collapsed .items{ display:none; }
 
     /* LOGIN */
     #loginOverlay{
-      position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      background:var(--login-bg);
-      backdrop-filter: blur(6px);
-      z-index:9999;
-      padding: 18px;
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:var(--login-bg); backdrop-filter: blur(6px); z-index:9999; padding: 18px;
     }
-
     .login-card{
-      width:420px; max-width:95vw;
-      background:var(--login-card-bg);
-      border:1px solid var(--input-border);
-      border-radius:20px;
-      padding:22px;
+      width:420px; max-width:95vw; background:var(--login-card-bg);
+      border:1px solid var(--input-border); border-radius:20px; padding:22px;
       box-shadow: 0 30px 70px var(--shadow);
     }
-
     .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
-    .login-card label{
-      font-size:11px; color:var(--muted);
-      font-weight:800; letter-spacing:.8px;
-      display:block; margin-bottom:8px;
-    }
-
+    .login-card label{ font-size:11px; color:var(--muted); font-weight:800; letter-spacing:.8px; display:block; margin-bottom:8px; }
     .login-card input{
-      width:100%;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid var(--input-border);
-      background:var(--input-bg);
-      color:var(--text);
-      font-weight:900;
-      letter-spacing:1px;
-      outline:none;
-      text-transform:uppercase;
+      width:100%; padding:14px; border-radius:14px; border:1px solid var(--input-border);
+      background:var(--input-bg); color:var(--text); font-weight:900; letter-spacing:1px; outline:none; text-transform:uppercase;
     }
-
-    .login-card button{
-      width:100%;
-      margin-top:14px;
-      background:var(--accent);
-      color:white;
-      padding:14px;
-      border-radius:14px;
-    }
-
-    #loginErr{
-      margin-top:10px;
-      color:#fb7185;
-      font-size:12px;
-      font-weight:800;
-      display:none;
-    }
-
+    .login-card button{ width:100%; margin-top:14px; background:var(--accent); color:white; padding:14px; border-radius:14px; }
+    #loginErr{ margin-top:10px; color:#fb7185; font-size:12px; font-weight:800; display:none; }
     .hint{ margin-top:10px; font-size:11px; color:var(--muted); }
 
-    .req-box{
-      margin-top:14px;
-      padding:12px;
-      border-radius:14px;
-      border:1px dashed rgba(99,102,241,.45);
-      background: rgba(99,102,241,.08);
-    }
+    .req-box{ margin-top:14px; padding:12px; border-radius:14px; border:1px dashed rgba(99,102,241,.45); background: rgba(99,102,241,.08); }
     .req-title{ font-weight:900; font-size:12px; margin-bottom:8px; letter-spacing:.6px; }
     .req-sub{ font-size:11px; color:var(--muted); margin-bottom:10px; text-transform:none; }
-
-    /* 🔒 Ocultar solo el botón ENVIAR SOLICITUD (función se mantiene) */
-    .req-btn{ display:none; }
+    .req-btn{ display:none; } /* oculto, funcionalidad intacta */
   </style>
 </head>
 
 <body>
-
   <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
@@ -227,7 +147,6 @@
 
       <div id="loginErr"></div>
 
-      <!-- CAJA DE SOLICITUD -->
       <div class="req-box" id="reqBox" style="display:none;">
         <div class="req-title">¿QUIERES ACCESO AL MENÚ DIGITAL?</div>
         <div class="req-sub">Si tu usuario no está registrado, puedes enviar una solicitud para que el admin lo apruebe.</div>
@@ -246,7 +165,6 @@
         <div class="who" id="whoTxt">NO LOGUEADO</div>
       </div>
 
-      <!-- Acciones (tema con emoji + salir) -->
       <div class="actions">
         <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambiar tema">
           <span id="themeIcon">🌙</span>
@@ -255,12 +173,28 @@
       </div>
     </div>
 
+    <!-- Filtros de fecha -->
+    <div class="filters" id="filtersBox" style="display:none;">
+      <div class="group">
+        <button class="btn btn-day" id="btnYesterday">AYER</button>
+        <button class="btn btn-day" id="btnToday">HOY</button>
+        <button class="btn btn-day" id="btnTomorrow">MAÑANA</button>
+      </div>
+      <div class="group">
+        <label style="font-size:12px;color:var(--muted);font-weight:800;">ELEGIR FECHA</label>
+        <input type="date" id="datePicker"/>
+        <button class="btn" id="btnGo">VER</button>
+      </div>
+      <div class="group">
+        <span style="font-size:12px;color:var(--muted);font-weight:800;">Mostrando:</span>
+        <span id="currentDateLabel" style="font-size:12px;font-weight:900;letter-spacing:.6px;"></span>
+      </div>
+    </div>
+
     <div class="grid" id="menusGrid"></div>
   </div>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     /* =========================
        SUPABASE
@@ -287,48 +221,45 @@
       const btn = document.getElementById("themeToggleBtn");
       btn.setAttribute("aria-label", t === "light" ? "Tema claro" : "Tema oscuro");
     }
-
     function toggleTheme(){
       const current = htmlEl.getAttribute("data-theme") || "dark";
       applyTheme(current === "dark" ? "light" : "dark");
     }
-
     (function initTheme(){
       const saved = localStorage.getItem(THEME_KEY) || "dark";
       applyTheme(saved);
     })();
 
     /* =========================
-       HELPERS
+       FECHAS
     ========================= */
-    function getToday(){
-      const d = new Date();
-      return d.getFullYear() + "-" +
-             String(d.getMonth()+1).padStart(2,'0') + "-" +
-             String(d.getDate()).padStart(2,'0');
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function dateToStr(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+    function getToday(){ return dateToStr(new Date()); }
+    function addDaysFromStr(str, n){
+      const [y,m,d] = str.split('-').map(Number);
+      const dt = new Date(y, m-1, d);
+      dt.setDate(dt.getDate()+n);
+      return dateToStr(dt);
     }
-
     function startEndOfDayUTC(dateLocal){
-      // dateLocal: "YYYY-MM-DD"
       const [y,m,d] = dateLocal.split('-').map(Number);
       const start = new Date(Date.UTC(y, m-1, d, 0, 0, 0));
       const end   = new Date(Date.UTC(y, m-1, d, 23, 59, 59, 999));
       return { start: start.toISOString(), end: end.toISOString() };
     }
 
-    function showErr(msg){
-      loginErr.style.display = "block";
-      loginErr.innerText = msg;
-    }
+    /* =========================
+       LOGIN
+    ========================= */
+    const viewerUser = document.getElementById('viewerUser');
+    const loginErr = document.getElementById('loginErr');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const whoTxt = document.getElementById('whoTxt');
 
-    function hideErr(){
-      loginErr.style.display = "none";
-      loginErr.innerText = "";
-    }
-
-    function normUser(){
-      return (viewerUser.value || "").trim().toUpperCase();
-    }
+    function showErr(msg){ loginErr.style.display="block"; loginErr.innerText = msg; }
+    function hideErr(){ loginErr.style.display="none"; loginErr.innerText = ""; }
+    function normUser(){ return (viewerUser.value || "").trim().toUpperCase(); }
 
     viewerUser.addEventListener('input', () => {
       lastTypedUser = normUser();
@@ -336,30 +267,19 @@
       hideErr();
     });
 
-    /* =========================
-       SOLICITAR ACCESO (SIN LOGIN)
-    ========================= */
     async function requestAccess(){
       hideErr();
-
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
-
       await createAccessRequest(u, null);
       subscribeToApproval(u);
-
       showErr("SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
     }
 
-    /* =========================
-       LOGIN VIEWER
-    ========================= */
     async function loginViewer(){
       hideErr();
-
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
-
       lastTypedUser = u;
 
       const { data, error } = await sb
@@ -370,7 +290,6 @@
 
       if(error) return showErr("ERROR: " + error.message);
 
-      // NO EXISTE -> genera solicitud y escucha aprobación
       if(!data || !data.length){
         reqBox.style.display = "block";
         await createAccessRequest(u, null);
@@ -379,7 +298,6 @@
       }
 
       const viewer = data[0];
-
       if(viewer.approved !== true){
         reqBox.style.display = "block";
         await createAccessRequest(u, viewer.id);
@@ -387,13 +305,14 @@
         return showErr("ACCESO PENDIENTE DE APROBACIÓN ⏳");
       }
 
-      // OK
       localStorage.setItem("viewer_user", viewer.username);
       localStorage.setItem("viewer_user_id", viewer.id);
 
       loginOverlay.style.display = "none";
       whoTxt.innerText = "USUARIO: " + viewer.username;
 
+      document.getElementById('filtersBox').style.display = "flex";
+      initDateControls();
       loadMenusForDate(getToday());
     }
 
@@ -417,40 +336,30 @@
 
     function subscribeToApproval(username){
       try{
-        if(approveChannel){
-          sb.removeChannel(approveChannel);
-          approveChannel = null;
-        }
+        if(approveChannel){ sb.removeChannel(approveChannel); approveChannel = null; }
       }catch(_){}
-
       approveChannel = sb.channel('viewer-approval-' + username)
-        .on('postgres_changes', {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'viewer_users',
-          filter: `username=eq.${username}`
-        }, (payload) => {
+        .on('postgres_changes', { event:'INSERT', schema:'public', table:'viewer_users', filter: `username=eq.${username}` }, (payload) => {
           const row = payload?.new || {};
           if(row.approved === true){
             localStorage.setItem("viewer_user", row.username);
             localStorage.setItem("viewer_user_id", row.id);
             loginOverlay.style.display = "none";
             whoTxt.innerText = "USUARIO: " + row.username;
+            document.getElementById('filtersBox').style.display = "flex";
+            initDateControls();
             loadMenusForDate(getToday());
           }
         })
-        .on('postgres_changes', {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'viewer_users',
-          filter: `username=eq.${username}`
-        }, (payload) => {
+        .on('postgres_changes', { event:'UPDATE', schema:'public', table:'viewer_users', filter: `username=eq.${username}` }, (payload) => {
           const row = payload?.new || {};
           if(row.approved === true){
             localStorage.setItem("viewer_user", row.username);
             localStorage.setItem("viewer_user_id", row.id);
             loginOverlay.style.display = "none";
             whoTxt.innerText = "USUARIO: " + row.username;
+            document.getElementById('filtersBox').style.display = "flex";
+            initDateControls();
             loadMenusForDate(getToday());
           }
         })
@@ -462,6 +371,8 @@
       if(u){
         loginOverlay.style.display = "none";
         whoTxt.innerText = "USUARIO: " + u;
+        document.getElementById('filtersBox').style.display = "flex";
+        initDateControls();
         loadMenusForDate(getToday());
       }
     }
@@ -472,13 +383,12 @@
     }
 
     /* =========================
-       RENDER / COLLAPSE HELPERS
+       RENDER / COLLAPSE
     ========================= */
-    function renderMenuCard(m){
-      const items = (m.menu_menu_items || [])
-        .map(rel => rel.menu_items)
-        .filter(Boolean);
+    const menusGrid = document.getElementById('menusGrid');
 
+    function renderMenuCard(m){
+      const items = (m.menu_menu_items || []).map(rel => rel.menu_items).filter(Boolean);
       const itemsHtml = items.length
         ? items.map(i => `
             <div class="item">
@@ -515,26 +425,20 @@
       cards.forEach(card => {
         const head = card.querySelector('.menu-head');
         const chip = head.querySelector('.chip');
-
         function toggle(){
           const isCollapsed = card.classList.toggle('collapsed');
           head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
           if(chip) chip.textContent = isCollapsed ? 'EXPANDIR' : 'MINIMIZAR';
         }
-
         head.addEventListener('click', toggle);
         head.addEventListener('keydown', (e) => {
-          if(e.key === 'Enter' || e.key === ' '){
-            e.preventDefault();
-            toggle();
-          }
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
         });
       });
     }
 
     /* =========================
-       CARGA MENÚS DEL DÍA
-       (maneja DATE y TIMESTAMP)
+       DATA FETCH (DATE/TIMESTAMP + fallback sin filtro)
     ========================= */
     async function fetchMenusByDateEq(dateStr){
       return await sb
@@ -544,7 +448,6 @@
         .order('menu_date', { ascending:true })
         .order('id', { ascending:true });
     }
-
     async function fetchMenusByTimestampRange(dateStr){
       const { start, end } = startEndOfDayUTC(dateStr);
       return await sb
@@ -555,18 +458,37 @@
         .order('menu_date', { ascending:true })
         .order('id', { ascending:true });
     }
+    async function fetchMenusNoFilter(){
+      return await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .order('menu_date', { ascending:true })
+        .order('id', { ascending:true })
+        .limit(50);
+    }
 
     async function loadMenusForDate(dateStr){
       menusGrid.innerHTML = "";
+      document.getElementById('currentDateLabel').textContent = dateStr;
 
-      // 1) Intento con eq (campo tipo DATE)
+      console.log("=== CARGA MENÚS PARA:", dateStr, "===");
+
+      // 1) Intento con eq (DATE)
       let { data, error } = await fetchMenusByDateEq(dateStr);
+      console.log("[EQ DATE] error:", error, "rows:", data?.length || 0);
 
-      // 2) Si no hay datos y no hubo error, intento rango (campo tipo TIMESTAMP)
+      // 2) Si no hay datos y no hubo error -> intenta TIMESTAMP rango día UTC
       if(!error && (!data || data.length === 0)){
-        const result2 = await fetchMenusByTimestampRange(dateStr);
-        data = result2.data;
-        error = result2.error;
+        const res2 = await fetchMenusByTimestampRange(dateStr);
+        data = res2.data; error = res2.error;
+        console.log("[RANGE TIMESTAMP] error:", error, "rows:", data?.length || 0);
+      }
+
+      // 3) Si sigue vacío -> trae sin filtro para auditar
+      if(!error && (!data || data.length === 0)){
+        const res3 = await fetchMenusNoFilter();
+        console.log("[NO FILTER] error:", res3.error, "rows:", res3.data?.length || 0, "sample:", res3.data?.slice(0,3));
+        // Renderiza "no hay" pero muestra en consola si existen menús en otras fechas
       }
 
       if(error){
@@ -592,8 +514,28 @@
       attachCollapseHandlers();
     }
 
+    /* =========================
+       CONTROLES DE FECHA (ayer/hoy/mañana/date picker)
+    ========================= */
+    function initDateControls(){
+      const dp = document.getElementById('datePicker');
+      const btnY = document.getElementById('btnYesterday');
+      const btnT = document.getElementById('btnToday');
+      const btnTm = document.getElementById('btnTomorrow');
+      const btnGo = document.getElementById('btnGo');
+
+      const today = getToday();
+      dp.value = today;
+
+      btnY.onclick = () => { const d = addDaysFromStr(dp.value, -1); dp.value = d; loadMenusForDate(d); };
+      btnT.onclick = () => { dp.value = today; loadMenusForDate(today); };
+      btnTm.onclick = () => { const d = addDaysFromStr(dp.value, 1); dp.value = d; loadMenusForDate(d); };
+      btnGo.onclick = () => { const d = dp.value || today; loadMenusForDate(d); };
+    }
+
     // Init
     checkViewerSession();
   </script>
 </body>
 </html>
+``
