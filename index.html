@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es" data-theme="dark">
 <head>
@@ -6,8 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MENÚ DEL DÍA</title>
 
-  <!-- Fuente -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
     /* =========================
@@ -30,9 +28,8 @@
       --input-bg: rgba(17,28,51,.65);
       --input-border: rgba(31,42,68,.9);
       --chip-bg: rgba(255,255,255,.08);
-      --glass-1: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      --pill-bg: rgba(255,255,255,.10);
     }
+
     :root[data-theme="light"]{
       --bg:#f6f7fb;
       --card:#ffffff;
@@ -50,8 +47,6 @@
       --input-bg:#f8fafc;
       --input-border:#e2e8f0;
       --chip-bg: rgba(15,23,42,.06);
-      --glass-1: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.01));
-      --pill-bg: rgba(15,23,42,.06);
     }
 
     *{ box-sizing:border-box; font-family:Inter,system-ui,sans-serif; }
@@ -87,135 +82,19 @@
       border:1px solid #2b3b63;
     }
 
-    /* Toggle de tema con emoji (solo icono) */
+    /* Toggle de tema con emoji */
     .btn-theme{
       background:var(--soft);
       border:1px solid var(--border);
       color:var(--text);
-      display:flex; align-items:center; justify-content:center;
-      width:44px; height:40px; padding:0;
-      font-size:18px;
-    }
-
-    /* =============== */
-    /*  BARRA DE FILTROS (NUEVA ESTÉTICA) */
-    /* =============== */
-    .filters{
-      margin-top:14px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .filters .group{
-      display:flex; gap:8px; align-items:center;
-      background:var(--glass-1);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:8px;
-      box-shadow: 0 8px 20px var(--shadow);
-    }
-    .segment{
-      display:flex; gap:6px; align-items:center;
-      padding:4px;
-      background:var(--soft);
-      border:1px solid var(--border);
-      border-radius:12px;
-    }
-    .segment .seg-btn{
-      background:transparent;
-      color:var(--text);
-      border:none;
-      padding:8px 12px;
-      border-radius:10px;
-      font-weight:900;
-      letter-spacing:.4px;
-      cursor:pointer;
-      transition: background .15s ease, transform .08s ease;
-    }
-    .segment .seg-btn:hover{ background:var(--pill-bg); }
-    .segment .seg-btn:active{ transform:scale(.98); }
-    .segment .seg-btn.active{
-      background:var(--accent);
-      color:#fff;
-    }
-
-    .picker{
       display:flex; align-items:center; gap:8px;
-      background:var(--soft);
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:6px 8px;
+      padding:10px 12px;
     }
-    .picker .label{
-      font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.6px;
-      display:flex; align-items:center; gap:6px;
-    }
-    .picker input[type="date"]{
-      background:var(--card);
-      color:var(--text);
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:8px 10px;
-      outline:none;
-      font-weight:800;
-      letter-spacing:.4px;
-    }
-    .picker .btn-go{
-      background:var(--accent);
-      color:#fff;
-      border:none;
-      border-radius:10px;
-      padding:8px 12px;
-      font-weight:900;
-      cursor:pointer;
-      display:flex; align-items:center; gap:6px;
-      transition: filter .12s ease, transform .08s ease;
-    }
-    .picker .btn-go:hover{ filter:brightness(1.05); }
-    .picker .btn-go:active{ transform:scale(.98); }
+    .btn-theme .icon{ font-size:16px; }
+    .btn-theme .label{ font-size:12px; color:var(--muted); font-weight:800; }
 
-    .showing{
-      display:flex; gap:8px; align-items:center;
-      background:var(--soft);
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:8px 12px;
-    }
-    .showing .tag{
-      font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.6px;
-    }
-    .showing .date-pill{
-      background:var(--pill-bg);
-      border:1px solid var(--border);
-      color:var(--text);
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:900;
-      letter-spacing:.6px;
-    }
-
-    /* Accesibilidad: foco visible */
-    .segment .seg-btn:focus,
-    .picker input[type="date"]:focus,
-    .picker .btn-go:focus{
-      outline:2px solid var(--accent);
-      outline-offset:2px;
-    }
-
-    /* Responsivo */
-    @media (max-width: 640px){
-      .filters{ gap:10px; }
-      .filters .group{ width:100%; justify-content:space-between; }
-      .segment{ width:100%; justify-content:space-between; }
-      .picker{ width:100%; justify-content:space-between; }
-      .showing{ width:100%; justify-content:space-between; }
-    }
-
-    /* =========================
-       TARJETAS DE MENÚ
-    ========================= */
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
+
     .menu-card{
       border:1px solid var(--border);
       border-radius:18px;
@@ -223,17 +102,20 @@
       background:var(--card);
       box-shadow: 0 18px 40px var(--shadow);
     }
+
     .menu-head{
       padding:16px 18px;
       background:linear-gradient(90deg, var(--accent-mix-2), var(--success-mix));
       border-bottom:1px solid var(--border);
       display:flex; justify-content:space-between; align-items:center; gap:10px;
-      cursor:pointer;
+      cursor:pointer; /* permite click para colapsar/expandir */
       user-select:none;
     }
+
     .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; display:flex; gap:8px; align-items:center; }
     .menu-date{ font-size:12px; color:var(--muted); }
 
+    /* Indicador de estado (chip) */
     .chip{
       padding:2px 8px;
       border-radius:999px;
@@ -243,16 +125,7 @@
       color:var(--muted);
     }
 
-    /* Contenido con transición suave */
-    .items{
-      padding:16px 18px;
-      display:grid;
-      gap:10px;
-      opacity:1;
-      max-height:1000px;     /* para animar altura */
-      overflow:hidden;
-      transition: opacity .2s ease, max-height .25s ease;
-    }
+    .items{ padding:16px 18px; display:grid; gap:10px; transition:max-height .25s ease, opacity .25s ease; }
     .item{
       background:var(--soft);
       border:1px solid var(--border);
@@ -262,16 +135,12 @@
     .item b{ display:block; font-size:13px; }
     .item small{ color:var(--muted); font-weight:700; }
 
-    /* Estado colapsado (por defecto) */
+    /* Estados colapsados */
     .menu-card.collapsed .items{
-      opacity:0;
-      max-height:0;
-      pointer-events:none;
+      display:none;            /* simple y eficiente */
     }
 
-    /* =========================
-       LOGIN
-    ========================= */
+    /* LOGIN */
     #loginOverlay{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
@@ -291,7 +160,11 @@
     }
 
     .login-card h2{ margin:0 0 14px; font-weight:900; letter-spacing:1px; }
-    .login-card label{ font-size:11px; color:var(--muted); font-weight:800; letter-spacing:.8px; display:block; margin-bottom:8px; }
+    .login-card label{
+      font-size:11px; color:var(--muted);
+      font-weight:800; letter-spacing:.8px;
+      display:block; margin-bottom:8px;
+    }
 
     .login-card input{
       width:100%;
@@ -341,6 +214,7 @@
 </head>
 
 <body>
+
   <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
@@ -353,6 +227,7 @@
 
       <div id="loginErr"></div>
 
+      <!-- CAJA DE SOLICITUD -->
       <div class="req-box" id="reqBox" style="display:none;">
         <div class="req-title">¿QUIERES ACCESO AL MENÚ DIGITAL?</div>
         <div class="req-sub">Si tu usuario no está registrado, puedes enviar una solicitud para que el admin lo apruebe.</div>
@@ -371,46 +246,20 @@
         <div class="who" id="whoTxt">NO LOGUEADO</div>
       </div>
 
+      <!-- Acciones (tema con emoji + salir) -->
       <div class="actions">
         <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambiar tema">
-          <span id="themeIcon">🌙</span>
+          <span class="icon" id="themeIcon">🌙</span>
+          <span class="label" id="themeLabel">OSC.</span>
         </button>
         <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
-      </div>
-    </div>
-
-    <!-- Filtros de fecha (nueva estética) -->
-    <div class="filters" id="filtersBox" style="display:none;">
-      <div class="group">
-        <div class="segment" role="group" aria-label="Cambiar día rápido">
-          <button class="seg-btn" id="btnYesterday">AYER</button>
-          <button class="seg-btn active" id="btnToday">HOY</button>
-          <button class="seg-btn" id="btnTomorrow">MAÑANA</button>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="picker">
-          <span class="label">🗓️ ELEGIR FECHA</span>
-          <input type="date" id="datePicker"/>
-          <button class="btn-go" id="btnGo"><span>📅</span><span>VER</span></button>
-        </div>
-      </div>
-
-      <div class="group">
-        <div class="showing">
-          <span class="tag">Mostrando:</span>
-          <span class="date-pill" id="currentDateLabel"></span>
-        </div>
       </div>
     </div>
 
     <div class="grid" id="menusGrid"></div>
   </div>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     /* =========================
        SUPABASE
@@ -427,55 +276,57 @@
     ========================= */
     const THEME_KEY = "menu_theme"; // dark | light
     const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById("themeToggleBtn");
     const themeIcon = document.getElementById("themeIcon");
+    const themeLabel = document.getElementById("themeLabel");
 
     function applyTheme(theme){
       const t = (theme === "light") ? "light" : "dark";
       htmlEl.setAttribute("data-theme", t);
       localStorage.setItem(THEME_KEY, t);
-      themeIcon.textContent = (t === "light") ? "☀️" : "🌙";
-      const btn = document.getElementById("themeToggleBtn");
-      btn.setAttribute("aria-label", t === "light" ? "Tema claro" : "Tema oscuro");
+      // Emoji + etiqueta corta
+      if(t === "light"){
+        themeIcon.textContent = "☀️";
+        themeLabel.textContent = "CL.";
+      }else{
+        themeIcon.textContent = "🌙";
+        themeLabel.textContent = "OSC.";
+      }
     }
+
     function toggleTheme(){
       const current = htmlEl.getAttribute("data-theme") || "dark";
       applyTheme(current === "dark" ? "light" : "dark");
     }
+
     (function initTheme(){
       const saved = localStorage.getItem(THEME_KEY) || "dark";
       applyTheme(saved);
     })();
 
     /* =========================
-       FECHAS
+       HELPERS
     ========================= */
-    function pad2(n){ return String(n).padStart(2,'0'); }
-    function dateToStr(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-    function getToday(){ return dateToStr(new Date()); }
-    function addDaysFromStr(str, n){
-      const [y,m,d] = str.split('-').map(Number);
-      const dt = new Date(y, m-1, d);
-      dt.setDate(dt.getDate()+n);
-      return dateToStr(dt);
-    }
-    function startEndOfDayUTC(dateLocal){
-      const [y,m,d] = dateLocal.split('-').map(Number);
-      const start = new Date(Date.UTC(y, m-1, d, 0, 0, 0));
-      const end   = new Date(Date.UTC(y, m-1, d, 23, 59, 59, 999));
-      return { start: start.toISOString(), end: end.toISOString() };
+    function getToday(){
+      const d = new Date();
+      return d.getFullYear() + "-" +
+             String(d.getMonth()+1).padStart(2,'0') + "-" +
+             String(d.getDate()).padStart(2,'0');
     }
 
-    /* =========================
-       LOGIN
-    ========================= */
-    const viewerUser = document.getElementById('viewerUser');
-    const loginErr = document.getElementById('loginErr');
-    const loginOverlay = document.getElementById('loginOverlay');
-    const whoTxt = document.getElementById('whoTxt');
+    function showErr(msg){
+      loginErr.style.display = "block";
+      loginErr.innerText = msg;
+    }
 
-    function showErr(msg){ loginErr.style.display="block"; loginErr.innerText = msg; }
-    function hideErr(){ loginErr.style.display="none"; loginErr.innerText = ""; }
-    function normUser(){ return (viewerUser.value || "").trim().toUpperCase(); }
+    function hideErr(){
+      loginErr.style.display = "none";
+      loginErr.innerText = "";
+    }
+
+    function normUser(){
+      return (viewerUser.value || "").trim().toUpperCase();
+    }
 
     viewerUser.addEventListener('input', () => {
       lastTypedUser = normUser();
@@ -483,19 +334,30 @@
       hideErr();
     });
 
+    /* =========================
+       SOLICITAR ACCESO (SIN LOGIN)
+    ========================= */
     async function requestAccess(){
       hideErr();
+
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
+
       await createAccessRequest(u, null);
       subscribeToApproval(u);
+
       showErr("SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
     }
 
+    /* =========================
+       LOGIN VIEWER
+    ========================= */
     async function loginViewer(){
       hideErr();
+
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
+
       lastTypedUser = u;
 
       const { data, error } = await sb
@@ -506,6 +368,7 @@
 
       if(error) return showErr("ERROR: " + error.message);
 
+      // NO EXISTE -> genera solicitud y escucha aprobación
       if(!data || !data.length){
         reqBox.style.display = "block";
         await createAccessRequest(u, null);
@@ -514,6 +377,7 @@
       }
 
       const viewer = data[0];
+
       if(viewer.approved !== true){
         reqBox.style.display = "block";
         await createAccessRequest(u, viewer.id);
@@ -521,14 +385,13 @@
         return showErr("ACCESO PENDIENTE DE APROBACIÓN ⏳");
       }
 
+      // OK
       localStorage.setItem("viewer_user", viewer.username);
       localStorage.setItem("viewer_user_id", viewer.id);
 
       loginOverlay.style.display = "none";
       whoTxt.innerText = "USUARIO: " + viewer.username;
 
-      document.getElementById('filtersBox').style.display = "flex";
-      initDateControls();
       loadMenusForDate(getToday());
     }
 
@@ -552,30 +415,40 @@
 
     function subscribeToApproval(username){
       try{
-        if(approveChannel){ sb.removeChannel(approveChannel); approveChannel = null; }
+        if(approveChannel){
+          sb.removeChannel(approveChannel);
+          approveChannel = null;
+        }
       }catch(_){}
+
       approveChannel = sb.channel('viewer-approval-' + username)
-        .on('postgres_changes', { event:'INSERT', schema:'public', table:'viewer_users', filter: `username=eq.${username}` }, (payload) => {
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'viewer_users',
+          filter: `username=eq.${username}`
+        }, (payload) => {
           const row = payload?.new || {};
           if(row.approved === true){
             localStorage.setItem("viewer_user", row.username);
             localStorage.setItem("viewer_user_id", row.id);
             loginOverlay.style.display = "none";
             whoTxt.innerText = "USUARIO: " + row.username;
-            document.getElementById('filtersBox').style.display = "flex";
-            initDateControls();
             loadMenusForDate(getToday());
           }
         })
-        .on('postgres_changes', { event:'UPDATE', schema:'public', table:'viewer_users', filter: `username=eq.${username}` }, (payload) => {
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'viewer_users',
+          filter: `username=eq.${username}`
+        }, (payload) => {
           const row = payload?.new || {};
           if(row.approved === true){
             localStorage.setItem("viewer_user", row.username);
             localStorage.setItem("viewer_user_id", row.id);
             loginOverlay.style.display = "none";
             whoTxt.innerText = "USUARIO: " + row.username;
-            document.getElementById('filtersBox').style.display = "flex";
-            initDateControls();
             loadMenusForDate(getToday());
           }
         })
@@ -587,8 +460,6 @@
       if(u){
         loginOverlay.style.display = "none";
         whoTxt.innerText = "USUARIO: " + u;
-        document.getElementById('filtersBox').style.display = "flex";
-        initDateControls();
         loadMenusForDate(getToday());
       }
     }
@@ -599,219 +470,106 @@
     }
 
     /* =========================
-       RENDER / COLLAPSE
+       CARGA MENÚS DEL DÍA + COLAPSE
     ========================= */
-    const menusGrid = document.getElementById('menusGrid');
+    async function loadMenusForDate(dateStr){
+      menusGrid.innerHTML = "";
 
-    function renderMenuCard(m){
-      const items = (m.menu_menu_items || []).map(rel => rel.menu_items).filter(Boolean);
-      const itemsHtml = items.length
-        ? items.map(i => `
-            <div class="item">
-              <b>${(i.name||'').toUpperCase()}</b>
-              <small>${(i.category||'').toUpperCase()}</small>
-            </div>`).join('')
-        : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
-
-      return `
-        <div class="menu-card collapsed" data-collapsible="true">
-          <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
-            <div class="menu-title"><span class="chip">EXPANDIR</span> ${(m.name||'MENÚ').toUpperCase()}</div>
-            <div class="menu-date">${m.menu_date}</div>
-          </div>
-          <div class="items">${itemsHtml}</div>
-        </div>`;
-    }
-
-    function emptyCard(dateStr){
-      return `
-        <div class="menu-card collapsed" data-collapsible="true">
-          <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
-            <div class="menu-title"><span class="chip">COLAPSADO</span> SIN MENÚ PUBLICADO</div>
-            <div class="menu-date">${dateStr}</div>
-          </div>
-          <div class="items">
-            <div class="item"><b>HOY NO HAY MENÚ</b><small>CONSULTA MÁS TARDE</small></div>
-          </div>
-        </div>`;
-    }
-
-    function attachCollapseHandlers(){
-      const cards = document.querySelectorAll('.menu-card[data-collapsible="true"]');
-      cards.forEach(card => {
-        const head = card.querySelector('.menu-head');
-        const chip = head.querySelector('.chip');
-        function toggle(){
-          const isCollapsed = card.classList.toggle('collapsed');
-          head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-          if(chip) chip.textContent = isCollapsed ? 'EXPANDIR' : 'MINIMIZAR';
-        }
-        head.addEventListener('click', toggle);
-        head.addEventListener('keydown', (e) => {
-          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
-        });
-      });
-    }
-
-    /* =========================
-       DATA FETCH (DATE/TIMESTAMP + "cercano")
-    ========================= */
-    async function fetchMenusByDateEq(dateStr){
-      return await sb
+      const { data, error } = await sb
         .from('menus')
         .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
         .eq('menu_date', dateStr)
-        .order('menu_date', { ascending:true })
         .order('id', { ascending:true });
-    }
-    async function fetchMenusByTimestampRange(dateStr){
-      const { start, end } = startEndOfDayUTC(dateStr);
-      return await sb
-        .from('menus')
-        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
-        .gte('menu_date', start)
-        .lte('menu_date', end)
-        .order('menu_date', { ascending:true })
-        .order('id', { ascending:true });
-    }
-    async function findNearestMenu(dateStr){
-      const { data, error } = await sb
-        .from('menus')
-        .select('id, name, menu_date')
-        .order('menu_date', { ascending: true })
-        .limit(200);
-      if(error) return {nearest:null, error};
-      const menus = (data || []).map(m => ({ id:m.id, date:m.menu_date, name:m.name }));
-      if(!menus.length) return {nearest:null, error:null};
-      let nearest = null, bestDelta = Infinity;
-      const target = new Date(dateStr + "T00:00:00");
-      menus.forEach(m => {
-        const d = new Date(m.date + "T00:00:00");
-        const delta = Math.abs(d - target);
-        if(delta < bestDelta){ bestDelta = delta; nearest = m; }
-      });
-      return { nearest, error:null };
-    }
 
-    async function loadMenusForDate(dateStr){
-      menusGrid.innerHTML = "";
-      document.getElementById('currentDateLabel').textContent = dateStr;
-
-      // 1) Intento con eq (DATE)
-      let { data, error } = await fetchMenusByDateEq(dateStr);
-
-      // 2) Si vacío y sin error, intento rango (TIMESTAMP)
-      if(!error && (!data || data.length === 0)){
-        const res2 = await fetchMenusByTimestampRange(dateStr);
-        data = res2.data; error = res2.error;
-      }
-
-      // 3) Render si hay datos
-      if(!error && data && data.length){
-        menusGrid.innerHTML = data.map(renderMenuCard).join('');
-        attachCollapseHandlers();
-        return;
-      }
-
-      // 4) Si no hay datos -> buscar el más cercano y avisar
-      const { nearest, error: nearErr } = await findNearestMenu(dateStr);
-
-      if(nearErr){
+      if(error){
         menusGrid.innerHTML = `
           <div class="menu-card">
             <div class="items">
               <b>ERROR</b>
-              <small>${nearErr.message}</small>
+              <small>${error.message}</small>
             </div>
           </div>`;
         return;
       }
 
-      if(!nearest){
-        menusGrid.innerHTML = emptyCard(dateStr);
+      const menus = data || [];
+
+      if(!menus.length){
+        menusGrid.innerHTML = `
+          <div class="menu-card">
+            <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
+              <div class="menu-title">
+                <span class="chip">COLAPSADO</span>
+                SIN MENÚ PUBLICADO
+              </div>
+              <div class="menu-date">${dateStr}</div>
+            </div>
+            <div class="items">
+              <div class="item">
+                <b>HOY NO HAY MENÚ</b>
+                <small>CONSULTA MÁS TARDE</small>
+              </div>
+            </div>
+          </div>`;
+        // Activa el colapso en esta tarjeta también
         attachCollapseHandlers();
         return;
       }
 
-      // Cargar el cercano
-      const { data: onlyNearest, error: errNearestData } = await sb
-        .from('menus')
-        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
-        .eq('id', nearest.id)
-        .limit(1);
+      menusGrid.innerHTML = menus.map(m => {
+        const items = (m.menu_menu_items || [])
+          .map(rel => rel.menu_items)
+          .filter(Boolean);
 
-      const notice = `
-        <div class="menu-card" data-collapsible="true">
-          <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
-            <div class="menu-title">
-              <span class="chip">SUGERENCIA</span>
-              SIN MENÚ EN ${dateStr}. MOSTRANDO EL MÁS CERCANO: ${nearest.date}
+        const itemsHtml = items.length
+          ? items.map(i => `
+              <div class="item">
+                <b>${(i.name||'').toUpperCase()}</b>
+                <small>${(i.category||'').toUpperCase()}</small>
+              </div>
+            `).join('')
+          : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
+
+        // Por defecto expandido (aria-expanded="true")
+        return `
+          <div class="menu-card" data-collapsible="true">
+            <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
+              <div class="menu-title">
+                <span class="chip">EXPANDIR / MINIMIZAR</span>
+                ${(m.name||'MENÚ').toUpperCase()}
+              </div>
+              <div class="menu-date">${m.menu_date}</div>
             </div>
-            <div class="menu-date">${dateStr}</div>
-          </div>
-          <div class="items">
-            <div class="item">
-              <b>NO HAY PUBLICACIÓN PARA LA FECHA SELECCIONADA</b>
-              <small>REVISA CON ADMIN LA FECHA GUARDADA en “menu_date”.</small>
-            </div>
-          </div>
-        </div>`;
+            <div class="items">${itemsHtml}</div>
+          </div>`;
+      }).join('');
 
-      if(errNearestData || !onlyNearest || !onlyNearest.length){
-        menusGrid.innerHTML = notice;
-        attachCollapseHandlers();
-        return;
-      }
-
-      menusGrid.innerHTML = notice + onlyNearest.map(renderMenuCard).join('');
       attachCollapseHandlers();
     }
 
-    /* =========================
-       CONTROLES DE FECHA
-    ========================= */
-    function setActiveSegment(btnId){
-      document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-      const b = document.getElementById(btnId);
-      if(b) b.classList.add('active');
+    // Añade manejo de colapso/expandir a todas las tarjetas actuales
+    function attachCollapseHandlers(){
+      const cards = document.querySelectorAll('.menu-card[data-collapsible="true"]');
+      cards.forEach(card => {
+        const head = card.querySelector('.menu-head');
+        const chip = head.querySelector('.chip');
+
+        function toggle(){
+          const isCollapsed = card.classList.toggle('collapsed');
+          head.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+          if(chip) chip.textContent = isCollapsed ? 'EXPANDIR' : 'MINIMIZAR';
+        }
+
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
     }
 
-    function initDateControls(){
-      const dp = document.getElementById('datePicker');
-      const btnY = document.getElementById('btnYesterday');
-      const btnT = document.getElementById('btnToday');
-      const btnTm = document.getElementById('btnTomorrow');
-      const btnGo = document.getElementById('btnGo');
-
-      const today = getToday();
-      dp.value = today;
-
-      btnY.onclick = () => {
-        const d = addDaysFromStr(dp.value, -1);
-        dp.value = d;
-        loadMenusForDate(d);
-        setActiveSegment('btnYesterday');
-      };
-      btnT.onclick = () => {
-        dp.value = today;
-        loadMenusForDate(today);
-        setActiveSegment('btnToday');
-      };
-      btnTm.onclick = () => {
-        const d = addDaysFromStr(dp.value, 1);
-        dp.value = d;
-        loadMenusForDate(d);
-        setActiveSegment('btnTomorrow');
-      };
-      btnGo.onclick = () => {
-        const d = dp.value || today;
-        loadMenusForDate(d);
-        // Al usar VER, ningún segmento está activo
-        document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-      };
-    }
-
-    // Init
     checkViewerSession();
   </script>
 </body>
