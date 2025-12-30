@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MENÚ DEL DÍA</title>
 
+  <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
@@ -83,16 +84,15 @@
       border:1px solid #2b3b63;
     }
 
-    /* Toggle de tema con emoji */
+    /* Toggle de tema con emoji (solo icono) */
     .btn-theme{
       background:var(--soft);
       border:1px solid var(--border);
       color:var(--text);
-      display:flex; align-items:center; gap:8px;
-      padding:10px 12px;
+      display:flex; align-items:center; justify-content:center;
+      width:44px; height:40px; padding:0;
+      font-size:18px;
     }
-    .btn-theme .icon{ font-size:16px; }
-    .btn-theme .label{ font-size:12px; color:var(--muted); font-weight:800; }
 
     .grid{ margin-top:18px; display:grid; grid-template-columns: 1fr; gap:14px; }
 
@@ -116,7 +116,6 @@
     .menu-title{ font-weight:900; font-size:14px; letter-spacing:.8px; display:flex; gap:8px; align-items:center; }
     .menu-date{ font-size:12px; color:var(--muted); }
 
-    /* Indicador de estado (chip) */
     .chip{
       padding:2px 8px;
       border-radius:999px;
@@ -138,7 +137,7 @@
 
     /* Estados colapsados */
     .menu-card.collapsed .items{
-      display:none;            /* simple y eficiente */
+      display:none; /* simple y eficiente */
     }
 
     /* LOGIN */
@@ -250,8 +249,7 @@
       <!-- Acciones (tema con emoji + salir) -->
       <div class="actions">
         <button class="btn btn-theme" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambiar tema">
-          <span class="icon" id="themeIcon">🌙</span>
-          <span class="label" id="themeLabel">OSC.</span>
+          <span id="themeIcon">🌙</span>
         </button>
         <button class="btn btn-logout" onclick="logoutViewer()">SALIR</button>
       </div>
@@ -260,7 +258,9 @@
     <div class="grid" id="menusGrid"></div>
   </div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
     /* =========================
        SUPABASE
@@ -277,22 +277,15 @@
     ========================= */
     const THEME_KEY = "menu_theme"; // dark | light
     const htmlEl = document.documentElement;
-    const themeBtn = document.getElementById("themeToggleBtn");
     const themeIcon = document.getElementById("themeIcon");
-    const themeLabel = document.getElementById("themeLabel");
 
     function applyTheme(theme){
       const t = (theme === "light") ? "light" : "dark";
       htmlEl.setAttribute("data-theme", t);
       localStorage.setItem(THEME_KEY, t);
-      // Emoji + etiqueta corta
-      if(t === "light"){
-        themeIcon.textContent = "☀️";
-        themeLabel.textContent = "CL.";
-      }else{
-        themeIcon.textContent = "🌙";
-        themeLabel.textContent = "OSC.";
-      }
+      themeIcon.textContent = (t === "light") ? "☀️" : "🌙";
+      const btn = document.getElementById("themeToggleBtn");
+      btn.setAttribute("aria-label", t === "light" ? "Tema claro" : "Tema oscuro");
     }
 
     function toggleTheme(){
@@ -313,6 +306,14 @@
       return d.getFullYear() + "-" +
              String(d.getMonth()+1).padStart(2,'0') + "-" +
              String(d.getDate()).padStart(2,'0');
+    }
+
+    function startEndOfDayUTC(dateLocal){
+      // dateLocal: "YYYY-MM-DD"
+      const [y,m,d] = dateLocal.split('-').map(Number);
+      const start = new Date(Date.UTC(y, m-1, d, 0, 0, 0));
+      const end   = new Date(Date.UTC(y, m-1, d, 23, 59, 59, 999));
+      return { start: start.toISOString(), end: end.toISOString() };
     }
 
     function showErr(msg){
@@ -471,84 +472,44 @@
     }
 
     /* =========================
-       CARGA MENÚS DEL DÍA + COLAPSE
+       RENDER / COLLAPSE HELPERS
     ========================= */
-    async function loadMenusForDate(dateStr){
-      menusGrid.innerHTML = "";
+    function renderMenuCard(m){
+      const items = (m.menu_menu_items || [])
+        .map(rel => rel.menu_items)
+        .filter(Boolean);
 
-      const { data, error } = await sb
-        .from('menus')
-        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
-        .eq('menu_date', dateStr)
-        .order('id', { ascending:true });
+      const itemsHtml = items.length
+        ? items.map(i => `
+            <div class="item">
+              <b>${(i.name||'').toUpperCase()}</b>
+              <small>${(i.category||'').toUpperCase()}</small>
+            </div>`).join('')
+        : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
 
-      if(error){
-        menusGrid.innerHTML = `
-          <div class="menu-card">
-            <div class="items">
-              <b>ERROR</b>
-              <small>${error.message}</small>
-            </div>
-          </div>`;
-        return;
-      }
-
-      const menus = data || [];
-
-      if(!menus.length){
-        menusGrid.innerHTML = `
-          <div class="menu-card">
-            <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
-              <div class="menu-title">
-                <span class="chip">COLAPSADO</span>
-                SIN MENÚ PUBLICADO
-              </div>
-              <div class="menu-date">${dateStr}</div>
-            </div>
-            <div class="items">
-              <div class="item">
-                <b>HOY NO HAY MENÚ</b>
-                <small>CONSULTA MÁS TARDE</small>
-              </div>
-            </div>
-          </div>`;
-        // Activa el colapso en esta tarjeta también
-        attachCollapseHandlers();
-        return;
-      }
-
-      menusGrid.innerHTML = menus.map(m => {
-        const items = (m.menu_menu_items || [])
-          .map(rel => rel.menu_items)
-          .filter(Boolean);
-
-        const itemsHtml = items.length
-          ? items.map(i => `
-              <div class="item">
-                <b>${(i.name||'').toUpperCase()}</b>
-                <small>${(i.category||'').toUpperCase()}</small>
-              </div>
-            `).join('')
-          : `<div class="item"><b>SIN PLATOS</b><small>MENÚ VACÍO</small></div>`;
-
-        // Por defecto expandido (aria-expanded="true")
-        return `
-          <div class="menu-card" data-collapsible="true">
-            <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
-              <div class="menu-title">
-                <span class="chip">EXPANDIR / MINIMIZAR</span>
-                ${(m.name||'MENÚ').toUpperCase()}
-              </div>
-              <div class="menu-date">${m.menu_date}</div>
-            </div>
-            <div class="items">${itemsHtml}</div>
-          </div>`;
-      }).join('');
-
-      attachCollapseHandlers();
+      return `
+        <div class="menu-card" data-collapsible="true">
+          <div class="menu-head" role="button" aria-expanded="true" tabindex="0">
+            <div class="menu-title"><span class="chip">EXPANDIR / MINIMIZAR</span> ${(m.name||'MENÚ').toUpperCase()}</div>
+            <div class="menu-date">${m.menu_date}</div>
+          </div>
+          <div class="items">${itemsHtml}</div>
+        </div>`;
     }
 
-    // Añade manejo de colapso/expandir a todas las tarjetas actuales
+    function emptyCard(dateStr){
+      return `
+        <div class="menu-card" data-collapsible="true">
+          <div class="menu-head" role="button" aria-expanded="false" tabindex="0">
+            <div class="menu-title"><span class="chip">COLAPSADO</span> SIN MENÚ PUBLICADO</div>
+            <div class="menu-date">${dateStr}</div>
+          </div>
+          <div class="items">
+            <div class="item"><b>HOY NO HAY MENÚ</b><small>CONSULTA MÁS TARDE</small></div>
+          </div>
+        </div>`;
+    }
+
     function attachCollapseHandlers(){
       const cards = document.querySelectorAll('.menu-card[data-collapsible="true"]');
       cards.forEach(card => {
@@ -571,6 +532,67 @@
       });
     }
 
+    /* =========================
+       CARGA MENÚS DEL DÍA
+       (maneja DATE y TIMESTAMP)
+    ========================= */
+    async function fetchMenusByDateEq(dateStr){
+      return await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .eq('menu_date', dateStr)
+        .order('menu_date', { ascending:true })
+        .order('id', { ascending:true });
+    }
+
+    async function fetchMenusByTimestampRange(dateStr){
+      const { start, end } = startEndOfDayUTC(dateStr);
+      return await sb
+        .from('menus')
+        .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
+        .gte('menu_date', start)
+        .lte('menu_date', end)
+        .order('menu_date', { ascending:true })
+        .order('id', { ascending:true });
+    }
+
+    async function loadMenusForDate(dateStr){
+      menusGrid.innerHTML = "";
+
+      // 1) Intento con eq (campo tipo DATE)
+      let { data, error } = await fetchMenusByDateEq(dateStr);
+
+      // 2) Si no hay datos y no hubo error, intento rango (campo tipo TIMESTAMP)
+      if(!error && (!data || data.length === 0)){
+        const result2 = await fetchMenusByTimestampRange(dateStr);
+        data = result2.data;
+        error = result2.error;
+      }
+
+      if(error){
+        console.error("Supabase error:", error);
+        menusGrid.innerHTML = `
+          <div class="menu-card">
+            <div class="items">
+              <b>ERROR</b>
+              <small>${error.message}</small>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const menus = data || [];
+      if(!menus.length){
+        menusGrid.innerHTML = emptyCard(dateStr);
+        attachCollapseHandlers();
+        return;
+      }
+
+      menusGrid.innerHTML = menus.map(renderMenuCard).join('');
+      attachCollapseHandlers();
+    }
+
+    // Init
     checkViewerSession();
   </script>
 </body>
