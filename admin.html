@@ -8,76 +8,450 @@
 
   <style>
     :root{
-      --radius: 14px; --radius-lg: 20px; --transition: .25s ease;
-      --bg: #f4f6fb; --card: #ffffff; --sidebar: #0f172a; --sidebar-soft: #111c33;
-      --text: #0f172a; --muted: #64748b; --border: #e5e7eb;
-      --accent: #6366f1; --accent-hover: #4f46e5;
-      --danger: #ef4444; --warning: #f59e0b; --success: #10b981;
+      --radius: 14px;
+      --radius-lg: 20px;
+      --transition: .25s ease;
+
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --sidebar: #0f172a;
+      --sidebar-soft: #111c33;
+
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+
+      --shadow: 0 12px 30px rgba(2,6,23,.08);
+      --shadow-strong: 0 40px 80px rgba(0,0,0,.45);
+
       --sidebar-width: 320px;
     }
-    *{ box-sizing: border-box; text-transform: uppercase; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body{ margin: 0; display: flex; height: 100vh; background: var(--bg); color: var(--text); overflow: hidden; }
+
+    body.dark{
+      --bg: #0b1222;
+      --card: #0f172a;
+      --sidebar: #020617;
+      --sidebar-soft: #0b1222;
+
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: #1f2a44;
+
+      --accent: #818cf8;
+      --accent-hover: #6366f1;
+
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --shadow-strong: 0 40px 90px rgba(0,0,0,.65);
+    }
+
+    *{
+      box-sizing: border-box;
+      text-transform: uppercase;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body{
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--bg), rgba(0,0,0,0) 55%);
+      color: var(--text);
+      overflow: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
     .hidden{ display:none !important; }
 
     /* LOGIN */
-    #loginOverlay{ position: fixed; inset: 0; background: var(--sidebar); z-index: 99999; display:flex; align-items:center; justify-content:center; padding: 20px; }
-    .login-card{ background: var(--card); padding: 40px; border-radius: var(--radius-lg); width: 360px; box-shadow: 0 40px 80px rgba(0,0,0,.45); }
-    .login-card input{ text-transform:none !important; width:100%; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 18px; font-weight: 700; outline:none; }
+    #loginOverlay{
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, var(--sidebar), #020617);
+      z-index: 99999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
+    }
+    .login-card{
+      background: var(--card);
+      padding: 38px;
+      border-radius: var(--radius-lg);
+      width: 360px;
+      max-width: 92vw;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-strong);
+    }
+    .login-card h2{
+      text-align:center;
+      margin: 0 0 26px;
+      letter-spacing: 1px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .login-card label{
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display:block;
+    }
+    .login-card input{
+      text-transform:none !important;
+      width:100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 18px;
+      font-weight: 700;
+      background: transparent;
+      color: var(--text);
+      outline:none;
+      transition: border var(--transition), box-shadow var(--transition);
+    }
+    .login-card input:focus{
+      border-color: rgba(99,102,241,.55);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.15);
+    }
 
     /* SIDEBAR */
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar); color: white; display:flex; flex-direction:column; flex-shrink:0; height: 100vh; transition: .3s ease; z-index: 1000; border-right: 1px solid rgba(255,255,255,.06); }
-    body.sidebar-hidden .sidebar { margin-left: calc(var(--sidebar-width) * -1); }
-    .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid rgba(255,255,255,.06); text-align:center; background: #020617; }
-    .sidebar-brand h2 { margin:0; font-size: 14px; color: var(--accent); letter-spacing: 2px; font-weight: 900; }
-    .nav-group-title { font-size: 9px; color: #475569; padding: 15px 15px 5px; font-weight: 900; letter-spacing: 1px; }
-    .sidebar-nav { padding: 10px; display:flex; flex-direction:column; gap: 5px; }
-    .nav-btn { width: 100%; padding: 12px 15px; background: transparent; border: none; color: #94a3b8; text-align:left; cursor:pointer; font-weight: 800; border-radius: 8px; font-size: 11px; }
-    .nav-btn.active { background: #1e293b; color: white; border-left: 4px solid var(--accent); }
+    .sidebar{
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--sidebar), var(--sidebar-soft));
+      color: white;
+      display:flex;
+      flex-direction:column;
+      flex-shrink:0;
+      height: 100vh;
+      transition: .3s ease;
+      z-index: 1000;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index: 999;
+    }
+    body.sidebar-hidden .sidebar{
+      margin-left: calc(var(--sidebar-width) * -1);
+    }
+    .sidebar-brand{
+      padding: 22px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      text-align:center;
+      background: rgba(2,6,23,.55);
+      backdrop-filter: blur(10px);
+    }
+    .sidebar-brand h2{
+      margin:0;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      font-weight: 900;
+    }
+    .nav-group-title{
+      font-size: 9px;
+      color: #94a3b8;
+      padding: 16px 14px 6px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .sidebar-nav{
+      padding: 10px;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav-btn{
+      width: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      text-align:left;
+      cursor:pointer;
+      font-weight: 900;
+      border-radius: 12px;
+      font-size: 11px;
+      transition: var(--transition);
+    }
+    .nav-btn:hover{
+      background: rgba(255,255,255,.07);
+      color: white;
+    }
+    .nav-btn.active{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      border-left: none;
+      box-shadow: 0 10px 22px rgba(99,102,241,.25);
+    }
 
-    /* PICKER */
-    #pickerSection { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05); }
-    .catalog-scroll { flex: 1; overflow-y: auto; padding: 10px; }
-    .search-cat { padding: 12px; background: #0b1222; }
-    .search-cat input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 10px; color: white; font-size: 10px; outline: none; text-transform: none !important; }
+    #pickerSection{
+      flex: 1;
+      overflow-y:auto;
+      padding: 10px;
+      background: rgba(2,6,23,.18);
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .catalog-scroll{ flex:1; overflow-y:auto; padding:10px; }
 
-    .cat-accordion { margin-bottom: 5px; }
-    .cat-trigger { width: 100%; padding: 12px; background: #1e293b; border: none; color: white; text-align: left; font-size: 11px; font-weight: 800; display: flex; justify-content: space-between; border-radius: 8px; cursor: pointer; }
-    .cat-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
-    .cat-accordion.active .cat-content { max-height: 1500px; padding: 10px 0; }
-    .food-card { background: #151e2f; padding: 12px; border-radius: 14px; margin-bottom: 8px; border: 1px solid #2d3748; margin: 0 5px; }
-    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .btn-quick { font-size: 8px; padding: 10px; background: #2d3748; border: 1px solid #334155; color: white; cursor: pointer; border-radius: 8px; font-weight: 800; }
-    .btn-quick:hover { background: var(--accent); }
+    #catSearch{
+      width:100%;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 10px;
+      outline:none;
+      text-transform:none;
+      transition: var(--transition);
+    }
+    #catSearch:focus{
+      border-color: rgba(129,140,248,.6);
+      box-shadow: 0 0 0 4px rgba(129,140,248,.18);
+    }
+
+    .cat-accordion{ margin-bottom: 8px; }
+    .cat-trigger{
+      width:100%;
+      padding: 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      text-align:left;
+      cursor:pointer;
+      font-size: 11px;
+      font-weight: 900;
+      border-radius: 12px;
+      display:flex;
+      justify-content:space-between;
+      transition: var(--transition);
+    }
+    .cat-trigger:hover{ background: rgba(255,255,255,.12); }
+    .cat-content{ max-height: 0; overflow:hidden; transition: .3s ease-out; }
+    .cat-accordion.active .cat-content{ max-height: 1500px; padding: 10px 0; }
+
+    .food-card{
+      background: rgba(255,255,255,.06);
+      padding: 10px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,.08);
+      margin: 0 5px 10px;
+    }
+    .food-card b{
+      display:block;
+      font-size: 11px;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+    .btn-grid-4{ display:grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .btn-quick{
+      font-size: 8px;
+      padding: 10px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      color: white;
+      cursor:pointer;
+      border-radius: 10px;
+      margin-top: 4px;
+      font-weight: 900;
+      transition: var(--transition);
+    }
+    .btn-quick:hover{
+      background: rgba(255,255,255,.16);
+      transform: translateY(-1px);
+    }
 
     /* MAIN */
-    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .top-bar { padding: 15px 30px; background: white; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .btn-toggle { background: var(--sidebar); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; margin-right: 15px; }
-    .view-port { flex: 1; overflow-y: auto; padding: 30px; }
-    .container { max-width: 1100px; margin: 0 auto; width: 100%; }
-    .card { background: white; padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+    .main-area{ flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; }
+    .top-bar{
+      padding: 14px 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      transition: background var(--transition), border var(--transition);
+    }
+    .btn-toggle{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      border:none;
+      margin-right: 14px;
+      box-shadow: 0 10px 22px rgba(99,102,241,.22);
+      transition: var(--transition);
+    }
+    .btn-toggle:hover{ transform: translateY(-1px); }
 
-    input, select { width: 100%; padding: 13px; border: 1px solid var(--border); border-radius: 12px; font-weight: 800; font-size: 13px; background: #fcfcfc; color: var(--text); }
-    label { font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; display: block; }
-    .btn { padding: 12px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 900; font-size: 11px; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-danger { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
-    
-    .draft-item { background: #f8fafc; border: 1px solid var(--border); padding: 18px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); }
-    .admin-bottom { margin-top: auto; background: #020617; padding-bottom: 20px; border-top: 1px solid rgba(255,255,255,.06); }
-    .perm-badge { padding: 4px 8px; border-radius: 6px; font-size: 9px; margin-right: 4px; border: 1px solid #ddd; }
-    .on { background: #dcfce7; color: #16a34a; }
-    .off { background: #f1f5f9; color: #94a3b8; }
+    .view-port{
+      flex:1;
+      overflow-y:auto;
+      padding: 26px;
+      scroll-behavior:smooth;
+    }
+    .container{ max-width: 1100px; margin: 0 auto; width: 100%; }
+
+    /* Cards */
+    .card{
+      background: var(--card);
+      padding: 26px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 26px;
+      transition: background var(--transition), border var(--transition), box-shadow var(--transition);
+    }
+    input, select{
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 13px;
+      background: transparent;
+      color: var(--text);
+      outline:none;
+      transition: var(--transition);
+    }
+    input:focus, select:focus{
+      border-color: rgba(99,102,241,.55);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+    }
+    label{
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display:block;
+    }
+
+    .btn{
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 11px;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      box-shadow: 0 10px 22px rgba(99,102,241,.20);
+    }
+    .btn-primary:hover{ transform: translateY(-1px); }
+    .btn-danger{
+      background: rgba(239,68,68,.14);
+      color: var(--danger);
+      border: 1px solid rgba(239,68,68,.20);
+    }
+    .btn-warning{
+      background: rgba(245,158,11,.16);
+      color: #b45309;
+      border: 1px solid rgba(245,158,11,.24);
+    }
+    .btn-ghost{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .tab-nav{ display:flex; gap: 10px; margin-bottom: 18px; }
+    .tab-btn{
+      flex:1;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(148,163,184,.10);
+      font-weight: 900;
+      font-size: 11px;
+      cursor:pointer;
+      transition: var(--transition);
+      color: var(--text);
+    }
+    .tab-btn.active{
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: white;
+      border-color: transparent;
+    }
+
+    .draft-item{
+      background: rgba(99,102,241,.06);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    table{ width:100%; border-collapse: collapse; }
+    td{
+      padding: 14px;
+      border-bottom: 1px solid rgba(148,163,184,.15);
+      font-size: 12px;
+      font-weight: 800;
+      vertical-align: top;
+      color: var(--text);
+    }
+
+    .theme-btn{
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.18);
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform:none;
+    }
+    .theme-btn:hover{
+      background: rgba(99,102,241,.18);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
+
 <body id="mainBody">
 
   <!-- LOGIN -->
   <div id="loginOverlay">
     <div class="login-card">
-      <h2 style="text-align: center;">ADT ADMIN PRO</h2>
+      <h2>CASINO ADMIN PRO</h2>
       <label>EMAIL</label><input id="lEmail" type="email">
-      <label style="margin-top:15px;">PASSWORD</label><input id="lPass" type="password">
+      <label>PASSWORD</label><input id="lPass" type="password">
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 16px;" onclick="handleLogin()">ENTRAR</button>
       <p id="loginErr" style="color:red; font-size:10px; text-align:center; margin-top:15px; display:none; text-transform:none;"></p>
     </div>
@@ -87,18 +461,20 @@
 
   <aside class="sidebar">
     <div class="sidebar-brand"><h2>MENU GESTION</h2></div>
+
     <div class="nav-group-title">GESTIÓN MENÚS</div>
     <div class="sidebar-nav">
-      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 CONSTRUCTOR</button>
+      <button class="nav-btn active" id="navB" onclick="switchView('builder')">🛠 INGRESO MENÚS</button>
       <button class="nav-btn" id="navH" onclick="switchView('history')">📜 HISTORIAL</button>
     </div>
 
-    <div id="pickerSection">
-        <div class="search-cat"><input id="catSearch" placeholder="🔍 BUSCAR..." oninput="filterCatalog()"></div>
-        <div id="catalogList" class="catalog-scroll"></div>
+    <div id="pickerSection" class="catalog-scroll">
+      <div class="nav-group-title" style="padding-left: 5px;">SELECCIÓN RÁPIDA</div>
+      <input type="text" id="catSearch" placeholder="🔍 BUSCAR PLATO..." oninput="filterCatalog()">
+      <div id="catalogList"></div>
     </div>
 
-    <div class="admin-bottom">
+    <div class="admin-bottom" style="margin-top:auto; border-top:1px solid rgba(255,255,255,.06); padding-bottom: 20px;">
       <div class="nav-group-title">ADMINISTRADOR</div>
       <div class="sidebar-nav">
         <button class="nav-btn hidden" id="navC" onclick="switchView('catalog')">📂 ALIMENTOS</button>
@@ -113,40 +489,59 @@
         <button class="btn-toggle" onclick="document.getElementById('mainBody').classList.toggle('sidebar-hidden')">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 800; color: var(--muted);">🛠 CONSTRUCTOR</h1>
+        <h1 id="viewTitle" style="font-size: 14px; margin: 0; font-weight: 900; color: var(--muted);">🛠 INGRESO MENÚS</h1>
       </div>
-      <div style="display: flex; align-items: center; gap: 15px;">
+
+      <div style="display: flex; align-items: center; gap: 12px;">
         <div style="font-size:10px; font-weight:900; color:var(--accent);">VISITAS: <span id="vCount">0</span></div>
         <span id="userBadge" style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: lowercase;"></span>
-        <button class="btn" style="background:#e2e8f0; padding: 8px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
+
+        <button class="theme-btn" onclick="toggleTheme()">🌙 / ☀️</button>
+        <button class="btn btn-ghost" style="padding: 10px 12px; font-size: 10px;" onclick="handleLogout()">SALIR</button>
       </div>
     </header>
 
     <div class="view-port" id="appMain">
       <div class="container">
-        <!-- VISTAS -->
+
+        <!-- CONSTRUCTOR -->
         <div id="viewBuilder">
           <div class="card">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div><label>FECHA</label><input id="menuDate" type="date"></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+              <div><label>FECHA DEL MENÚ</label><input id="menuDate" type="date" onchange="calcName()"></div>
               <div><label>NOMBRE AUTO</label><div id="autoName" style="font-size:20px; font-weight:900; color:var(--accent); margin-top:8px;">MENÚ DEL DÍA</div></div>
             </div>
-            <div style="display:flex; gap:10px; margin:20px 0;">
-                <button class="tab-btn active" id="tabC" onclick="setBuilderMode('cat')">📂 CATÁLOGO</button>
-                <button class="tab-btn" id="tabM" onclick="setBuilderMode('man')">✍️ MANUAL</button>
+
+            <div class="tab-nav" style="display:flex; gap:10px; margin:20px 0;">
+              <button class="tab-btn active" id="tabC" onclick="setBuilderMode('cat')">📂 USAR CATÁLOGO</button>
+              <button class="tab-btn" id="tabM" onclick="setBuilderMode('man')">✍️ MODO MANUAL</button>
             </div>
+
             <div id="manArea" class="hidden">
-                <label>ESCRIBIR PLATO</label>
-                <div style="display:flex; gap:10px; margin-bottom:20px;"><input id="mIn" style="flex:1;"><button class="btn btn-primary" onclick="addMan()">AÑADIR</button></div>
+              <label>ESCRIBIR PLATO PERSONALIZADO</label>
+              <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <input id="mIn" style="flex:1;" placeholder="EJ: PESCADO FRITO CON ARROZ">
+                <select id="mCat" style="width: 150px;">
+                    <option value="VARIOS">CATEGORÍA</option>
+                    <option value="PLATOS">PLATOS</option>
+                    <option value="ENSALADAS">ENSALADAS</option>
+                    <option value="POSTRES">POSTRES</option>
+                </select>
+                <button class="btn btn-primary" onclick="addMan()">AÑADIR</button>
+              </div>
             </div>
-            <button class="btn btn-primary" id="btnPublish" style="width: 100%; padding: 18px; justify-content: center;" onclick="publishMenu()">PUBLICAR MENÚ</button>
-            <div id="draftList" style="margin-top: 25px;"></div>
-            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px;">SELECCIONA PLATOS A LA IZQUIERDA</div>
+
+            <button class="btn btn-primary" id="btnPublish" style="width: 100%; padding: 18px; justify-content: center; font-size: 13px;" onclick="publishMenu()">🚀 PUBLICAR MENÚ AHORA</button>
+
+            <div id="draftList" style="margin-top: 30px;"></div>
+            <div id="emptyMsg" style="text-align:center; color:var(--muted); padding:30px; border:2px dashed var(--border); border-radius:15px; font-size:12px;">BORRADOR VACÍO. SELECCIONA PLATOS A LA IZQUIERDA.</div>
           </div>
         </div>
-        <div id="viewHistory" class="hidden"><div style="display:flex;justify-content:flex-end;margin-bottom:15px;"><button class="btn btn-danger" onclick="delAll()">🗑️ BORRAR TODO</button></div><div class="card"><table><tbody id="historyTable"></tbody></table></div></div>
+
+        <div id="viewHistory" class="hidden"><div style="display:flex;justify-content:flex-end;margin-bottom:15px;"><button class="btn btn-danger" onclick="delAll()">🗑️ BORRAR TODO EL HISTORIAL</button></div><div class="card"><table><tbody id="historyTable" style="width:100%"></table></div></div>
+
         <div id="viewCatalog" class="hidden">
-            <div class="card">
+            <div class="card" style="border-top: 4px solid var(--accent);">
                 <div class="grid-form">
                     <input type="hidden" id="editCatId">
                     <div><label>CAT.</label><input id="cCat"></div>
@@ -158,18 +553,18 @@
                     <div style="display:flex; align-items:flex-end; gap:5px; grid-column: 1 / -1;"><button class="btn btn-primary" onclick="saveFood()">GUARDAR</button><button class="btn hidden" id="btnCancelCat" onclick="resetCat()">X</button></div>
                 </div>
             </div>
-            <div class="table-wrap"><table><tbody id="catTable"></tbody></table></div>
+            <div class="card"><div class="table-wrap"><table><tbody id="catTable"></tbody></table></div></div>
         </div>
-        <div id="viewUsers" class="hidden"><div class="card"><div class="grid-form"><input type="hidden" id="editUsrId"><div><label>USUARIO</label><input id="uEmail" type="text" style="text-transform:none;"></div><div style="display:flex;align-items:flex-end;gap:10px;"><label><input type="checkbox" id="pIdx"> ACCESO INDEX</label><button class="btn btn-primary" onclick="saveUsr()">GUARDAR</button></div></div></div><div class="table-wrap"><table><thead><tr><th>USUARIO</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usrTableBody"></tbody></table></div></div>
+
+        <div id="viewUsers" class="hidden"><div class="card"><div class="table-wrap"><table><thead><tr><th>USUARIO</th><th>PERMISOS</th><th>ACCIÓN</th></tr></thead><tbody id="usrTableBody"></tbody></table></div></div></div>
+
       </div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // --- CORREGIDO: Configuración Supabase ---
-    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co";
-    const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
+    const S_URL = "https://wljgbmgpjqvmaphrlwyh.supabase.co", S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsamdibWdwanF2bWFwaHJsd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzA5NTAsImV4cCI6MjA4MTkwNjk1MH0.V4N_0vDA6ZYWfwNVoUH-QWuHMsElQENBDORs-aON8Cg";
     const sb = window.supabase.createClient(S_URL, S_KEY);
 
     let uPerms = { cat: false, usr: false, idx: false }, draft = [], catalogCache = [], usersCache = [], historyCache = [];
@@ -194,7 +589,7 @@
       const { error } = await sb.auth.signInWithPassword({ email: email, password: lPass.value });
       if (error) alert("ACCESO DENEGADO: " + error.message); else location.reload();
     }
-    function handleLogout() { sb.auth.signOut(); localStorage.clear(); location.reload(); }
+    async function handleLogout() { await sb.auth.signOut(); localStorage.clear(); location.reload(); }
     async function getStats() { const { data } = await sb.from('visitor_stats').select('count').eq('id', 1).maybeSingle(); if(data) vCount.innerText = data.count; }
 
     function switchView(v) {
@@ -227,10 +622,10 @@
 
     function addD(a, p, c) { if(!p || p === '-' || p === 'null') return; draft.push({ name: `${a} + ${p}`.toUpperCase(), category: c }); renderD(); }
     function renderD() {
-      draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:var(--accent)">${p.category}</small></div><div style="display:flex; gap:5px;"><button class="btn btn-warning" onclick="eD(${i})">✏️</button><button class="btn btn-primary" onclick="draft.push({...draft[${i}]});renderD()">👯</button><button class="btn btn-danger" onclick="draft.splice(${i},1);renderD()">X</button></div></div>`).join('');
+      draftList.innerHTML = draft.map((p, i) => `<div class="draft-item"><div><b>${p.name}</b><br><small style="color:var(--accent); font-weight:800;">${p.category}</small></div><div style="display:flex; gap:5px;"><button class="btn btn-warning" onclick="eD(${i})">✏️</button><button class="btn btn-primary" onclick="draft.push({...draft[${i}]});renderD()">👯</button><button class="btn btn-danger" onclick="draft.splice(${i},1);renderD()">X</button></div></div>`).join('');
       emptyMsg.classList.toggle('hidden', draft.length > 0);
     }
-    function eD(i) { const n = prompt("EDITAR:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
+    function eD(i) { const n = prompt("EDITAR NOMBRE DEL PLATO:", draft[i].name); if(n) { draft[i].name = n.toUpperCase(); renderD(); } }
 
     async function publishMenu() {
       const date = menuDate.value; if(!date || !draft.length) return alert("FALTA INFO");
@@ -239,23 +634,29 @@
         const { data: item } = await sb.from('menu_items').insert([p]).select().single();
         await sb.from('menu_menu_items').insert([{ menu_id: m.id, menu_item_id: item.id }]);
       }
-      alert("PUBLICADO ✅"); draft = []; renderD();
+      alert("¡MENÚ PUBLICADO EXITOSAMENTE! ✅"); draft = []; renderD();
     }
-    function setMode(m) { tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man'); manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man'); }
-    function addMan() { if(!mIn.value) return; draft.push({ name: mIn.value.toUpperCase(), category: 'MANUAL' }); mIn.value=""; renderD(); }
+
+    function setBuilderMode(m) { tabC.classList.toggle('active', m==='cat'); tabM.classList.toggle('active', m==='man'); manArea.classList.toggle('hidden', m==='cat'); pickerSection.classList.toggle('hidden', m==='man'); }
+    function addMan() { if(!mIn.value) return; draft.push({ name: mIn.value.toUpperCase(), category: mCat.value, description: 'MANUAL' }); mIn.value=""; renderD(); }
     function filterCatalog() { const q = catSearch.value.toUpperCase(); renderCatalog(catalogCache.filter(f => f.acompanamiento.includes(q) || f.categoria.includes(q))); if(q) document.querySelectorAll('.cat-accordion').forEach(a => a.classList.add('active')); }
     
     async function loadCatTable() { const { data } = await sb.from('food_catalog').select('*').order('categoria'); catalogCache = data || []; catTable.innerHTML = catalogCache.map(i => `<tr><td><b>${i.categoria}</b></td><td>${i.acompanamiento}</td><td style="text-align:right;"><button class="btn btn-warning" onclick="editCat(${i.id})">✏️</button> <button class="btn btn-primary" onclick="dupCat(${i.id})">👯</button> <button class="btn btn-danger" onclick="delCat(${i.id})">🗑️</button></td></tr>`).join(''); }
     function editCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = i.id; cCat.value = i.categoria; cAcomp.value = i.acompanamiento; cO1.value = i.pollo; cO2.value = i.cerdo; cO3.value = i.carne_roja; cO4.value = i.opcion_4; btnCancelCat.classList.remove('hidden'); }
     function dupCat(id) { const i = catalogCache.find(x => x.id === id); editCatId.value = ""; cCat.value = i.categoria; cAcomp.value = i.acompanamiento + " (COPIA)"; cO1.value = i.pollo; cO2.value = i.cerdo; cO3.value = i.carne_roja; cO4.value = i.opcion_4; btnCancelCat.classList.remove('hidden'); }
     function resetCat() { editCatId.value=""; cCat.value=""; cAcomp.value=""; cO1.value=""; cO2.value=""; cO3.value=""; cO4.value=""; btnCancelCat.classList.add('hidden'); }
-    async function saveFood() { const p = { categoria:cCat.value.toUpperCase(), acompanamiento:cAcomp.value.toUpperCase(), pollo:cO1.value.toUpperCase(), cerdo:cO2.value.toUpperCase(), carne_roja:cO3.value.toUpperCase(), opcion_4:cO4.value.toUpperCase() }; if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value); else await sb.from('food_catalog').insert([p]); resetCat(); loadCatTable(); loadCatalog(); }
+    async function saveFood() {
+        const p = { categoria:cCat.value.toUpperCase(), acompanamiento:cAcomp.value.toUpperCase(), pollo:cO1.value.toUpperCase(), cerdo:cO2.value.toUpperCase(), carne_roja:cO3.value.toUpperCase(), opcion_4:cO4.value.toUpperCase() };
+        if(editCatId.value) await sb.from('food_catalog').update(p).eq('id', editCatId.value); else await sb.from('food_catalog').insert([p]);
+        resetCat(); loadCatTable(); loadCatalog();
+    }
     async function delCat(id) { if(confirm("¿BORRAR?")) { await sb.from('food_catalog').delete().eq('id', id); loadCatTable(); loadCatalog(); } }
 
     async function loadHistory() {
-      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category))').order('menu_date', {ascending:false});
+      const container = document.getElementById('historyTable');
+      const { data } = await sb.from('menus').select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))').order('menu_date', {ascending:false});
       historyCache = data || [];
-      historyTable.innerHTML = historyCache.map(m => {
+      container.innerHTML = historyCache.map(m => {
         const pts = m.menu_menu_items.map(rel => rel.menu_items ? `<span style="display:block; font-size:10px; color:#64748b;">• ${rel.menu_items.category}: <b>${rel.menu_items.name}</b></span>` : '').join('');
         return `<tr><td style="width:120px;"><b>${m.menu_date}</b></td><td><b>${m.name}</b><br><div style="background:#f8fafc; padding:10px; border-radius:12px;">${pts}</div></td><td style="text-align:right;"><button class="btn btn-primary" onclick="reUseMenu(${m.id})">REUTILIZAR</button> <button class="btn btn-danger" onclick="delMenu(${m.id})">X</button></td></tr>`;
       }).join('');
@@ -266,7 +667,7 @@
 
     async function loadUsrTable() {
       const { data } = await sb.from('user_permissions').select('*').order('email');
-      usrTableBody.innerHTML = (data||[]).map(u => `<tr><td style="text-transform:none;">${u.email}</td><td>${u.can_access_index?'IDX':'-'}</td><td style="text-align:right;"><button class="btn btn-danger" onclick="delUsr(${u.id})">X</button></td></tr>`).join('');
+      usrTableBody.innerHTML = (data||[]).map(u => `<tr><td style="text-transform:none;">${u.email}</td><td><span class="badge ${u.can_access_index?'on':'off'}">IDX</span></td><td style="text-align:right; padding:15px;"><button class="btn btn-warning" onclick="editUsr(${u.id})">✏️</button> <button class="btn btn-danger" onclick="delUsr(${u.id})">X</button></td></tr>`).join('');
     }
     async function saveUsr() {
         await sb.from('user_permissions').upsert({ email: uEmail.value.trim().toLowerCase(), can_access_index: pIdx.checked });
@@ -275,7 +676,20 @@
     async function delUsr(id) { if(confirm("¿QUITAR?")) { await sb.from('user_permissions').delete().eq('id', id); loadUsrTable(); } }
 
     document.addEventListener('input', e => { if (e.target.tagName==='INPUT' && !['email','password','date'].includes(e.target.type)) e.target.value = e.target.value.toUpperCase(); });
+    
+    function getToday() {
+        const d = new Date();
+        return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+    }
     menuDate.value = new Date().toLocaleString("en-CA", {timeZone: "America/Santiago"}).split(',')[0];
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        localStorage.setItem('adt_theme', isDark ? 'dark' : 'light');
+    }
+    if(localStorage.getItem('adt_theme') === 'dark') document.body.classList.add('dark');
+
     check();
   </script>
 </body>
