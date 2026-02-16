@@ -210,10 +210,25 @@
 
     /* 🔒 Ocultar solo el botón ENVIAR SOLICITUD (función se mantiene) */
     .req-btn{ display:none; }
+
+    /* LOADING SPINNER */
+    #pageLoading {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        display: none;
+        align-items: center; justify-content: center;
+        color: white; font-weight: 800;
+        backdrop-filter: blur(2px);
+    }
+    #pageLoading.active { display: flex; }
   </style>
 </head>
 
 <body>
+
+  <!-- LOADING -->
+  <div id="pageLoading">CARGANDO MENÚ...</div>
 
   <!-- LOGIN -->
   <div id="loginOverlay">
@@ -270,6 +285,12 @@
 
     let lastTypedUser = "";
     let approveChannel = null;
+    const loadingEl = document.getElementById('pageLoading');
+
+    function showLoading(show) {
+        if(show) loadingEl.classList.add('active');
+        else loadingEl.classList.remove('active');
+    }
 
     /* =========================
        TEMA OSCURO / CLARO (🌙/☀️)
@@ -343,8 +364,10 @@
       const u = normUser();
       if(!u) return showErr("INGRESA USUARIO");
 
+      showLoading(true);
       await createAccessRequest(u, null);
       subscribeToApproval(u);
+      showLoading(false);
 
       showErr("SOLICITUD ENVIADA ✅ (PENDIENTE DE APROBACIÓN)");
     }
@@ -360,11 +383,13 @@
 
       lastTypedUser = u;
 
+      showLoading(true);
       const { data, error } = await sb
         .from('viewer_users')
         .select('id, username, approved')
         .eq('username', u)
         .limit(1);
+      showLoading(false);
 
       if(error) return showErr("ERROR: " + error.message);
 
@@ -473,6 +498,7 @@
        CARGA MENÚS DEL DÍA + COLAPSE
     ========================= */
     async function loadMenusForDate(dateStr){
+      showLoading(true);
       menusGrid.innerHTML = "";
 
       const { data, error } = await sb
@@ -480,6 +506,8 @@
         .select('id, name, menu_date, menu_menu_items(menu_items(name, category, description))')
         .eq('menu_date', dateStr)
         .order('id', { ascending:true });
+
+      showLoading(false);
 
       if(error){
         menusGrid.innerHTML = `
